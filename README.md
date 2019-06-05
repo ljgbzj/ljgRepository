@@ -51,10 +51,10 @@ s\\without-unicode-flag\\script-extensions\\input.js'".
 则执行以下三个个步骤：
 
 1、将‘C:\Users\ecidi\AppData\Local\Yarn\Cache\v4\npm-@babel-plugin-proposal-unicode-property-regex-7.4.4-501ffd9826c0b91da22690720722ac7cb1ca9c78\node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\without-unicode-flag\script-extensions’
-目录下的两个文件‘input.js’和‘output.js’复制到‘ant-design-jeecg-vue’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\without-unicode-flag\script-extensions’目录中。
+目录下的两个文件‘input.js’和‘output.js’复制到‘cmp-front’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\without-unicode-flag\script-extensions’目录中。
 
 2、将‘C:\Users\ecidi\AppData\Local\Yarn\Cache\v4\npm-@babel-plugin-proposal-unicode-property-regex-7.4.4-501ffd9826c0b91da22690720722ac7cb1ca9c78\node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\with-unicode-flag\script-extensions’
-目录下的两个文件‘input.js’和‘output.js’复制到‘ant-design-jeecg-vue’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\with-unicode-flag\script-extensions’目录中。
+目录下的两个文件‘input.js’和‘output.js’复制到‘cmp-front’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\with-unicode-flag\script-extensions’目录中。
 
 3、重新执行 yarn install
 
