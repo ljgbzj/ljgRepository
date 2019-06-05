@@ -28,6 +28,17 @@ export function httpAction(url,parameter,method) {
   })
 }
 
+export function httpActionHeader(url,parameter,method) {
+  return axios({
+    url: url,
+    method:method ,
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
 //put
 export function putAction(url,parameter) {
   return axios({
