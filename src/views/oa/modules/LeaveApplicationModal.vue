@@ -137,6 +137,12 @@
               label="状态">
               <a-input-number v-decorator="[ 'status', {}]" />
             </a-form-item>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="评论留言">
+              <a-textarea placeholder="评论意见" :rows="4" v-decorator="[ 'content', {}]"/>
+            </a-form-item>
             <!-- <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
