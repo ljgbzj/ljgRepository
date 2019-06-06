@@ -7,7 +7,6 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction,downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
-import Qs from 'qs'
 
 export const CmpListMixin = {
   data(){
@@ -178,25 +177,6 @@ export const CmpListMixin = {
     handleEdit: function (record) {
       this.$refs.modalForm.edit(record);
       this.$refs.modalForm.title = "编辑";
-    },
-
-    handleEditform: function (record) {
-      let params = {
-        businessKey: record.businessKey,
-        formDataApi: record.formDataApi, 
-        processDefinitionId: record.processDefinitionId, 
-        processInstanceId: record.processInstanceId, 
-        taskId: record.taskId
-      }
-      getAction(this.url.form, params).then((res) => {
-        if (res.success) {
-          record = Object.assign(res.result, {taskId: record.taskId}) 
-          //this.dataSource = res.result.dataList;
-          //this.ipagination.total = res.result.total;
-          this.$refs.modalForm.edit(record);
-          this.$refs.modalForm.title = "执行";
-        }
-      })
     },
     handleAdd: function () {
       this.$refs.modalForm.add();
