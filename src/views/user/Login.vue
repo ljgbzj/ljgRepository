@@ -148,8 +148,9 @@
             <a-select-option
               v-for="d in departList"
               :key="d.id"
-              :value="d.orgCode">
-              {{ d.departName }}
+              :value="`${d.prjCode}.${d.orgCode}`">
+              <span style="float: left">{{ d.departName }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ d.prjCode }}</span>
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -405,7 +406,8 @@
           return false
         }
        let obj = {
-          orgCode:this.departSelected,
+          prjCode:this.departSelected.split(".")[0],
+          orgCode:this.departSelected.split(".")[1],
           username:this.form.getFieldValue("username")
         }
         putAction("/sys/selectDepart",obj).then(res=>{
