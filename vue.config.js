@@ -64,8 +64,8 @@ module.exports = {
       },*/
       '/ecidi-cmp': {
         //target: 'http://10.215.142.15:8080', //请求本地 需要ecidi-cmp后台项目
-        //target: 'http://10.215.142.15:8082/service-cmp', //请求本地 需要ecidi-cmp后台项目
-        target: 'http://127.0.0.1:8080', //请求本地 需要ecidi-cmp后台项目
+        //target: 'http://10.215.142.15:8082/ecidi-cmp', //请求本地 需要ecidi-cmp后台项目
+        target: 'http://10.215.49.177:8080', //请求本地 需要ecidi-cmp后台项目
         ws: false,
         changeOrigin: true
       },

@@ -1,10 +1,5 @@
-
 Overview
 ----
-
-基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 Ant Design Pro  Vue 版
-ecidi-cmp 的前段UI框架，采用前后端分离方案，提供强大代码生成器的快速开发平台。
-前端页面代码和后端功能代码一键生成，不需要写任何代码，保持cmp一贯的强大！！
 
 
 
@@ -28,14 +23,42 @@ ecidi-cmp 的前段UI框架，采用前后端分离方案，提供强大代码�
 
 - 拉取项目代码
 ```bash
-git clone http://10.215.142.15:8001/cmp/cmc.git
-cd  cmp/ant-design-cmp-vue
+git clone http://cmp.ecidi.com:8001/cmp/cmp-front.git
+cd  cmp-front
 ```
+ - 安装前端工具
+ 
+1、安装 Nodejs	JavaScript运行环境，此处使用到它的包管理器npm	http://www.jianshu.com/p/03a76b2e7e00
+2、安装 yarn ，命令行下面： npm install yarn -g 
+
+
 
 - 安装依赖run 
 ```
 yarn install
 ```
+若出现如下错误：
+
+error An unexpected error occurred: "ENOENT: no such file or directory, copyfile
+ 'C:\\Users\\chen_m2\\AppData\\Local\\Yarn\\Cache\\v4\\npm-@babel-plugin-proposa
+l-unicode-property-regex-7.4.4-501ffd9826c0b91da22690720722ac7cb1ca9c78\\node_mo
+dules\\@babel\\plugin-proposal-unicode-property-regex\\test\\fixtures\\without-u
+nicode-flag\\script-extensions\\input.js' -> 'F:\\ecidi\\cmc2\\ant-design-jeecg-
+vue\\node_modules\\@babel\\plugin-proposal-unicode-property-regex\\test\\fixture
+s\\without-unicode-flag\\script-extensions\\input.js'".
+
+
+则执行以下三个个步骤：
+
+1、将‘C:\Users\ecidi\AppData\Local\Yarn\Cache\v4\npm-@babel-plugin-proposal-unicode-property-regex-7.4.4-501ffd9826c0b91da22690720722ac7cb1ca9c78\node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\without-unicode-flag\script-extensions’
+目录下的两个文件‘input.js’和‘output.js’复制到‘cmp-front’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\without-unicode-flag\script-extensions’目录中。
+
+2、将‘C:\Users\ecidi\AppData\Local\Yarn\Cache\v4\npm-@babel-plugin-proposal-unicode-property-regex-7.4.4-501ffd9826c0b91da22690720722ac7cb1ca9c78\node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\with-unicode-flag\script-extensions’
+目录下的两个文件‘input.js’和‘output.js’复制到‘cmp-front’文件夹下的‘node_modules\@babel\plugin-proposal-unicode-property-regex\test\fixtures\with-unicode-flag\script-extensions’目录中。
+
+3、重新执行 yarn install
+
+
 
 - 开发模式运行
 ```
@@ -61,7 +84,7 @@ yarn run lint
 
 - 关闭 Eslint (不推荐) 移除 `package.json` 中 `eslintConfig` 整个节点代码
 
-- 修改 Ant Design 配色，在文件 `vue.config.js` 中，其他 less 变量覆盖参考 [ant design](https://ant.design/docs/react/customize-theme-cn) 官方说明
+- 修改 Ant Design 配色，在文件 `vue.config.js` 中，
 ```ecmascript 6
   css: {
     loaderOptions: {
