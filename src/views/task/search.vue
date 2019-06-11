@@ -70,12 +70,12 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <task-modal ref="modalForm" @ok="modalFormOk"></task-modal>
+    <leaveApplication-modal ref="modalForm" @ok="modalFormOk"></leaveApplication-modal>
   </a-card>
 </template>
 
 <script>
-  import TaskModal from './modules/TaskModal'
+  import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
 
@@ -83,7 +83,7 @@
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      TaskModal
+      LeaveApplicationModal
     },
     data () {
       return {
@@ -144,8 +144,25 @@
       }
     },
     methods: {
+      handleEditform: function (record) {
+        let params = {
+          businessKey: record.businessKey,
+          formDataApi: record.formDataApi, 
+          processDefinitionId: record.processDefinitionId, 
+          processInstanceId: record.processInstanceId, 
+          taskId: record.taskId
+        }
+        getAction(this.url.form, params).then((res) => {
+          if (res.success) {
+            record = Object.assign(res.result, {taskId: record.taskId}) 
+            //this.dataSource = res.result.dataList;
+            //this.ipagination.total = res.result.total;
+            this.$refs.modalForm.edit(record);
+            this.$refs.modalForm.title = "查看";
+          }
+        })
+      },
       loadData(arg) {
-        console.log(1)
         if(!this.url.list){
           this.$message.error("请设置url.list属性!")
           return
@@ -158,9 +175,7 @@
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            console.log(res)
             this.dataSource = res.result.dataList;
-            console.log(this.dataSource)
             this.ipagination.total = res.result.total;
           }
           this.loading = false;

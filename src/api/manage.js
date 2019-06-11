@@ -57,6 +57,16 @@ export function getAction(url,parameter) {
   })
 }
 
+//get png流程图及审批流程
+export function getActionUrl(url,parameter) {
+  return axios({
+    url: url,
+    method: 'get',
+    params: parameter,
+    responseType: 'arraybuffer'
+  })
+}
+
 //deleteAction
 export function deleteAction(url,parameter) {
   return axios({
