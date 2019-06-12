@@ -157,6 +157,7 @@
       },
       edit (record) {
         this.form.resetFields();
+        console.log(record,'逗你玩的千万');
         this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
         this.visible = true;
         this.taskId = record.taskId;

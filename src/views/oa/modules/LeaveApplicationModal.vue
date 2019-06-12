@@ -172,10 +172,11 @@
               :wrapperCol="wrapperCol1"
               v-if="model.status == undefined"
             >
-              <a-button type="primary" @click="handleSave">暂存</a-button>
+              <a-button type="primary" @click="handleSave('start')">暂存</a-button>
             </a-form-item>
           </a-form>
-          <option-list :commentList="commentList" v-if="commentList.length !== 0"></option-list>
+          <!-- <option-list :commentList="commentList" v-if="commentList.length !== undefined"></option-list> -->
+          <option-list :commentList="commentList" v-if="model.status !== undefined"></option-list>
         </a-spin>
       </a-tab-pane>
       <a-tab-pane key="2" forceRender>
@@ -196,7 +197,8 @@
               <span>已完成</span>
               <s-table 
                 :columns="goodsColumns" 
-                :data="loadGoodsData">
+                :data="loadGoodsData"
+                v-if="loadGoodsData">
               </s-table>
             </h3>
           </div>
@@ -206,7 +208,7 @@
             </h3>
             <s-table 
                 :columns="goodsColumns1" 
-                :data="loadGoodsData">
+                :data="loadGoodsData1">
             </s-table>
           </div>
         </div>
@@ -268,7 +270,8 @@
           templateContent: {rules: []},
         },
         url: {
-          add: "/oa/leaveApplication/action",
+          // add: "/oa/leaveApplication/action",
+          add: "/flowable/action",
           edit: "/oa/leaveApplication/edit",
           chart: '/flowable/process/diagram',
           taskComment: '/flowable/process/taskComment'
@@ -277,6 +280,7 @@
         radioStyle: '',
         btnsValue: '',
         commentList: {},
+        commentList1:{},
         url123: '',
         goodsColumns: [
           {
@@ -367,8 +371,8 @@
         });
         //请求流程图 + 审批意见
         const that = this;
-        console.log(that.model);
-        if(record) {
+        // console.log(record.,'带我去皮带我去');
+        if(JSON.stringify(record) !== "{}") {
           let params = {
             // processDefinitionId: that.model.processDefinitionId,
             // processInstanceId: that.model.processInstanceId
@@ -383,9 +387,11 @@
             // that.close();
           })
           getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
+            console.log(res,'进来吃口药');
             this.commentList = res.result;
-            this.commentList= Object.assign(res.result.taskListEnd, res.result.taskListIng).reverse();
-            console.log(this.commentList,'可以');
+            this.commentList= Object.assign(res.result.taskListEnd);
+            this.commentList1= Object.assign(res.result.taskListIng);
+            console.log(this.commentList,'wqedwqdqwdwqdwqdqwdqdwqd');
           }).finally(() => {
             this.loadGoodsData();
           })
@@ -415,17 +421,21 @@
         } else {
           // 触发表单验证
         this.form.validateFields((err, values) => {
+          console.log(values,'这是空闲的千万家门店屁哦我去额度为哦');
             if (!err) {
               that.confirmLoading = true;
               let httpurl = '';
               let method = '';
               let qsMothods = '';
-              let formData = Object.assign(this.model, values);
+              let formDataString = Object.assign(this.model, values);
+              let flowDataString = {};
+              console.log('我道歉我ID那我去打');
               if(!this.model.id){
+                console.log('dqwdnwqd ')
                 httpurl+=this.url.add;
                 method = 'post';
-                formData.api = '/process/startAndSubmit';
-                formData.processDefinitionKey = 'leave';
+                flowDataString.api = '/process/startAndSubmit';
+                flowDataString.processDefinitionKey = 'leave';
               }else{
                 httpurl+=this.url.edit;
                 method = 'put';
@@ -433,11 +443,16 @@
               // let formData = Object.assign(this.model, values);
 
               //时间格式化
-              formData.timeStart = formData.timeStart?formData.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
-              formData.timeEnd = formData.timeEnd?formData.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
-              
+              formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
+              formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
+
+              let params2 = {
+                flowDataString: JSON.stringify(flowDataString),
+                formDataString: JSON.stringify(formDataString),
+              }
+              console.log(params2,'2222222');
               if(method == 'post'){
-                httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
+                httpAction(httpurl,qs.stringify(params2),method).then((res)=>{
                   if(res.success){
                     that.$message.success(res.message);
                     that.$emit('ok');
@@ -449,7 +464,7 @@
                   that.close();
                 })
               } else {
-                httpActionHeader(httpurl,JSON.stringify(formData), method).then((res)=>{
+                httpActionHeader(httpurl,JSON.stringify(params2), method).then((res)=>{
                   if(res.success){
                     that.$message.success(res.message);
                     that.$emit('ok');
@@ -474,25 +489,34 @@
             let httpurl = '';
             let method = '';
             let qsMothods = '';
-            let formData = Object.assign(this.model, values);
+            let formDataString = Object.assign(this.model, values);
             httpurl+=this.url.add;
             method = 'post';
-            if (lab) {
-              formData.api = '/process/' + lab;
-              if (lab == 'jump') {
-                formData.targetNodeId = id;
+            let flowDataString = {};
+            // let formDataString = {};
+            if (lab !== 'start') {
+              flowDataString.api = lab;
+              if (lab == '/task/jump') {
+                flowDataString.targetNodeId = id;
               }
             } else {
-              formData.api = '/process/start';
+              console.log('d带我去on第五期');
+              flowDataString.api = '/process/start';
             }
-            formData.processDefinitionKey = 'leave';
+            flowDataString.processDefinitionKey = 'leave';
+            
+            // let formData = Object.assign(this.model, values);
             // let formData = Object.assign(this.model, values);
 
             //时间格式化
-            formData.timeStart = formData.timeStart?formData.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.timeEnd = formData.timeEnd?formData.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
+            formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
+            formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
             
-            httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
+            let params1 = {
+              flowDataString: JSON.stringify(flowDataString),
+              formDataString: JSON.stringify(formDataString),
+            }
+            httpAction(httpurl,qs.stringify(params1),method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -510,18 +534,23 @@
         this.close()
       },
       onChange(value,id) {
+        console.log(value);
         var lab = '';
         if(value.btnApi == '/process/save'){
-          lab = 'save';
+          lab = '/process/save';
           this.handleSave(lab); 
+        } else if (value.btnApi == '/task/submit') {
+          lab = '/task/submit';
+          this.handleSave(lab);
         } else if (value.btnApi == '/task/audit') {
-          lab = 'submit';
-          this.handleSave(lab); 
+          lab = '/task/audit';
+          this.handleSave(lab);
         } else if (value.btnApi == '/process/delete') {
-          lab = 'delete';
+          lab = '/process/delete';
           this.handleSave(lab);
         } else if (value = 'jump'){
-          lab = 'jump';
+          console.log('进来了');
+          lab = '/task/jump';
           this.handleSave(lab,id); 
         }
       },
@@ -532,16 +561,33 @@
       loadGoodsData() {
         var that = this;
         var arr = []
-        console.log(that.commentList,'第一个');
-        console.log(that.commentList[0],'第二个');
         for (let i in that.commentList) {
             // let o = {};
             // o[i] = that.commentList[i];
             // arr.push(o)
             arr.push(that.commentList[i])
         }
-        console.log(arr,'吃的维持');
-        console.log(arr instanceof Array);
+        return new Promise((resolve => {
+          resolve({
+            data: arr,
+            pageSize: 10,
+            pageNo: 1,
+            totalPage: 1,
+            totalCount: 10
+          })
+        })).then(res => {
+          return res
+        })
+      },
+      loadGoodsData1() {
+        var that = this;
+        var arr = []
+        for (let i in that.commentList1) {
+            // let o = {};
+            // o[i] = that.commentList[i];
+            // arr.push(o)
+            arr.push(that.commentList1[i])
+        }
         return new Promise((resolve => {
           resolve({
             data: arr,
