@@ -32,13 +32,13 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="填写的时间">
               <!-- <a-input placeholder="请输入请假开始时间" v-model="queryParam.timeStart"></a-input> -->
-              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss"/>
+              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="至">
               <!-- <a-input placeholder="请输入请假结束时间" v-model="queryParam.timeEnd"></a-input> -->
-              <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss"/>
+              <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -72,7 +72,7 @@
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
       <!-- <a-button @click="handleEdit(record)" type="primary" icon="edit" :disabled="selectedRowKeys.length >0 && selectedRowKeys.length <=1? false : true">修改</a-button> -->
-      <a-button @click="batchAbandone" type="primary" icon="delete" :disabled="selectedRowKeys.length <=0 ? true : false">废弃</a-button>
+      <a-button @click="batchAbandone" type="primary" icon="delete" :disabled="selectedRowKeys.length <=0 || selectedRowKeys.length >1? true : false">废弃</a-button>
       <!-- <a-button type="primary" icon="download" @click="handleExportXls('请假申请')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
@@ -180,7 +180,7 @@
               let re = "";
               if (text === '0') {
                 re = "事假";
-              } else if (text === 1) {
+              } else if (text === '1') {
                 re = '病假';
               } else if (text === '2') {
                 re = '年假';
@@ -295,6 +295,8 @@
           delete: '/oa/leaveApplication/action',
           exportXlsUrl: "oa/leaveApplication/exportXls",
           importExcelUrl: "oa/leaveApplication/importExcel",
+          list1: "/flowable/tasks/list",
+          form: "/flowable/tasks/form"
        },
     }
   },

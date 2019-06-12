@@ -6,7 +6,9 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭">
+    cancelText="关闭"
+    :okButtonProps="model.btns ? { style: 'display:none' } : {}"
+    :cancelButtonProps="model.btns ? { style: 'display:none' } : {}">
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
@@ -69,25 +71,25 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="部门领导">
-              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderUsername', {}]" />
+              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderUsername', validatorRules.templateDeLeaderR]" />
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="部门领导">
-              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderRealname', {}]" />
+              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderRealname', validatorRules.templateDeLeaderR]" />
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="人事部门领导">
-              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderUsername', {}]" />
+              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderUsername', validatorRules.templatehrLeaderU]" />
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="人事部门领导">
-              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderRealname', {}]" />
+              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderRealname', validatorRules.templatehrLeaderR]" />
             </a-form-item>
             <!-- <a-form-item
               :labelCol="labelCol"
@@ -105,13 +107,13 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="总经理">
-              <a-input placeholder="请输入总经理" v-decorator="['generalManagerUsername', {}]" />
+              <a-input placeholder="请输入总经理" v-decorator="['generalManagerUsername', validatorRules.templateGeManagerU]" />
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="总经理">
-              <a-input placeholder="请输入总经理" v-decorator="['generalManagerRealname', {}]" />
+              <a-input placeholder="请输入总经理" v-decorator="['generalManagerRealname', validatorRules.templateGeManagerR]" />
             </a-form-item>
             <!-- <a-form-item
               :labelCol="labelCol"
@@ -129,28 +131,51 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="备注信息">
-              <a-input placeholder="请输入备注信息" v-decorator="['remarks', validatorRules.templateContent]" />
+              <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="状态">
-              <a-input-number v-decorator="[ 'status', {}]" />
+              label="状态"
+              v-if="model.status !== undefined">
+              <a-select placeholder="开启状态中" v-decorator="['status', {}]" disabled>
+                <a-select-option value="0">暂存</a-select-option>
+                <a-select-option value="1">流转中</a-select-option>
+                <a-select-option value="2">已完成</a-select-option>
+                <a-select-option value="3">废弃</a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="评论留言">
-              <a-textarea placeholder="评论意见" :rows="4" v-decorator="[ 'content', {}]"/>
+              label="审批意见"
+              v-if="model.status !== undefined">
+              <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
             </a-form-item>
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="所属租户">
-              <a-input placeholder="请输入所属租户" v-decorator="['corpCode', {}]" />
-            </a-form-item> -->
-        
+            <a-form-item
+              :wrapperCol="wrapperCol1"
+            >
+              <template v-for="(placement, index) in btns">
+                <a-dropdown placement="bottomCenter" :key="index">
+                  <a-button
+                  style="{ 'margin-right': '10px' }"
+                  @click="onChange(placement)">{{placement.btnName}}</a-button>
+                  <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
+                    <a-menu-item v-for="(v,k) in rollback" :key="k">
+                      <div @click="goBack(v.nodeId)">{{ v.nodeName }}</div>
+                    </a-menu-item>
+                  </a-menu>
+                </a-dropdown>
+              </template>
+            </a-form-item>
+            <a-form-item
+              :wrapperCol="wrapperCol1"
+              v-if="model.status == undefined"
+            >
+              <a-button type="primary" @click="handleSave">暂存</a-button>
+            </a-form-item>
           </a-form>
+          <option-list :commentList="commentList" v-if="commentList.length !== 0"></option-list>
         </a-spin>
       </a-tab-pane>
       <a-tab-pane key="2" forceRender>
@@ -158,26 +183,56 @@
           <a-icon type="bell" />
           流程图
         </span>
-        这是流程图
+        <div>
+          <div class="proc_bg">
+            <h3>
+              <span>流程图</span>
+            </h3>
+            <!-- <img :src="imgUrl"/> -->
+            <img :src="url123"/>
+          </div>
+          <div class="proc_bg">
+            <h3>
+              <span>已完成</span>
+              <s-table 
+                :columns="goodsColumns" 
+                :data="loadGoodsData">
+              </s-table>
+            </h3>
+          </div>
+          <div class="proc_bg">
+            <h3>
+              <span>处理中</span>
+            </h3>
+            <s-table 
+                :columns="goodsColumns1" 
+                :data="loadGoodsData">
+            </s-table>
+          </div>
+        </div>
       </a-tab-pane>
     </a-tabs>
   </a-modal>
 </template>
 
 <script>
-  import { httpAction, httpActionHeader } from '@/api/manage'
+  import { httpAction, httpActionHeader, getActionUrl, getAction } from '@/api/manage'
+  import OptionList from './OptionList'
   import pick from 'lodash.pick'
   import moment from "moment"
   import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
   import { mapGetters } from 'vuex'
   import qs from 'qs';
-
-import { setTimeout } from 'timers';
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
+  import Vue from 'vue'
+  import STable from '@/components/table/'
 
   export default {
     name: "LeaveApplicationModal",
     components: {
-      JSelectUserByDep
+      JSelectUserByDep,
+      OptionList,
+      STable
     },
     data () {
       return {
@@ -192,7 +247,10 @@ import { setTimeout } from 'timers';
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        wrapperCol1: {
+          xs: { span: 24, offset: 0 },
+          sm: { span: 16, offset: 5 }
+        },
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -201,15 +259,71 @@ import { setTimeout } from 'timers';
           templateStartT: {rules: [{required: true, message: '请选择开始时间!'}]},
           templateEndT: {rules: [{required: true, message: '请选择开结束时间!'}]},
           templateReason: {rules: [{required: true, message: '请输入请假原因!'}]},
-          templateDeLeader: {rules: [{required: true, message: '请选择部门领导!'}]},
-          templatehrLeader: {rules: [{required: true, message: '请选择人事部门领导!'}]},
-          templateGeManager: {rules: [{required: true, message: '请选择总经理!'}]},
+          templateDeLeaderU: {rules: [{required: true, message: '请选择部门领导!'}]},
+          templateDeLeaderR: {rules: [{required: true, message: '请选择部门领导!'}]},
+          templatehrLeaderU: {rules: [{required: true, message: '请选择人事部门领导!'}]},
+          templatehrLeaderR: {rules: [{required: true, message: '请选择人事部门领导!'}]},
+          templateGeManagerU: {rules: [{required: true, message: '请选择总经理!'}]},
+          templateGeManagerR: {rules: [{required: true, message: '请选择总经理!'}]},
           templateContent: {rules: []},
         },
         url: {
           add: "/oa/leaveApplication/action",
           edit: "/oa/leaveApplication/edit",
+          chart: '/flowable/process/diagram',
+          taskComment: '/flowable/process/taskComment'
         },
+        imgurl: '',
+        radioStyle: '',
+        btnsValue: '',
+        commentList: {},
+        url123: '',
+        goodsColumns: [
+          {
+            title: '步骤名称',
+            dataIndex: 'nodeName',
+            key: 'nodeName'
+          },
+          {
+            title: '处理人',
+            dataIndex: 'assigneeFullname',
+            key: 'assigneeFullname'
+          },
+          {
+            title: '到达时间',
+            dataIndex: 'startTime',
+            key: 'startTime'
+          },
+          {
+            title: '完成时间',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            align: 'right'
+          },
+          {
+            title: '处理意见',
+            dataIndex: 'num',
+            key: 'num',
+            align: 'right'
+          }
+        ],
+        goodsColumns1: [
+          {
+            title: '步骤名称',
+            dataIndex: 'nodeName',
+            key: 'nodeName'
+          },
+          {
+            title: '当前处理',
+            dataIndex: 'assigneeFullname',
+            key: 'assigneeFullname'
+          },
+          {
+            title: '到达时间',
+            dataIndex: 'startTime',
+            key: 'startTime'
+          }
+        ]
       }
     },
     created () {
@@ -221,17 +335,72 @@ import { setTimeout } from 'timers';
       },
       edit (record) {
         this.form.resetFields();
-        this.model.inputerFullname = this.nickname();
-        this.model = Object.assign({}, record);
+        if(record.formData !== undefined) {
+          this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
+        } else {
+          this.model = Object.assign({}, record);
+        }
         this.visible = true;
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'inputerFullname','type','reason','departmentLeaderUsername','departmentLeaderRealname','hrLeaderUsername','hrLeaderRealname','generalManagerUsername','generalManagerRealname','processDefinitionId','processInstanceId','remarks'))
+          this.form.setFieldsValue(pick(this.model,
+          'inputerFullname',
+          'type',
+          'reason',
+          'departmentLeaderUsername',
+          'departmentLeaderRealname',
+          'hrLeaderUsername',
+          'hrLeaderRealname',
+          'generalManagerUsername',
+          'generalManagerRealname',
+          'remarks',
+          'status',
+          '_taskComment'));
 		  //时间格式化
           this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
           this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
           this.form.setFieldsValue({inputerFullname: this.nickname()})
+          if(this.model.status !== undefined){
+            this.form.setFieldsValue({status: this.model.status.toString()})
+          }
+          
         });
+        //请求流程图 + 审批意见
+        const that = this;
+        console.log(that.model);
+        if(record) {
+          let params = {
+            // processDefinitionId: that.model.processDefinitionId,
+            // processInstanceId: that.model.processInstanceId
+            id: that.model.id
+          };
+          let httpGetUrlC = that.url.chart;
+          let httpGetUrlTc = that.url.taskComment;
+          getActionUrl(httpGetUrlC,params).then((res)=>{
+            this.url123 =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+          }).finally(() => {
+            // that.confirmLoading = false;
+            // that.close();
+          })
+          getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
+            this.commentList = res.result;
+            this.commentList= Object.assign(res.result.taskListEnd, res.result.taskListIng).reverse();
+            console.log(this.commentList,'可以');
+          }).finally(() => {
+            this.loadGoodsData();
+          })
+        } else {
+          let params = {
+            processDefinitionKey: 'leave'
+          };
+          let httpGetUrlC = that.url.chart;
+          getActionUrl(httpGetUrlC, params).then((res)=>{
+            this.url123 =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+          }).finally(() => {
+            // that.confirmLoading = false;
+            // that.close();
+          })
+        }
 
       },
       close () {
@@ -240,68 +409,187 @@ import { setTimeout } from 'timers';
       },
       handleOk () {
         const that = this;
+        if(that.title == '查看') {
+          // that.confirmLoading = false;
+          that.close();
+        } else {
+          // 触发表单验证
+        this.form.validateFields((err, values) => {
+            if (!err) {
+              that.confirmLoading = true;
+              let httpurl = '';
+              let method = '';
+              let qsMothods = '';
+              let formData = Object.assign(this.model, values);
+              if(!this.model.id){
+                httpurl+=this.url.add;
+                method = 'post';
+                formData.api = '/process/startAndSubmit';
+                formData.processDefinitionKey = 'leave';
+              }else{
+                httpurl+=this.url.edit;
+                method = 'put';
+              }
+              // let formData = Object.assign(this.model, values);
+
+              //时间格式化
+              formData.timeStart = formData.timeStart?formData.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
+              formData.timeEnd = formData.timeEnd?formData.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
+              
+              if(method == 'post'){
+                httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
+                  if(res.success){
+                    that.$message.success(res.message);
+                    that.$emit('ok');
+                  }else{
+                    that.$message.warning(res.message);
+                  }
+                }).finally(() => {
+                  that.confirmLoading = false;
+                  that.close();
+                })
+              } else {
+                httpActionHeader(httpurl,JSON.stringify(formData), method).then((res)=>{
+                  if(res.success){
+                    that.$message.success(res.message);
+                    that.$emit('ok');
+                  }else{
+                    that.$message.warning(res.message);
+                  }
+                }).finally(() => {
+                  that.confirmLoading = false;
+                  that.close();
+                })
+              }
+            }
+          })
+        }
+      },
+      handleSave (lab,id) {
+        const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
-          console.log();
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
             let qsMothods = '';
             let formData = Object.assign(this.model, values);
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-              formData.api = '/process/startAndSubmit';
-              formData.processDefinitionKey = 'leave';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
+            httpurl+=this.url.add;
+            method = 'post';
+            if (lab) {
+              formData.api = '/process/' + lab;
+              if (lab == 'jump') {
+                formData.targetNodeId = id;
+              }
+            } else {
+              formData.api = '/process/start';
             }
+            formData.processDefinitionKey = 'leave';
             // let formData = Object.assign(this.model, values);
 
             //时间格式化
             formData.timeStart = formData.timeStart?formData.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
             formData.timeEnd = formData.timeEnd?formData.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
             
-            console.log(formData);
-            if(method == 'post'){
-              httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
-            } else {
-              httpActionHeader(httpurl,JSON.stringify(formData), method).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
+            httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
             }
-          }
         })
       },
       handleCancel () {
         this.close()
       },
+      onChange(value,id) {
+        var lab = '';
+        if(value.btnApi == '/process/save'){
+          lab = 'save';
+          this.handleSave(lab); 
+        } else if (value.btnApi == '/task/audit') {
+          lab = 'submit';
+          this.handleSave(lab); 
+        } else if (value.btnApi == '/process/delete') {
+          lab = 'delete';
+          this.handleSave(lab);
+        } else if (value = 'jump'){
+          lab = 'jump';
+          this.handleSave(lab,id); 
+        }
+      },
+      goBack(id) {
+        this.onChange('jump',id);
+      },
+      // 加载数据方法 必须为 Promise 对象
+      loadGoodsData() {
+        var that = this;
+        var arr = []
+        console.log(that.commentList,'第一个');
+        console.log(that.commentList[0],'第二个');
+        for (let i in that.commentList) {
+            // let o = {};
+            // o[i] = that.commentList[i];
+            // arr.push(o)
+            arr.push(that.commentList[i])
+        }
+        console.log(arr,'吃的维持');
+        console.log(arr instanceof Array);
+        return new Promise((resolve => {
+          resolve({
+            data: arr,
+            pageSize: 10,
+            pageNo: 1,
+            totalPage: 1,
+            totalCount: 10
+          })
+        })).then(res => {
+          return res
+        })
+      },
 
-
+    },
+    computed: {
+      rollback() {
+        return this.model.rollBackAbleNodes
+      },
+      btns(){
+        return this.model.btns
+      }
     }
   }
 </script>
 
 <style lang="less" scoped>
-
+  .proc_bg {
+    margin-top: 10px;
+    padding: 10px 15px;
+    height: auto;
+    overflow: hidden;
+    background: #FFF;
+    border: 1px solid #EEE;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    ul li{
+      float: left;
+      margin-left: 22px;
+      display: block;
+      height: 18px;
+      line-height: 18px;
+      color: #888;
+      text-indent: 30px;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
 </style>

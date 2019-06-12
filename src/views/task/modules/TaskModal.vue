@@ -157,12 +157,7 @@
       },
       edit (record) {
         this.form.resetFields();
-        console.log(8888888)
-        console.log(record)
-        console.log(this.form)
         this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
-        console.log(33333333)
-        console.log(this.model)
         this.visible = true;
         this.taskId = record.taskId;
         this.$nextTick(() => {
@@ -191,14 +186,11 @@
         this.visible = false;
       },
       onChange(){
-        /* console.log(res)
-        console.log(this.value); */
       },
       handleOk () {
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
-          console.log(err)
           if (!err) {
             that.confirmLoading = true;
             let httpurl = ''
@@ -213,8 +205,6 @@
               httpurl+=this.url.edit;
                method = 'put';
             } */
-
-            console.log(this.model)
             let formData = Object.assign(this.model, values, {api: this.value})
             //时间格式化
             /* formData.startTime = formData.startTime?formData.startTime.format('YYYY-MM-DD HH:mm:ss'):null; */
@@ -227,13 +217,8 @@
               _taskComment: formData._taskComment
             }
             formData = qs.stringify(formData)
-            console.log(formData)
 
             httpAction(httpurl,formData,method).then((res)=>{
-              /* console.log(res)
-              console.log(formData)
-              console.log(method)
-              console.log(httpurl) */
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');

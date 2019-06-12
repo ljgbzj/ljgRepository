@@ -72,12 +72,14 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <task-modal ref="modalForm" @ok="modalFormOk"></task-modal>
+    <!-- <task-modal ref="modalForm" @ok="modalFormOk"></task-modal> -->
+    <leaveApplication-modal ref="modalForm" @ok="modalFormOk"></leaveApplication-modal>
   </a-card>
 </template>
 
 <script>
-  import TaskModal from './modules/TaskModal'
+  // import TaskModal from './modules/TaskModal'
+  import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
 
@@ -85,7 +87,7 @@
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      TaskModal
+      LeaveApplicationModal
     },
     data () {
       return {
@@ -159,12 +161,9 @@
         }
         getAction(this.url.form, params).then((res) => {
           if (res.success) {
-            console.log("这是个激动人心的时刻222")
             record = Object.assign(res.result, {taskId: record.taskId}) 
-            console.log(record)
             //this.dataSource = res.result.dataList;
             //this.ipagination.total = res.result.total;
-            console.log(11111)
             this.$refs.modalForm.edit(record);
             this.$refs.modalForm.title = "执行";
           }
@@ -183,9 +182,7 @@
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            console.log(res)
             this.dataSource = res.result.dataList;
-            console.log(this.dataSource)
             this.ipagination.total = res.result.total;
           }
           this.loading = false;
