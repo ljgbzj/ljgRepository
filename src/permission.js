@@ -9,7 +9,7 @@ import { generateIndexRouter } from "@/utils/util"
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/user/login', '/user/register', '/user/register-result'] // no redirect whitelist
+const whiteList = ['/user/description','/user/login', '/user/register', '/user/register-result'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
@@ -17,11 +17,15 @@ router.beforeEach((to, from, next) => {
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {
+      console.log(1);
       next({ path: '/dashboard/workplace' })
       NProgress.done()
     } else {
+      console.log(2)
       if (store.getters.permissionList.length === 0) {
+        console.log(3)
         store.dispatch('GetPermissionList').then(res => {
+              console.log(4)
               const menuData = res.result.menu;
               console.log(res.message)
               if (menuData === null || menuData === "" || menuData === undefined) {
@@ -54,15 +58,18 @@ router.beforeEach((to, from, next) => {
             })
           })
       } else {
+        console.log(5)
         next()
       }
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
+      console.log(6)
       next()
     } else {
-      next({ path: '/user/login', query: { redirect: to.fullPath } })
+      console.log(7)
+      next({ path: '/user/description', query: { redirect: to.fullPath } })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }
