@@ -1,28 +1,43 @@
 <template>
   <div id="userLayout" :class="['user-layout-wrapper', device]">
     <div class="container">
-      <div class="top">
+        <!-- header -->
         <div class="header">
-          <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">建管云</span>
+          <!-- logo -->
+          <div class="logo">
+            <a href="/">
+            <img src="@/assets/img/login/logo.png" alt="logo">
           </a>
-        </div>
-        <div class="desc">
-           (CMP)建管快速开发平台
-        </div>
-      </div>
+          </div>
+          
+          <!-- title-list -->
+          <ul class="title-list">
+            <li 
+            v-for="(page,index) in pagelists"
+            :key="index"
+            class="title"
+            >{{page.title}}</li>
+          </ul>
 
-      <route-view></route-view>
-
-      <div class="footer">
-        <div class="links">
-
+          <a class="login" href="/user/login">
+              <span>请登录</span>
+              <img src="@/assets/img/login/login.png" />
+          </a>
+              
         </div>
-        <div class="copyright">
-          Copyright &copy; 2019 建管部研发小组
+
+        <!-- body -->
+        <div class="body">
+          <route-view></route-view>
         </div>
-      </div>
+        
+
+        <!-- footer -->
+        <!-- <div class="footer">
+          <div class="links"></div>
+          <div class="copyright">Copyright &copy; 2019 建管部研发小组</div>
+        </div> -->
+
     </div>
   </div>
 </template>
@@ -36,7 +51,33 @@
     components: { RouteView },
     mixins: [mixinDevice],
     data () {
-      return {}
+      return {
+        pagelists: [
+          {
+            title: '统计报表'
+          },{
+            title: '系统管理'
+          },{
+            title: '系统监控'
+          },{
+            title: '消息中心'
+          },{
+            title: '常见案例'
+          },{
+            title: '结果页'
+          },{
+            title: '详情页'
+          },{
+            title: '异常页'
+          },{
+            title: '个人页'
+          },{
+            title: '列表页'
+          },{
+            title: '表单页'
+          }
+        ]
+      }
     },
     mounted () {
       document.body.classList.add('userLayout')
@@ -63,63 +104,63 @@
     .container {
       width: 100%;
       min-height: 100%;
-      background: #f0f2f5 url(~@/assets/background.svg) no-repeat 50%;
-      background-size: 100%;
-      padding: 110px 0 144px;
+      background: #f0f2f5 url(~@/assets/img/login/background.png) no-repeat 50%;
+      background-size: 100% 100%;
+      padding: 58px 80px 0 80px;
       position: relative;
 
-      a {
-        text-decoration: none;
-      }
-
-      .top {
-        text-align: center;
-
-        .header {
-          height: 44px;
-          line-height: 44px;
-
-          .badge {
-            position: absolute;
-            display: inline-block;
-            line-height: 1;
-            vertical-align: middle;
-            margin-left: -12px;
-            margin-top: -10px;
-            opacity: 0.8;
-          }
-
-          .logo {
-            height: 44px;
-            vertical-align: top;
-            margin-right: 16px;
-            border-style: none;
-          }
-
-          .title {
-            font-size: 33px;
-            color: rgba(0, 0, 0, .85);
-            font-family: "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            font-weight: 600;
-            position: relative;
-            top: 2px;
+      .header { 
+        display: flex;
+        align-items: center;
+        .logo{
+          padding-right: 60px;
+        }
+        .title-list{
+          flex-grow: 1;
+          .title{
+            float: left;
+            margin-right: 48px;
+            height:14px;
+            font-size:13px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(255,255,255,1);
+            line-height:32px;
+            opacity:0.66;
           }
         }
-        .desc {
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.45);
-          margin-top: 12px;
-          margin-bottom: 40px;
+        .login{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          span{
+            font-size:14px;
+            font-family:SourceHanSansCN-Regular;
+            font-weight:400;
+            color:rgba(255,255,255,1);
+            line-height:32px;
+            opacity:0.66;
+          }
+
+          img{
+            width:12px;
+            height:13px;
+            opacity:0.66;
+            margin-left: 5px;
+          }
         }
       }
 
-      .main {
-        min-width: 260px;
-        width: 368px;
-        margin: 0 auto;
+      .body{
+        .desc{
+          
+        }
       }
 
-      .footer {
+      
+
+      /* .footer {
         position: absolute;
         width: 100%;
         bottom: 0;
@@ -142,7 +183,7 @@
           color: rgba(0, 0, 0, 0.45);
           font-size: 14px;
         }
-      }
+      } */
     }
   }
 </style>
