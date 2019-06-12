@@ -98,6 +98,7 @@
         size="middle"
         bordered
         rowKey="id"
+        key="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -291,8 +292,9 @@
           // delete: "/oa/leaveApplication/delete",
           // deleteBatch: "/oa/leaveApplication/deleteBatch",
           // 废弃即删除
-          deleteBatch: "/oa/leaveApplication/action",
-          delete: '/oa/leaveApplication/action',
+          // deleteBatch: "/oa/leaveApplication/action",
+          deleteBatch: "/flowable/action",
+          // delete: '/oa/leaveApplication/action',
           exportXlsUrl: "oa/leaveApplication/exportXls",
           importExcelUrl: "oa/leaveApplication/importExcel",
           list1: "/flowable/tasks/list",
@@ -307,7 +309,7 @@
   },
     methods: {
       // 自定义废弃方法覆盖混合模式
-      batchAbandone: function (id, processInstanceId) {
+      batchAbandone: function (id) {
         if(!this.url.deleteBatch){
           this.$message.error("请设置url.deleteBatch属性!")
           return
@@ -318,18 +320,25 @@
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
               ids += this.selectedRowKeys[a] + ",";
             }
-            processInsId = this.selectionRows[0].processInstanceId;
-          } else if (this.selectedRowKeys.length = 1 && processInstanceId == undefined) {
+            // processInsId = this.selectionRows[0].processInstanceId;
+          } else if (this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined) {
             ids = this.selectedRowKeys[0];
-            processInsId = this.selectionRows[0].processInstanceId;
+            // processInsId = this.selectionRows[0].processInstanceId;
           } else {
             ids = id;
-            processInsId = processInstanceId
+            // processInsId = processInstanceId
+          }
+          let flowDataString = {
+            api: '/process/delete',
+            // processInstanceId : processInsId
+            processDefinitionKey: 'leave'
+          }
+          let formDataString = {
+            id: ids
           }
           let params = {
-            api: '/process/delete',
-            processInstanceId : processInsId,
-            id: ids
+            flowDataString: JSON.stringify(flowDataString),
+            formDataString: JSON.stringify(formDataString),
           };
           let method = 'post';
           var that = this;

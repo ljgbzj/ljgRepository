@@ -151,9 +151,10 @@
     },
     methods: {
       handleEditform: function (record) {
+        console.log(record);
         let params = {
           businessKey: record.businessKey,
-          formDataApi: record.formDataApi, 
+          processDefinitionKey: record.processDefinitionKey, 
           processDefinitionId: record.processDefinitionId, 
           processInstanceId: record.processInstanceId, 
           taskId: record.taskId
@@ -180,6 +181,7 @@
         var params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
+          console.log(res,'不是');
           if (res.success) {
             this.dataSource = res.result.dataList;
             this.ipagination.total = res.result.total;

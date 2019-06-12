@@ -152,9 +152,10 @@
     },
     methods: {
       handleEditform: function (record) {
+        console.log(record);
         let params = {
           businessKey: record.businessKey,
-          formDataApi: record.formDataApi, 
+          processDefinitionKey: record.processDefinitionKey, 
           processDefinitionId: record.processDefinitionId, 
           processInstanceId: record.processInstanceId, 
           taskId: record.taskId
