@@ -7,6 +7,7 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction,downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
+import Qs from 'qs'
 
 export const CmpListMixin = {
   data(){

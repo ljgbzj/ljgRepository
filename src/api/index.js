@@ -1,9 +1,10 @@
 const api = {
     Login: '/sys/login',
+    LoginByPhone: '/sys/verifyMessageLogin',
     Logout: '/sys/logout',
     ForgePassword: '/auth/forge-password',
     Register: '/auth/register',
-    SendSms: '/account/sms',
+    SendSms: '/sys/sendMessage/login',
     // get my info
     UserInfo: '/user/info'
 }

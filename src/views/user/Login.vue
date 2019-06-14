@@ -1,7 +1,9 @@
 <template>
   <div class="login">
     <div class="desc">工程建设管理平台</div>
+
     <div class="main">
+      <!--  -->
       <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
         <a-tabs
           :activeKey="customActiveKey"
@@ -33,7 +35,7 @@
           <a-tab-pane key="tab2" tab="手机登陆">
             <a-form-item>
               <a-input
-                v-decorator="['mobile',validatorRules.mobile]"
+                v-decorator="['phone',validatorRules.phone]"
                 size="large"
                 type="text"
                 placeholder="手机号"
@@ -44,7 +46,7 @@
               <a-col class="gutter-row" :span="16">
                 <a-form-item>
                   <a-input
-                    v-decorator="['captcha',validatorRules.captcha]"
+                    v-decorator="['identifyCode',validatorRules.indetifyCode]"
                     size="large"
                     type="text"
                     placeholder="请输入验证码"
@@ -74,6 +76,7 @@
         </a-form-item>
 
         <a-form-item class="login-btn">
+          <!-- loginBtn控制按钮的实效状态和载入状态，为true时按钮实效，表现载入 -->
           <a-button
             type="primary"
             htmlType="submit"
@@ -94,18 +97,20 @@
         </div>
       </a-form>
 
-      <!-- 注册三步 -->
+      <!-- 三步注册组件 -->
       <div>
-        <a-modal 
-          v-model="visibleRegister" 
-          width="1000px" 
-          :footer="null" 
+        <a-modal
+          v-model="visibleRegister"
+          width="1000px"
+          :footer="null"
           class="registerPage"
-          @cancel="reset">
+          @cancel="reset"
+        >
           <user-register ref="register"></user-register>
         </a-modal>
       </div>
 
+      <!-- 短信两步验证 -->
       <two-step-captcha
         v-if="requiredTwoStepCaptcha"
         :visible="stepCaptchaVisible"
@@ -118,7 +123,6 @@
         title="登录部门选择"
         :width="450"
         :visible="departVisible"
-        :closable="false"
         :maskClosable="false"
       >
         <template slot="footer">
@@ -151,7 +155,7 @@
                 :value="`${d.prjCode}.${d.orgCode}`"
               >
                 <span style="float: left">{{ d.departName }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{d.prjName}}{{ d.corpName }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ d.prjCode }}</span>
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -163,15 +167,16 @@
 
 <script>
 //import md5 from "md5"
-import api from '@/api'
-import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
+import api from '@/api' // 引入api接口，接口放在了api对象里
+import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha' //两步验证（功能待查）
 import { mapActions } from 'vuex'
-import { timeFix } from '@/utils/util'
+import { timeFix } from '@/utils/util' // 根据当前时间，判断问候语
 import Vue from 'vue'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
-import JGraphicCode from '@/components/cmp/JGraphicCode'
-import { putAction } from '@/api/manage'
+import { ACCESS_TOKEN } from '@/store/mutation-types' // token
+import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
+import { putAction, postAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
+import qs from 'qs'
 
 export default {
   components: {
@@ -181,9 +186,10 @@ export default {
   },
   data() {
     return {
-      customActiveKey: 'tab1',
-      loginBtn: false,
-      visibleRegister: false,
+      customActiveKey: 'tab1', // 激活的tab的key至，此处默认设置为tab1
+      loginBtn: false, //控制手机登录时“获取验证码”按钮的载入和可操作状态
+      visibleRegister: false, // 控制注册组件表单的显隐
+
       // login type: 0 email, 1 username, 2 telephone
       loginType: 0,
       requiredTwoStepCaptcha: false,
@@ -196,15 +202,15 @@ export default {
       formLogin: {
         username: '',
         password: '',
-        captcha: '',
-        mobile: '',
+        identifyCode: '',
+        phone: '',
         rememberMe: true
       },
       validatorRules: {
         username: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
-        mobile: { rules: [{ validator: this.validateMobile }] },
-        captcha: { rule: [{ required: true, message: '请输入验证码!' }] },
+        phone: { rules: [{ validator: this.validateMobile }] },
+        identifyCode: { rule: [{ required: true, message: '请输入验证码!' }] },
         inputCode: { rules: [{ required: true, message: '请输入验证码!' }, { validator: this.validateInputCode }] }
       },
       verifiedCode: '',
@@ -212,14 +218,17 @@ export default {
       inputCodeNull: true,
 
       departList: [],
-      departVisible: false,
+      departVisible: false, // 部门选择组件显隐
       departSelected: '',
       currentUsername: '',
-      validate_status: ''
+      validate_status: '',
+
+      url: '/sys/verifyMessageLogin' // 短信登录接口
     }
   },
   created() {
-    Vue.ls.remove(ACCESS_TOKEN)
+    Vue.ls.remove(ACCESS_TOKEN) //移除浏览器storage中的token
+
     // update-begin- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
     //      this.$http.get('/auth/2step-code')
     //        .then(res => {
@@ -231,8 +240,9 @@ export default {
     // this.requiredTwoStepCaptcha = true
   },
   methods: {
-    ...mapActions(['Login', 'Logout']),
+    ...mapActions(['Login', 'LoginByPhone', 'Logout']), // 引入vuex store中的Login和loginout方法，放在当前的methods中
     // handler
+    // 判断登录方式是邮件还是username,邮件 0，username 1
     handleUsernameOrEmail(rule, value, callback) {
       const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
       if (regex.test(value)) {
@@ -242,26 +252,33 @@ export default {
       }
       callback()
     },
+    // 切换登录方式tab时，获取当前tab的key值，保存到customActiveKey中
     handleTabClick(key) {
       this.customActiveKey = key
       // this.form.resetFields()
     },
+    // 登录：账号或者手机登录
     handleSubmit() {
-      let that = this
+      let that = this //将this指向的vue实例赋值给that
       let loginParams = {
         remember_me: that.formLogin.rememberMe
       }
-
-      // 使用账户密码登陆
+      console.log('login1')
+      // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
       if (that.customActiveKey === 'tab1') {
-        that.form.validateFields(['username', 'password', 'inputCode'], { force: true }, (err, values) => {
+        //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
+        that.form.validateFields(['username', 'password'], { force: true }, (err, values) => {
           if (!err) {
+            // err为空，则执行，将账号密码防盗loginParams对象中
             loginParams.username = values.username
             //loginParams.password = md5(values.password)
             loginParams.password = values.password
+            // 执行登录操作
             that
               .Login(loginParams)
               .then(res => {
+                // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                console.log(res)
                 this.departConfirm(res)
               })
               .catch(err => {
@@ -271,17 +288,27 @@ export default {
         })
         // 使用手机号登陆
       } else {
-        that.form.validateFields(['mobile', 'captcha'], { force: true }, (err, values) => {
+        console.log('login2')
+        that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
+          console.log('login3')
           if (!err) {
-            loginParams = Object.assign(loginParams, values)
+            console.log(values)
+            console.log('phoneTest')
+
+            loginParams = qs.stringify(Object.assign({}, values))
+            console.log(loginParams)
             that.loginBtn = true
+            console.log(11111)
+            console.log(that.LoginByPhone())
             that
-              .Login(loginParams)
-              .then(() => {
+              .LoginByPhone(loginParams)
+              .then(res => {
+                console.log('loginbyphone')
                 if (that.requiredTwoStepCaptcha) {
                   that.stepCaptchaVisible = true
                 } else {
-                  that.loginSuccess()
+                  console.log(res)
+                  this.departConfirm(res)
                 }
               })
               .catch(err => {
@@ -295,9 +322,14 @@ export default {
       e.preventDefault()
       let that = this
 
-      this.form.validateFields(['mobile'], { force: true }, err => {
+      this.form.validateFields(['phone'], { force: true }, (err, val) => {
         if (!err) {
+          console.log(err)
+          console.log(val)
+
           this.state.smsSendBtn = true
+          that.formLogin.phone = val.phone
+          console.log(that.formLogin.phone)
 
           let interval = window.setInterval(() => {
             if (that.state.time-- <= 0) {
@@ -307,16 +339,27 @@ export default {
             }
           }, 1000)
 
+          let params = qs.stringify({ phone: that.formLogin.phone })
+
           const hide = this.$message.loading('验证码发送中..', 0)
-          this.$http
-            .post(api.SendSms, { mobile: that.formLogin.mobile })
+          postAction(api.SendSms, params)
             .then(res => {
+              console.log('12345')
+              console.log(res)
               setTimeout(hide, 2500)
-              this.$notification['success']({
-                message: '提示',
-                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
+              if (res.success) {
+                this.$notification['success']({
+                  message: '提示',
+                  description: res.message + '请注意查收手机短信！',
+                  duration: 4
+                })
+              } else {
+                this.$notification['error']({
+                  message: '获取失败',
+                  description: res.message,
+                  duration: 4
+                })
+              }
             })
             .catch(err => {
               setTimeout(hide, 1)
@@ -384,6 +427,7 @@ export default {
         let multi_depart = res.result.multi_depart
         //0:无部门 1:一个部门 2:多个部门
         if (multi_depart == 0) {
+          // 0 则提示
           this.loginSuccess()
           this.$notification.warn({
             message: '提示',
@@ -391,11 +435,12 @@ export default {
             duration: 3
           })
         } else if (multi_depart == 2) {
-          this.departVisible = true
-          this.currentUsername = this.form.getFieldValue('username')
+          // 2 则选择
+          this.departVisible = true // 归属部门组件显示
+          this.currentUsername = this.form.getFieldValue('username') //获取当前username
           this.departList = res.result.departs
         } else {
-          this.loginSuccess()
+          this.loginSuccess() // 只有1个部门则直接登录
         }
       } else {
         debugger
@@ -441,71 +486,16 @@ export default {
     register() {
       this.visibleRegister = true
     },
-    reset(){
-      this.$refs.register.step1 = true;
-      this.$refs.register.step2 = false;
-      this.$refs.register.step3 = false;
+    reset() {
+      this.$refs.register.step1 = true
+      this.$refs.register.step2 = false
+      this.$refs.register.step3 = false
+      this.visibleRegister = false
     },
-    handleOk() {
-      console.log('方法未完成')
-    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 @import '~@/assets/less/login.less';
-
-/* .user-layout-login {
-    width: 304px;
-    margin: 0 auto;
-    label {
-      font-size: 14px;
-    }
-
-    .getCaptcha {
-      display: block;
-      width: 100%;
-      height: 40px;
-    }
-
-    .forge-password {
-      font-size: 14px;
-    }
-
-    button.login-button {
-      padding: 0 15px;
-      font-size: 16px;
-      height: 40px;
-      width: 100%;
-    }
-
-    .user-login-other {
-      text-align: left;
-      margin-top: 24px;
-      line-height: 22px;
-
-      .item-icon {
-        font-size: 24px;
-        color: rgba(0,0,0,.2);
-        margin-left: 16px;
-        vertical-align: middle;
-        cursor: pointer;
-        transition: color .3s;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-
-      .register {
-        float: right;
-      }
-    }
-  } */
-</style>
-<style>
-/* .valid-error .ant-select-selection__placeholder {
-  color: #f5222d;
-} */
 </style>
