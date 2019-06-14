@@ -20,6 +20,7 @@
             <a-form-item label="请假类型">
               <!-- <a-input placeholder="请输入请假类型" v-model="queryParam.type"></a-input> -->
               <a-select placeholder="请选择类型" v-model="queryParam.type">
+                <a-icon slot="suffixIcon" type="caret-down" />
                 <a-select-option value="0">事假</a-select-option>
                 <a-select-option value="1">病假</a-select-option>
                 <a-select-option value="2">年假</a-select-option>
@@ -32,7 +33,7 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="填写的时间">
               <!-- <a-input placeholder="请输入请假开始时间" v-model="queryParam.timeStart"></a-input> -->
-              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'"/>
+              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -45,6 +46,7 @@
             <a-form-item label="状态">
               <!-- <a-input placeholder="请选择请假状态" v-model="queryParam.status"></a-input> -->
               <a-select placeholder="请选择状态" v-model="queryParam.status">
+                <a-icon slot="suffixIcon" type="caret-down" />
                 <a-select-option value="0">暂存</a-select-option>
                 <a-select-option value="1">流转中</a-select-option>
                 <a-select-option value="2">已完成</a-select-option>
@@ -84,15 +86,16 @@
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown> -->
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
-    </div>
 
-    <!-- table区域-begin -->
-    <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+    </div>
+
+    <!-- table区域-begin -->
+    <div>
       <a-table
         ref="table"
         size="middle"
@@ -171,7 +174,7 @@
 		   {
             title: '请假人',
             align:"center",
-            dataIndex: 'inputerName'
+            dataIndex: 'inputerFullname'
            },
 		   {
             title: '请假类型',
@@ -361,6 +364,60 @@
     }
   }
 </script>
-<style scoped>
-  @import '~@assets/less/common.less'
+<style lang="less" scoped>
+  @import '~@assets/less/common.less';
+    // 组件内直接引入ant组件样式覆盖
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+
+  //时间选择
+  .ant-calendar-picker {
+    :global(.ant-input) {
+      height: 40px;
+    }
+  }
 </style>

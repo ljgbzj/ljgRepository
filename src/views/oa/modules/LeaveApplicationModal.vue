@@ -1,6 +1,7 @@
 <template>
   <a-modal
     :title="title"
+    :footer="null"
     :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
@@ -8,7 +9,14 @@
     @cancel="handleCancel"
     cancelText="关闭"
     :okButtonProps="model.btns ? { style: 'display:none' } : {}"
-    :cancelButtonProps="model.btns ? { style: 'display:none' } : {}">
+    :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
+    v-dialogDrag
+    :closable="false"
+    :centered="true">
+    <!-- <div style="font-size:16px;color:rgba(25,25,25,1);">
+      <a-icon type="plus" />
+      新增
+    </div> -->
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
@@ -16,164 +24,200 @@
           发起表单
         </span>
         <a-spin :spinning="confirmLoading">
-          <a-form :form="form">        
+          <a-form :form="form" class="">        
             <!-- <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="请假人用户编码">
               <a-input placeholder="请输入请假人用户编码" v-decorator="['username', {}]" />
             </a-form-item> -->
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假人">
-              <a-input placeholder="请输入请假人姓名" v-decorator="['inputerFullname', validatorRules.templateName]" disabled/>
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假类型">
-              <!-- <a-input placeholder="请输入请假类型" v-decorator="['type', {}]" /> -->
-              <a-select placeholder="请选择类型" v-decorator="['type', validatorRules.templateType]">
-                <a-select-option value="0">事假</a-select-option>
-                <a-select-option value="1">病假</a-select-option>
-                <a-select-option value="2">年假</a-select-option>
-                <a-select-option value="3">婚假</a-select-option>
-                <a-select-option value="4">出差</a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假开始时间">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假结束时间">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假原因">
-              <a-input placeholder="请输入请假原因" v-decorator="['reason', validatorRules.templateReason]" />
-            </a-form-item>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="请假人">
+                  <a-input placeholder="请输入请假人姓名" v-decorator="['inputerFullname', validatorRules.templateName]" disabled/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="请假类型">
+                  <!-- <a-input placeholder="请输入请假类型" v-decorator="['type', {}]" /> -->
+                  <a-select placeholder="请选择类型" v-decorator="['type', validatorRules.templateType]">
+                    <a-select-option value="0">事假</a-select-option>
+                    <a-select-option value="1">病假</a-select-option>
+                    <a-select-option value="2">年假</a-select-option>
+                    <a-select-option value="3">婚假</a-select-option>
+                    <a-select-option value="4">出差</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="开始时间">
+                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="结束时间">
+                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  label="请假原因">
+                  <a-textarea placeholder="请输入请假原因" :rows="4" v-decorator="[ 'reason', validatorRules.templateReason]"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
             <!--  人员选择控件 -->
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="部门领导">
-              <j-select-user-by-dep v-decorator="['departmentLeaderUsername']"></j-select-user-by-dep>
-            </a-form-item> -->
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="部门领导">
-              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderUsername', validatorRules.templateDeLeaderR]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="部门领导">
-              <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderRealname', validatorRules.templateDeLeaderR]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="人事部门领导">
-              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderUsername', validatorRules.templatehrLeaderU]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="人事部门领导">
-              <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderRealname', validatorRules.templatehrLeaderR]" />
-            </a-form-item>
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="人事部门领导">
-              <j-select-user-by-dep v-decorator="['hrLeaderUsername']"></j-select-user-by-dep>
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="总经理">
-              <j-select-user-by-dep v-decorator="['generalManagerUsername']"></j-select-user-by-dep>
-            </a-form-item> -->
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="总经理">
-              <a-input placeholder="请输入总经理" v-decorator="['generalManagerUsername', validatorRules.templateGeManagerU]" />
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="总经理">
-              <a-input placeholder="请输入总经理" v-decorator="['generalManagerRealname', validatorRules.templateGeManagerR]" />
-            </a-form-item>
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="流程定义ID">
-              <a-input placeholder="请输入流程定义ID" v-decorator="['processDefinitionId', {}]" />
-            </a-form-item> -->
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="流程实例ID">
-              <a-input placeholder="请输入流程实例ID" v-decorator="['processInstanceId', {}]" />
-            </a-form-item> -->
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="备注信息">
-              <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
-            </a-form-item>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="状态"
-              v-if="model.status !== undefined">
-              <a-select placeholder="开启状态中" v-decorator="['status', {}]" disabled>
-                <a-select-option value="0">暂存</a-select-option>
-                <a-select-option value="1">流转中</a-select-option>
-                <a-select-option value="2">已完成</a-select-option>
-                <a-select-option value="3">废弃</a-select-option>
-              </a-select>
-            </a-form-item>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <!-- <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="部门领导">
+                  <j-select-user-by-dep v-decorator="['departmentLeaderUsername']" @change="fang"></j-select-user-by-dep>
+                </a-form-item> -->
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="部门领导">
+                  <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderUsername', validatorRules.templateDeLeaderU]" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <!-- <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="人事领导">
+                  <j-select-user-by-dep v-decorator="['hrLeaderUsername']"></j-select-user-by-dep>
+                </a-form-item> -->
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="部门领导">
+                  <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderRealname', validatorRules.templateDeLeaderR]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="人事领导">
+                  <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderUsername', validatorRules.templatehrLeaderU]" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="人事领导">
+                  <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderRealname', validatorRules.templatehrLeaderR]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="总经理">
+                  <!-- <j-select-user-by-dep v-decorator="['generalManagerUsername']"></j-select-user-by-dep> -->
+                  <a-input placeholder="请输入总经理" v-decorator="['generalManagerUsername', validatorRules.templateGeManagerU]" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="总经理">
+                  <a-input placeholder="请输入总经理" v-decorator="['generalManagerRealname', validatorRules.templateGeManagerR]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  label="备注信息">
+                  <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="12">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="状态"
+                  v-show="model.status !== undefined && title == '编辑'">
+                  <a-select placeholder="开启状态中" v-decorator="['status', {}]" disabled>
+                    <a-select-option value="0">暂存</a-select-option>
+                    <a-select-option value="1">流转中</a-select-option>
+                    <a-select-option value="2">已完成</a-select-option>
+                    <a-select-option value="3">废弃</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="审批意见"
-              v-if="model.status !== undefined">
+              v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
+              :disabled= "title == '编辑'">
               <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
             </a-form-item>
-            <a-form-item
-              :wrapperCol="wrapperCol1"
-            >
-              <template v-for="(placement, index) in btns">
-                <a-dropdown placement="bottomCenter" :key="index">
-                  <a-button
-                  style="{ 'margin-right': '10px' }"
-                  @click="onChange(placement)">{{placement.btnName}}</a-button>
-                  <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
-                    <a-menu-item v-for="(v,k) in rollback" :key="k">
-                      <div @click="goBack(v.nodeId)">{{ v.nodeName }}</div>
-                    </a-menu-item>
-                  </a-menu>
-                </a-dropdown>
-              </template>
-            </a-form-item>
-            <a-form-item
-              :wrapperCol="wrapperCol1"
-              v-if="model.status == undefined"
-            >
-              <a-button type="primary" @click="handleSave('start')">暂存</a-button>
-            </a-form-item>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  class="btnClass"
+                >
+                  <template v-for="(placement, index) in btns">
+                    <a-dropdown placement="bottomCenter" :key="index">
+                      <a-button
+                      style="margin-right:10px"
+                      @click="onChange(placement)"
+                      class="cancel">{{placement.btnName}}</a-button>
+                      <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
+                        <a-menu-item v-for="(v,k) in rollback" :key="k">
+                          <div @click="goBack(v.nodeId)">{{ v.nodeName }}</div>
+                        </a-menu-item>
+                      </a-menu>
+                    </a-dropdown>
+                  </template>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24" v-if="!btns">
+              <a-col :span="24">
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  class="btnClass"
+                >
+                  <a-button @click="handleSave('start')" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
+                  <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
+                  <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
+                </a-form-item>
+              </a-col>
+            </a-row>
           </a-form>
           <!-- <option-list :commentList="commentList" v-if="commentList.length !== undefined"></option-list> -->
           <option-list :commentList="commentList" v-if="model.status !== undefined"></option-list>
@@ -198,7 +242,8 @@
               <s-table 
                 :columns="goodsColumns" 
                 :data="loadGoodsData"
-                v-if="loadGoodsData">
+                v-if="commentList"
+                :pagination="false">
               </s-table>
             </h3>
           </div>
@@ -208,17 +253,21 @@
             </h3>
             <s-table 
                 :columns="goodsColumns1" 
-                :data="loadGoodsData1">
+                :data="loadGoodsData1"
+                v-if="commentList"
+                :pagination="false">
             </s-table>
           </div>
         </div>
       </a-tab-pane>
     </a-tabs>
+    <!-- 通过部门筛选，选择人 -->
+    <j-search-user-by-dep ref="JSearchUserByDep" @ok="onSearchDepUserCallBack"></j-search-user-by-dep>
   </a-modal>
 </template>
 
 <script>
-  import { httpAction, httpActionHeader, getActionUrl, getAction } from '@/api/manage'
+  import { httpAction, getActionUrl, getAction } from '@/api/manage'
   import OptionList from './OptionList'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -228,13 +277,16 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import Vue from 'vue'
   import STable from '@/components/table/'
+  import { setTimeout } from 'timers';
+  import JSearchUserByDep from '@/components/cmpbiz/JSearchUserByDep'
 
   export default {
     name: "LeaveApplicationModal",
     components: {
       JSelectUserByDep,
       OptionList,
-      STable
+      STable,
+      JSearchUserByDep
     },
     data () {
       return {
@@ -243,16 +295,24 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 5 }
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 16 },
+          sm: { span: 16 }
+        },
+        labelCol1: {
+          xs: { span: 24 },
+          sm: { span: 5 }
         },
         wrapperCol1: {
-          xs: { span: 24, offset: 0 },
-          sm: { span: 16, offset: 5 }
+          xs: { span: 24 },
+          sm: { span: 16 }
         },
+        // wrapperCol1: {
+        //   xs: { span: 24, offset: 0 },
+        //   sm: { span: 16, offset: 5 }
+        // },
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -280,7 +340,7 @@
         radioStyle: '',
         btnsValue: '',
         commentList: {},
-        commentList1:{},
+        unfinishedList:{},
         url123: '',
         goodsColumns: [
           {
@@ -327,7 +387,11 @@
             dataIndex: 'startTime',
             key: 'startTime'
           }
-        ]
+        ],
+        arr: [], //初始化完成列表
+        arr1: [], //初始化进行中列表
+        selectedDepUsers: '',
+        selectedDepUsersU:''
       }
     },
     created () {
@@ -345,7 +409,8 @@
           this.model = Object.assign({}, record);
         }
         this.visible = true;
-
+        
+        console.log(this.model,'model内容');
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
           'inputerFullname',
@@ -387,13 +452,30 @@
             // that.close();
           })
           getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
-            console.log(res,'进来吃口药');
-            this.commentList = res.result;
-            this.commentList= Object.assign(res.result.taskListEnd);
-            this.commentList1= Object.assign(res.result.taskListIng);
-            console.log(this.commentList,'wqedwqdqwdwqdwqdqwdqdwqd');
+            this.commentList = res.result.taskListEnd.concat(res.result.taskListIng);
+
+            this.finishedList= Object.assign(res.result.taskListEnd);
+            this.unfinishedList= Object.assign(res.result.taskListIng);
+            console.log(this.commentList,'wqedwqdqwdwqdwqdqwdqdwqd',this.unfinishedList);
+
+            // 渲染流程图tab中的数据列表
+            var that = this;
+            that.arr.length = 0;
+            that.arr1.length = 0;
+
+            for (let i in that.finishedList) {
+                // let o = {};
+                // o[i] = that.finishedList[i];
+                // arr.push(o)
+                that.arr.push(that.finishedList[i])
+            }
+            for (let i in that.unfinishedList) {
+                // let o = {};
+                // o[i] = that.commentList[i];
+                // arr.push(o)
+                that.arr1.push(that.unfinishedList[i])
+            }
           }).finally(() => {
-            this.loadGoodsData();
           })
         } else {
           let params = {
@@ -464,7 +546,7 @@
                   that.close();
                 })
               } else {
-                httpActionHeader(httpurl,JSON.stringify(params2), method).then((res)=>{
+                httpAction(httpurl,qs.stringify(params2), method).then((res)=>{
                   if(res.success){
                     that.$message.success(res.message);
                     that.$emit('ok');
@@ -534,7 +616,7 @@
         this.close()
       },
       onChange(value,id) {
-        console.log(value);
+        console.log(value,id,'大姑娘真漂亮');
         var lab = '';
         if(value.btnApi == '/process/save'){
           lab = '/process/save';
@@ -548,6 +630,9 @@
         } else if (value.btnApi == '/process/delete') {
           lab = '/process/delete';
           this.handleSave(lab);
+        } else if (value.btnApi == '/task/jump') {
+          console.log('驳回无效');
+          return;
         } else if (value = 'jump'){
           console.log('进来了');
           lab = '/task/jump';
@@ -560,20 +645,13 @@
       // 加载数据方法 必须为 Promise 对象
       loadGoodsData() {
         var that = this;
-        var arr = []
-        for (let i in that.commentList) {
-            // let o = {};
-            // o[i] = that.commentList[i];
-            // arr.push(o)
-            arr.push(that.commentList[i])
-        }
         return new Promise((resolve => {
           resolve({
-            data: arr,
-            pageSize: 10,
-            pageNo: 1,
-            totalPage: 1,
-            totalCount: 10
+            data: that.arr,
+            // pageSize: 10,
+            // pageNo: 1,
+            // totalPage: 1,
+            // totalCount: 10
           })
         })).then(res => {
           return res
@@ -581,26 +659,33 @@
       },
       loadGoodsData1() {
         var that = this;
-        var arr = []
-        for (let i in that.commentList1) {
-            // let o = {};
-            // o[i] = that.commentList[i];
-            // arr.push(o)
-            arr.push(that.commentList1[i])
-        }
         return new Promise((resolve => {
           resolve({
-            data: arr,
-            pageSize: 10,
-            pageNo: 1,
-            totalPage: 1,
-            totalCount: 10
+            data: that.arr1,
+            // pageSize: 10,
+            // pageNo: 1,
+            // totalPage: 1,
+            // totalCount: 10
           })
         })).then(res => {
+          console.log(res,'数组');
           return res
         })
       },
-
+      onSearchDepUserCallBack(selectedDepUsers) {
+        console.log(selectedDepUsers,'知道是你');
+        this.selectedDepUsers = selectedDepUsers.realname;
+        this.selectedDepUsersU = selectedDepUsers.rusername;
+      },
+      //通过组织机构筛选选择用户
+      onSearchDepUser() {
+        this.$refs.JSearchUserByDep.showModal()
+        this.selectedDepUsers = {}
+        this.$refs.JSearchUserByDep.title = '根据部门查询用户'
+      },
+      fang(rr) {
+        console.log(rr,'这是一首小情歌');
+      }
     },
     computed: {
       rollback() {
@@ -614,6 +699,110 @@
 </script>
 
 <style lang="less" scoped>
+  // 弹窗规范样式
+  // 有图标的tab的下面横线样式
+  .ant-tabs {
+    :global(.ant-tabs-bar) {
+      :global(.ant-tabs-nav-container) {
+        :global(.ant-tabs-nav-scroll) {      
+          :global(.ant-tabs-nav) {     
+            :global(.ant-tabs-ink-bar) {
+              width:24px!important;
+              height:3px!important;
+              border-radius:2px!important;
+              margin-left:45px!important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 按钮及边框样式
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  textarea.ant-input {
+    height: auto;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+
+  //时间选择
+  .ant-calendar-picker {
+    :global(.ant-input) {
+      height: 40px;
+    }
+  }
+
+  //按钮样式
+  .btnClass {
+    :global(.ant-form-item-control-wrapper) {
+      width: 100%;
+      text-align: center;
+      button {
+        margin: 0;
+        padding: 0;
+        border: 1px solid transparent;  //自定义边框
+        outline: none;  //消除默认点击蓝色边框效果
+      }
+      .cancel {
+        width:96px;
+        height:40px;
+        background:rgba(238,238,238,1);
+        border-radius:4px;
+        color:rgba(51,51,51,1);
+      }
+      .confirm {
+        width:96px;
+        height:40px;
+        background:rgba(109,98,255,1);
+        border-radius:4px;
+        color: rgba(255,255,255,1);
+      }
+    }
+  }
   .proc_bg {
     margin-top: 10px;
     padding: 10px 15px;

@@ -29,3 +29,22 @@
 
 </script>
 
+<style lang="less" scoped>
+  // tab的下面横线样式
+  .ant-tabs {
+    :global(.ant-tabs-bar) {
+      :global(.ant-tabs-nav-container) {
+        :global(.ant-tabs-nav-scroll) {      
+          :global(.ant-tabs-nav) {     
+            :global(.ant-tabs-ink-bar) {
+              width:24px!important;
+              height:3px!important;
+              border-radius:2px!important;
+              margin-left:30px!important;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

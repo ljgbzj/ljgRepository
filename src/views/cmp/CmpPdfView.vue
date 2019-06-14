@@ -117,6 +117,35 @@
   }
 </script>
 
-<style scoped>
-  .clName .ant-tree li span.ant-tree-switcher, .ant-tree li span.ant-tree-iconEle{width:10px}
+<style lang="less" scoped>
+  .clName .ant-tree li span.ant-tree-switcher, .ant-tree li span.ant-tree-iconEle{width:10px};
+  .ant-card {
+    :global(.ant-card-body) {
+      :global(.ant-tree > .ant-tree-treenode-switcher-open > ul > li) {
+        :global(.ant-tree-switcher-noop) {
+          display: none;
+        }
+        :global(.ant-tree-node-content-wrapper) {
+          width: 200px;
+          height:40px;
+          border-radius:4px;
+          padding-left: 40px;
+          :global(.ant-tree-title) {
+            line-height:40px;
+            font-size: 14px;
+            font-weight:400;
+          }
+          :global(.ant-tree-title :hover) {
+            background: unset;
+            color: unset;
+          }
+        }
+        :global(.ant-tree-node-content-wrapper :hover) {
+          background: unset;
+          background:rgba(109,98,255,0.1)!important;  
+          color:rgba(109,98,255,1)!important;
+        }
+      }
+    }
+  }
 </style>

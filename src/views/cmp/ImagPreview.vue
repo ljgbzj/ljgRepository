@@ -1,51 +1,57 @@
 <template>
   <a-card :bordered="false">
-    <a-col :span="18">
+    <a-col>
       <a-spin tip="Loading..." :spinning="spinning">
-        <div>
+        <div style="margin-bottom:40px">
           <a-row>
-            <a-col :span="18">
+            <a-col>
               <p>
-                <a-divider orientation="left">组一</a-divider>
+                <!-- <a-divider orientation="left">图组一</a-divider> -->
+                图组一
               </p>
             </a-col>
-            <a-col :span="6"></a-col>
+            <!-- <a-col :span="6"></a-col> -->
             <!-- 预览区域 -->
-            <a-col :span="12">
-              <template>
-                <div v-for="(fileDetail,index) in dataSource[0].fileDetails" :key="index">
-                  <div style="float: left;width:104px;height:104px;margin-right: 10px;margin: 0 8px 8px 0;">
-                    <div
-                      style="width: 100%;height: 100%;position: relative;padding: 8px;border: 1px solid #d9d9d9;border-radius: 4px;">
-                      <img style="width: 100%;" :src="fileDetail.imgUrl"  :preview="dataSource[0].key">
+            <div class="proc_bg">
+              <a-col>
+                <template>
+                  <div v-for="(fileDetail,index) in dataSource[0].fileDetails" :key="index">
+                    <div style="float: left;width:104px;height:104px;margin-right: 10px;margin: 0 8px 8px 0;">
+                      <div
+                        style="width: 100%;height: 100%;position: relative;padding: 8px;border: 1px solid #d9d9d9;border-radius: 4px;">
+                        <img style="width: 100%;" :src="fileDetail.imgUrl"  :preview="dataSource[0].key">
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </a-col>
+                </template>
+              </a-col>
+            </div>
           </a-row>
         </div>
-        <div>
+        <div style="margin-bottom:40px">
           <a-row>
-            <a-col :span="18">
+            <a-col>
               <p>
-                <a-divider orientation="left">组二</a-divider>
+                <!-- <a-divider orientation="left">图组二</a-divider> -->
+                图组二
               </p>
             </a-col>
-            <a-col :span="6"></a-col>
+            <a-col></a-col>
             <!-- 预览区域 -->
-            <a-col :span="12">
-              <template>
-                <div v-for="(fileDetail,index) in dataSource[1].fileDetails" :key="index">
-                  <div style="float: left;width:104px;height:104px;margin-right: 10px;margin: 0 8px 8px 0;">
-                    <div
-                      style="width: 100%;height: 100%;position: relative;padding: 8px;border: 1px solid #d9d9d9;border-radius: 4px;">
-                      <img style="width: 100%;" :src="fileDetail.imgUrl"  :preview="dataSource[1].key">
+            <div class="proc_bg">
+              <a-col>
+                <template>
+                  <div v-for="(fileDetail,index) in dataSource[1].fileDetails" :key="index">
+                    <div style="float: left;width:104px;height:104px;margin-right: 10px;margin: 0 8px 8px 0;">
+                      <div
+                        style="width: 100%;height: 100%;position: relative;padding: 8px;border: 1px solid #d9d9d9;border-radius: 4px;">
+                        <img style="width: 100%;" :src="fileDetail.imgUrl"  :preview="dataSource[1].key">
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </a-col>
+                </template>
+              </a-col>
+            </div>
           </a-row>
         </div>
       </a-spin>
@@ -104,7 +110,30 @@
     }
   }
 </script>
-<style scoped>
+<style lang="less" scoped>
+  .proc_bg {
+    margin-top: 10px;
+    padding: 10px 15px;
+    height: auto;
+    overflow: hidden;
+    background: #FFF;
+    border:1px solid rgba(238,238,238,1);
+    border-radius:4px;
+    ul li{
+      float: left;
+      margin-left: 22px;
+      display: block;
+      height: 18px;
+      line-height: 18px;
+      color: #888;
+      text-indent: 30px;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
   .table-operator {
     margin-bottom: 10px
   }
