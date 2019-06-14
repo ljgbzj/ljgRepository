@@ -1,79 +1,213 @@
-:global(.register){
-    height: 552px;
-    padding: 13px 24px;
-
-    .step{
-        margin-bottom: 25px;
-    }
-    .step2{
-        margin-bottom: 75px;
-    }
-
-    :global(.ant-row.ant-form-item){
-        margin-bottom: 20px;
-        height: 40px;
-
-        :global(.ant-select-selection.ant-select-selection--single){
+*{
+     margin: 0;
+     padding: 0;
+ }
+ .ant-input:focus{
+    box-shadow: none;
+  }
+ .register{
+     display: flex;
+     height: 539px;
+     margin: 13px 36px 0 36px;
+     .step1{
+         margin-bottom: 45px;
+     }
+     .step2{
+         margin-bottom: 75px;
+     }
+     .item{
+         height: 40px;
+         margin-top: 20px;
+        :global(.ant-form-item-label){
+            width: 270px;
+            margin-right: 20px;
+            vertical-align: top;
+        }
+        :global(.ant-form-item-control-wrapper){
+            display: inline-block;
             height: 40px;
-            background-color: rgba(225,225,225,1);
-        }
-        .ant-input{
-            height: 40px;
-            background-color: rgba(225,225,225,1);
-        }
-        .gc-canvas{
-            float: right;
-            height: 40px;
-        }
-        
-        .ant-btn{
-            float: right;
-            height: 40px;
-            width: 135px;
-            color: white;
-            background-color:rgba(100,85,255,1);;
-        }
+            vertical-align: top;
+            :global(.ant-form-explain){
+                display: inline-block;
+            }
+            input{
+                background-color: #f5f5f5;
+                border-color: #f5f5f5;
+                padding-left: 16px;
+                margin-right: 19px;
+                &:hover{
+                    border-color: rgba(100,85,255,1);
+                }
+                &:focus{
+                    border: 1px solid rgba(100,85,255,1);
+                }
+            }
+            .code{
+                width: 190px;
+                margin-right: 10px;
+            }
 
-        .ant-checkbox-wrapper{
-            margin-left: 290px;
+            .codePic{
+                display: inline-block;
+                vertical-align: top;
+                img{
+                    width: 100px;
+                    height: 40px;
+                    vertical-align: top;
+                    border: 1px solid #f5f5f5;
+                    border-radius: 4px;
+                }
+            }
+
+            
+            button{
+                width: 100px;
+                height: 40px;
+                color: #6455ff;
+                border: 1px solid #f5f5f5;
+                &:hover{
+                    color: #ffffff;
+                    background-color: #6455ff;
+                    border-color: #6455ff;
+                }
+            }
+    
+            .ant-row{
+                width: 300px;
+                display: flex;
+                vertical-align: top;
+                .category{
+                    width: 90px;
+                    margin-right: 10px;
+                }
+                .cate-item{
+                    width: 200px;
+                }
+                
+            }
+            :global(.ant-select-selection.ant-select-selection--single){
+                height: 40px;
+                background-color: #f5f5f5;
+                border-color: #f5f5f5;
+                :global(.ant-select-selection__rendered){
+                    line-height: 40px;
+                }
+            }
+            :global(.ant-select-selection.ant-select-selection--single:focus){
+                border-color: #6455ff;
+            }
+            :global(.ant-select-selection.ant-select-selection--single:hover){
+                border-color: #6455ff;
+            }
+            .scale{
+                width: 300px;
+            }
+            
         }
+     }
+     .ant-checkbox-wrapper{
+        padding-left: 290px;
+        margin-top: 17px;
+        margin-bottom: 38px;
+        height: 14px;
+
         :global(.ant-checkbox-inner){
+            border-color: #f5f5f5;
+            background-color: #f5f5f5;
+            &:hover{
+                border-color: rgba(100,85,255,1);
+            }
+          }
+          :global(.ant-checkbox-checked .ant-checkbox-inner){
+            background-color: rgba(100,85,255,1);
             border-color: rgba(100,85,255,1);
+          }
+    }
+     input{
+         width: 300px;
+         height: 40px;
+     }
+     .next-container{
+        display:flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        span{
+            display: inline-block;
+            width: 105px;
         }
-    }
-    .ant-btn{
-        width: 200px;
-        margin-left: 340px;
-        background-color: rgba(100,85,255,1);
-        border-color: rgba(100,85,255,1);
-    }
-    .left{
-        margin-left: 265px;
-        width: 120px;
-        background-color: rgba(225,225,225,1);
-        color:  rgba(51,51,51,1);
-        border: none;
-    }
-    .right{
-        margin-top: 5px;
-        margin-left: 10px;
-        width: 245px;
-    }
-
-    .login{
-        margin-top: 25px;
-        float: left;
-        color: rgba(179,181,186,1)
-    }
-    .help{
-        margin-top: 25px;
-        float: right;
-        color: rgba(179,181,186,1)
-    }
-
-
-    .register-done{
-        text-align: center;
-    }
-}
-
+        .help{
+            text-align: right;
+        }
+        button{
+            height: 40px;
+            background-color: #6455ff;
+            border: none;
+        }
+        button.one2two{
+            width: 200px;
+        }
+        .left{
+            width: 90px;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+        .right{
+            width: 200px;
+            margin-left: 10px;
+        }
+     }
+     .next-container2{
+         margin-top: 99px;
+     }
+     
+     .register-done{
+         text-align: center;
+         .result{
+             margin: 0 auto;
+             width: 248px;
+             height: 189px;
+             text-align: center;
+             img{
+                 height: 149px;
+             }
+             div{
+                margin: 0 auto;
+                width:241px;
+                height:24px;
+                font-size:24px;
+                font-family:MicrosoftYaHei;
+                font-weight:400;
+                color:rgba(25,25,25,1);
+                line-height:32px;
+             }
+         }
+         .jump{
+             margin-top: 44px;
+             div{
+                height:14px;
+                font-size:14px;
+                font-family:MicrosoftYaHei;
+                font-weight:400;
+                color:rgba(51,51,51,1);
+                line-height:32px;
+                margin-bottom: 20px;
+             }
+             a{
+                height:19px;
+                font-size:18px;
+                font-family:MicrosoftYaHei-Bold;
+                font-weight:bold;
+                color:rgba(108,92,255,1);
+                line-height:32px;
+             }
+         }
+         .desc{
+            font-size:14px;
+            font-family:MicrosoftYaHei;
+            font-weight:400;
+            color:rgba(179,181,186,1);
+            line-height:32px;
+            margin-top: 60px;
+         }
+     }
+ }

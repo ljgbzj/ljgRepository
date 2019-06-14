@@ -1,5 +1,8 @@
 .login{
     margin: 93px 0 0 120px;
+    .ant-input:focus{
+      box-shadow: none;
+    }
     .desc{
       width:327px;
       height:35px;
@@ -28,6 +31,17 @@
           :global(.ant-tabs-nav .ant-tabs-tab-active){
             color: rgba(100,85,2551);
           }
+          :global(.ant-input){
+            background-color: rgba(245,245,245,1);
+          }
+          // input输入框hover边框颜色
+          :global(.ant-input:hover){
+            border-color: rgba(100,85,255,1);
+          }
+          // input输入框选中边框颜色
+          :global(.ant-input:focus){
+            border: 1px solid rgba(100,85,255,1);
+          }
           :global(.ant-tabs-ink-bar){
             background-color: rgba(100,85,255,1);
           }
@@ -37,14 +51,22 @@
           :global(.ant-input-lg){
             height: 44px;
           }
+          :global(.ant-form-explain){
+            height: 2px;
+          }
+
           .getCaptcha{
             float: right;
             height: 44px;
+            width: 99px;
             background-color: rgba(100,85,255,1);
             color: white;
+            border-color: rgba(100,85,255,1);
           }
         }
-
+        :global(.login-button.ant-btn-primary){
+          border-color: rgba(100,85,255,1);
+        }
         :global(.ant-row.ant-form-item){
           margin-bottom: 20px;
         }
