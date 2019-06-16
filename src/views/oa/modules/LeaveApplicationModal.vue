@@ -1,7 +1,7 @@
 <template>
   <a-modal
-    :title="title"
     :footer="null"
+    :title="null"
     :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
@@ -13,10 +13,10 @@
     v-dialogDrag
     :closable="false"
     :centered="true">
-    <!-- <div style="font-size:16px;color:rgba(25,25,25,1);">
-      <a-icon type="plus" />
-      新增
-    </div> -->
+    <div style="font-size:16px;color:rgba(25,25,25,1);">
+      <!-- <a-icon :type="typeIcon" /> -->
+      {{ title }}
+    </div>
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
@@ -85,41 +85,11 @@
             <!--  人员选择控件 -->
             <a-row :gutter="24">
               <a-col :span="12">
-                <!-- <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="部门领导">
-                  <j-select-user-by-dep v-decorator="['departmentLeaderUsername']" @change="fang"></j-select-user-by-dep>
-                </a-form-item> -->
                 <a-form-item
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="部门领导">
-                  <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderUsername', validatorRules.templateDeLeaderU]" />
-                </a-form-item>
-              </a-col>
-              <a-col :span="12">
-                <!-- <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="人事领导">
-                  <j-select-user-by-dep v-decorator="['hrLeaderUsername']"></j-select-user-by-dep>
-                </a-form-item> -->
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="部门领导">
-                  <a-input placeholder="请输入部门领导" v-decorator="['departmentLeaderRealname', validatorRules.templateDeLeaderR]" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row :gutter="24">
-              <a-col :span="12">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="人事领导">
-                  <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderUsername', validatorRules.templatehrLeaderU]" />
+                  <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -127,7 +97,7 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="人事领导">
-                  <a-input placeholder="请输入人事部门领导" v-decorator="['hrLeaderRealname', validatorRules.templatehrLeaderR]" />
+                  <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -137,28 +107,9 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="总经理">
-                  <!-- <j-select-user-by-dep v-decorator="['generalManagerUsername']"></j-select-user-by-dep> -->
-                  <a-input placeholder="请输入总经理" v-decorator="['generalManagerUsername', validatorRules.templateGeManagerU]" />
+                  <j-select-user-by-dep v-model="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="总经理">
-                  <a-input placeholder="请输入总经理" v-decorator="['generalManagerRealname', validatorRules.templateGeManagerR]" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row :gutter="24">
-              <a-col :span="24">
-                <a-form-item
-                  label="备注信息">
-                  <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row :gutter="24">
               <a-col :span="12">
                 <a-form-item
                   :labelCol="labelCol"
@@ -174,14 +125,24 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="审批意见"
-              v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
-              :disabled= "title == '编辑'">
-              <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
-            </a-form-item>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  label="备注信息">
+                  <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  label="审批意见"
+                  v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
+                  :disabled= "title == '编辑'">
+                  <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
@@ -220,7 +181,7 @@
             </a-row>
           </a-form>
           <!-- <option-list :commentList="commentList" v-if="commentList.length !== undefined"></option-list> -->
-          <option-list :commentList="commentList" v-if="model.status !== undefined"></option-list>
+          <option-list :commentList="commentList" :currentList="currentList" v-if="model.status !== undefined"></option-list>
         </a-spin>
       </a-tab-pane>
       <a-tab-pane key="2" forceRender>
@@ -291,6 +252,7 @@
     data () {
       return {
         title:"操作",
+        typeIcon: '',
         visible: false,
         model: {},
         labelCol: {
@@ -340,6 +302,7 @@
         radioStyle: '',
         btnsValue: '',
         commentList: {},
+        currentList: 0,
         unfinishedList:{},
         url123: '',
         goodsColumns: [
@@ -391,7 +354,13 @@
         arr: [], //初始化完成列表
         arr1: [], //初始化进行中列表
         selectedDepUsers: '',
-        selectedDepUsersU:''
+        selectedDepUsersU:'',
+        departmentLeaderUsername: '',
+        departmentLeaderRealname: '',
+        hrLeaderUsername: '',
+        hrLeaderRealname: '',
+        generalManagerUsername: '',
+        generalManagerRealname: ''      
       }
     },
     created () {
@@ -409,22 +378,38 @@
           this.model = Object.assign({}, record);
         }
         this.visible = true;
-        
-        console.log(this.model,'model内容');
+
+        // // 根据title初始化图标
+        // if (this.title == '新增') {
+        //   this.typeIcon = 'plus'
+        // } else if (this.title == '编辑') {
+        //   this.typeIcon = 'edit'
+        // } else if (this.title == '执行') {
+        //   this.typeIcon = 'form'
+        // } else if (this.title == '查看') {
+        //   this.typeIcon = 'eye'
+        // }
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
           'inputerFullname',
           'type',
           'reason',
-          'departmentLeaderUsername',
-          'departmentLeaderRealname',
-          'hrLeaderUsername',
-          'hrLeaderRealname',
-          'generalManagerUsername',
-          'generalManagerRealname',
+          // 'departmentLeaderUsername',
+          // 'departmentLeaderRealname',
+          // 'hrLeaderUsername',
+          // 'hrLeaderRealname',
+          // 'generalManagerUsername',
+          // 'generalManagerRealname',
           'remarks',
           'status',
           '_taskComment'));
+        
+        // 初始化选人组件字段
+        if (record) {
+          this.departmentLeaderRealname = this.model.departmentLeaderRealname;
+          this.hrLeaderRealname = this.model.hrLeaderRealname;
+          this.generalManagerRealname = this.model.generalManagerRealname;
+        }
 		  //时间格式化
           this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
           this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
@@ -436,7 +421,6 @@
         });
         //请求流程图 + 审批意见
         const that = this;
-        // console.log(record.,'带我去皮带我去');
         if(JSON.stringify(record) !== "{}") {
           let params = {
             // processDefinitionId: that.model.processDefinitionId,
@@ -453,10 +437,10 @@
           })
           getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
             this.commentList = res.result.taskListEnd.concat(res.result.taskListIng);
+            this.currentList = res.result.taskListEnd.length-1;
 
             this.finishedList= Object.assign(res.result.taskListEnd);
             this.unfinishedList= Object.assign(res.result.taskListIng);
-            console.log(this.commentList,'wqedwqdqwdwqdwqdqwdqdwqd',this.unfinishedList);
 
             // 渲染流程图tab中的数据列表
             var that = this;
@@ -503,7 +487,6 @@
         } else {
           // 触发表单验证
         this.form.validateFields((err, values) => {
-          console.log(values,'这是空闲的千万家门店屁哦我去额度为哦');
             if (!err) {
               that.confirmLoading = true;
               let httpurl = '';
@@ -511,9 +494,7 @@
               let qsMothods = '';
               let formDataString = Object.assign(this.model, values);
               let flowDataString = {};
-              console.log('我道歉我ID那我去打');
               if(!this.model.id){
-                console.log('dqwdnwqd ')
                 httpurl+=this.url.add;
                 method = 'post';
                 flowDataString.api = '/process/startAndSubmit';
@@ -528,11 +509,16 @@
               formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
               formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
 
+              formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
+              formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
+              formDataString.hrLeaderUsername = that.hrLeaderUsername;
+              formDataString.hrLeaderRealname = that.hrLeaderRealname;
+              formDataString.generalManagerUsername = that.generalManagerUsername;
+              formDataString.generalManagerRealname = that.generalManagerRealname;
               let params2 = {
                 flowDataString: JSON.stringify(flowDataString),
                 formDataString: JSON.stringify(formDataString),
               }
-              console.log(params2,'2222222');
               if(method == 'post'){
                 httpAction(httpurl,qs.stringify(params2),method).then((res)=>{
                   if(res.success){
@@ -582,7 +568,6 @@
                 flowDataString.targetNodeId = id;
               }
             } else {
-              console.log('d带我去on第五期');
               flowDataString.api = '/process/start';
             }
             flowDataString.processDefinitionKey = 'leave';
@@ -616,7 +601,6 @@
         this.close()
       },
       onChange(value,id) {
-        console.log(value,id,'大姑娘真漂亮');
         var lab = '';
         if(value.btnApi == '/process/save'){
           lab = '/process/save';
@@ -631,10 +615,8 @@
           lab = '/process/delete';
           this.handleSave(lab);
         } else if (value.btnApi == '/task/jump') {
-          console.log('驳回无效');
           return;
         } else if (value = 'jump'){
-          console.log('进来了');
           lab = '/task/jump';
           this.handleSave(lab,id); 
         }
@@ -668,12 +650,10 @@
             // totalCount: 10
           })
         })).then(res => {
-          console.log(res,'数组');
           return res
         })
       },
       onSearchDepUserCallBack(selectedDepUsers) {
-        console.log(selectedDepUsers,'知道是你');
         this.selectedDepUsers = selectedDepUsers.realname;
         this.selectedDepUsersU = selectedDepUsers.rusername;
       },
@@ -683,9 +663,18 @@
         this.selectedDepUsers = {}
         this.$refs.JSearchUserByDep.title = '根据部门查询用户'
       },
-      fang(rr) {
-        console.log(rr,'这是一首小情歌');
+      departmentUserName(val) {
+        this.departmentLeaderUsername = val;
+      },
+      hrUsername(val) {
+        this.hrLeaderUsername = val;
+      },
+      ManagerUserName(val) {
+        this.generalManagerUsername = val;
       }
+    },
+    mounted() {
+      
     },
     computed: {
       rollback() {
@@ -771,6 +760,7 @@
 
   //时间选择
   .ant-calendar-picker {
+    width: 100%!important;
     :global(.ant-input) {
       height: 40px;
     }
@@ -803,6 +793,7 @@
       }
     }
   }
+
   .proc_bg {
     margin-top: 10px;
     padding: 10px 15px;

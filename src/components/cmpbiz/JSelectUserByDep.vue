@@ -43,6 +43,7 @@
     data() {
       return {
         selectedDepUsers:"",
+        selectedDepUsers1:"",
       }
     },
     mounted(){
@@ -57,10 +58,12 @@
       //通过组织机构筛选选择用户
       onSearchDepUser() {
         this.$refs.selectModal.showModal()
-        this.onSearchDepUserCallBack('')
+        // this.onSearchDepUserCallBack('')
       },
-      onSearchDepUserCallBack(selectedDepUsers) {
-        this.selectedDepUsers = selectedDepUsers
+      onSearchDepUserCallBack(selectedDepUsers,selectedDepUsers1) {
+        this.selectedDepUsers = selectedDepUsers;
+        this.selectedDepUsers1 = selectedDepUsers1;
+        this.$emit("userName",selectedDepUsers1)
         if(this.triggerChange){
           this.$emit("change",selectedDepUsers)
         }else{
@@ -71,6 +74,11 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .ant-input-affix-wrapper {
+    height: 40px;
+    button {
+      height: 40px;
+    }
+  }
 </style>

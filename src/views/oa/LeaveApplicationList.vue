@@ -43,7 +43,7 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="状态">
+            <a-form-item label="状态选择">
               <!-- <a-input placeholder="请选择请假状态" v-model="queryParam.status"></a-input> -->
               <a-select placeholder="请选择状态" v-model="queryParam.status">
                 <a-icon slot="suffixIcon" type="caret-down" />
@@ -216,7 +216,7 @@
 		   {
             title: '部门领导',
             align:"center",
-            dataIndex: 'departmentLeaderUsername'
+            dataIndex: 'departmentLeaderRealname'
            },
 		  //  {
       //       title: '部门领导',
@@ -226,7 +226,7 @@
 		   {
             title: '人事部门领导',
             align:"center",
-            dataIndex: 'hrLeaderUsername'
+            dataIndex: 'hrLeaderRealname'
            },
 		  //  {
       //       title: '人事部门领导',
@@ -236,7 +236,7 @@
 		   {
             title: '总经理',
             align:"center",
-            dataIndex: 'generalManagerUsername'
+            dataIndex: 'generalManagerRealname'
            },
 		  //  {
       //       title: '总经理',
@@ -416,6 +416,7 @@
 
   //时间选择
   .ant-calendar-picker {
+    width: 100%!important;
     :global(.ant-input) {
       height: 40px;
     }

@@ -30,7 +30,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <a-input placeholder="请输入开始时间" v-model="queryParam.startTime"></a-input>
+                <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/>
               </a-form-item>
             </a-col>
           </template>
@@ -82,12 +82,14 @@
   import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
+  import JDate from '@/components/cmp/JDate'
 
   export default {
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      LeaveApplicationModal
+      LeaveApplicationModal,
+      JDate
     },
     data () {
       return {
@@ -241,5 +243,12 @@
     border: unset;
     border-radius:4px;
     background: rgba(109,98,255,0.1);
+  }
+  //时间选择
+  .ant-calendar-picker {
+    width: 100%!important;
+    :global(.ant-input) {
+      height: 40px;
+    }
   }
 </style>

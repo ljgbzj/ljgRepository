@@ -4,7 +4,7 @@
       <h3>
         <span>审批环节处理意见列表</span>
       </h3>
-      <a-steps direction="vertical" progressDot :current="commentList.length-2">
+      <a-steps direction="vertical" progressDot :current="currentList">
         <a-step v-for="(item,k) in commentList" :key="k">
           <template slot="title">
             <td class="shenpi-info-area">
@@ -89,6 +89,8 @@
     },
     props: {
       commentList: {
+      },
+      currentList: {
       }
     },
     created () {
