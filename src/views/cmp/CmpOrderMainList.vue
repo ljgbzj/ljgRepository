@@ -14,6 +14,7 @@
           <a-col :md="6" :sm="24">
             <a-form-item label="订单类型">
               <a-select placeholder="请输入订单类型"  v-model="queryParam.ctype">
+                <a-icon slot="suffixIcon" type="caret-down" />
                 <a-select-option value="1">国内订单</a-select-option>
                 <a-select-option value="2">国际订单</a-select-option>
               </a-select>
@@ -45,15 +46,16 @@
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-    </div>
 
-    <!-- table区域-begin -->
-    <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <div class="ant-alert ant-alert-info">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+    </div>
+
+    <!-- table区域-begin -->
+    <div>
       <a-table
         ref="table"
         size="middle"
@@ -171,7 +173,7 @@
     }
   }
 </script>
-<style scoped>
+<style lang="less" scoped>
   /** Button按钮间距 */
   .ant-btn {
     margin-left: 3px
@@ -189,4 +191,55 @@
   .ant-modal-cust-warp{height: 100%}
   .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
   .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+
+  // 按钮及边框样式
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  textarea.ant-input {
+    height: auto;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
 </style>

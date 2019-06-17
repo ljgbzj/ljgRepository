@@ -108,6 +108,7 @@
         dataSource: [],
         selectedKeys: [],
         userNameArr: [],
+        userNameArr1: [],
         departName: '',
         userRolesMap: {},
         title: '根据部门选择用户',
@@ -197,6 +198,7 @@
         }
         that.selectedRowKeys = [];
         that.userNameArr = [];
+        that.userNameArr1 = [];
         that.selectedKeys = [];
       },
       close() {
@@ -217,7 +219,7 @@
         for (let i = 0, len = this.selectedRowKeys.length; i < len; i++) {
           this.getUserNames(this.selectedRowKeys[i]);
         }
-        that.$emit('ok', that.userNameArr.join(','));
+        that.$emit('ok', that.userNameArr.join(','), that.userNameArr1.join(','));
         that.close();
       },
       // 遍历匹配,获取用户真实姓名
@@ -226,6 +228,7 @@
         for (let i = 0, len = dataSource.length; i < len; i++) {
           if (rowId === dataSource[i].id) {
             this.userNameArr.push(dataSource[i].realname);
+            this.userNameArr1.push(dataSource[i].username);
           }
         }
       },

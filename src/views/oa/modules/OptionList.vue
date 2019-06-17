@@ -4,7 +4,7 @@
       <h3>
         <span>审批环节处理意见列表</span>
       </h3>
-      <a-steps direction="vertical" progressDot :current="commentList.length-2">
+      <a-steps direction="vertical" progressDot :current="currentList">
         <a-step v-for="(item,k) in commentList" :key="k">
           <template slot="title">
             <td class="shenpi-info-area">
@@ -23,7 +23,7 @@
                 <tbody>
                   <tr>
                     <td class="shenpi-detail-content">
-                      {{ item.endTime == undefined ? '处理中' : '已完成' }}
+                      {{ item._taskComment == undefined ? '无意见' : item._taskComment }}
                     </td>
                     <td class="shenpi-detail-line">
                       <i></i>
@@ -83,12 +83,14 @@
         return statusMap[status]
       },
       stringSplit(T) {
-        const statusMap = T.slice(0,9);
+        const statusMap = T.slice(0,10);
         return statusMap
       }
     },
     props: {
       commentList: {
+      },
+      currentList: {
       }
     },
     created () {

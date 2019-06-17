@@ -1,18 +1,26 @@
 <template>
   <a-modal
-    :title="title"
-    :width="1200"
+    :title="null"
+    :footer="null"
+    :width="1000"
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
-    @cancel="handleCancel">
-
+    @cancel="handleCancel"
+    :closable="false">
+    <div style="font-size:16px;font-weight:bold;color:rgba(25,25,25,1);">
+      <!-- <a-icon :type="typeIcon" /> -->
+      {{ title }}
+    </div>
+    <div style="font-weight:bold;color:rgba(25,25,25,1);">
+      订单信息
+    </div>
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <!-- 主表单区域 -->
         <a-row class="form-row" :gutter="0">
-          <a-col :lg="8">
+          <a-col :lg="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -22,7 +30,7 @@
                 v-decorator="['orderCode', {rules: [{ required: true, message: '请输入订单号!' }]}]"/>
             </a-form-item>
           </a-col>
-          <a-col :lg="8">
+          <a-col :lg="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -33,7 +41,9 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :lg="8">
+        </a-row>
+        <a-row class="form-row" :gutter="0">
+          <a-col :lg="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -41,9 +51,7 @@
               <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" style="width: 100%" v-decorator="[ 'orderDate',{}]"/>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row class="form-row" :gutter="0">
-          <a-col :lg="8">
+          <a-col :lg="12">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -51,15 +59,26 @@
               <a-input-number placeholder="请输入订单金额" style="width: 100%" v-decorator="[ 'orderMoney', {}]"/>
             </a-form-item>
           </a-col>
-          <a-col :lg="8">
+        </a-row>
+        <a-row class="form-row" :gutter="0">
+          <a-col :lg="12">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="订单备注">
+              <!-- <a-input placeholder="请输入订单备注" v-decorator="['content', {}]"/> -->
+              <a-textarea placeholder="请输入订单备注" :rows="6" v-decorator="[ 'content', {}]"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <!-- <a-col :lg="8">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="订单备注">
               <a-input placeholder="请输入订单备注" v-decorator="['content', {}]"/>
             </a-form-item>
-          </a-col>
-        </a-row>
+          </a-col> -->
       </a-form>
 
       <!-- 子表单区域 -->
@@ -89,9 +108,21 @@
             :rowNumber="true"
             :rowSelection="true"
             :actionButton="true"/>
-
         </a-tab-pane>
       </a-tabs>
+      <a-row :gutter="24">
+        <a-col :span="24">
+          <a-form-item
+            :labelCol="labelCol"
+            :wrapperCol="wrapperCol"
+            class="btnClass"
+          >
+            <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
+            <a-button @click="handleOk" icon="check" class="confirm">确认</a-button>
+          </a-form-item>
+        </a-col>
+      </a-row>
+
 
     </a-spin>
   </a-modal>
@@ -336,5 +367,102 @@
   }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+
+// 组件内直接引入ant组件样式覆盖
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  textarea.ant-input {
+    height: 80px;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+  // tab的下面横线样式
+  .ant-tabs {
+    :global(.ant-tabs-bar) {
+      :global(.ant-tabs-nav-container) {
+        :global(.ant-tabs-nav-scroll) {      
+          :global(.ant-tabs-nav) {     
+            :global(.ant-tabs-ink-bar) {
+              width:24px!important;
+              height:3px!important;
+              border-radius:2px!important;
+              margin-left:30px!important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //按钮样式
+  .btnClass {
+    margin-top: 42px;
+    :global(.ant-form-item-control-wrapper) {
+      width: 100%;
+      text-align: center;
+      button {
+        margin: 0;
+        padding: 0;
+        border: 1px solid transparent;  //自定义边框
+        outline: none;  //消除默认点击蓝色边框效果
+      }
+      .cancel {
+        width:96px;
+        height:40px;
+        background:rgba(238,238,238,1);
+        border-radius:4px;
+        color:rgba(51,51,51,1);
+      }
+      .confirm {
+        width:96px;
+        height:40px;
+        background:rgba(109,98,255,1);
+        border-radius:4px;
+        color: rgba(255,255,255,1);
+      }
+    }
+  }
 </style>

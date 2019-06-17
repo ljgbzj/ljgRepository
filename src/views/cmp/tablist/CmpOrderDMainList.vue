@@ -14,6 +14,7 @@
           <a-col :md="6" :sm="24">
             <a-form-item label="订单类型">
               <a-select placeholder="请输入订单类型" v-model="queryParam.ctype">
+                <a-icon slot="suffixIcon" type="caret-down" />
                 <a-select-option value="1">国内订单</a-select-option>
                 <a-select-option value="2">国际订单</a-select-option>
               </a-select>
@@ -44,17 +45,22 @@
           </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
+          <a-icon type="caret-down"/>
         </a-button>
       </a-dropdown>
+
+      <div class="ant-alert ant-alert-info">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!-- <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      </div> -->
 
       <a-table
         ref="table"
@@ -62,7 +68,7 @@
         bordered
         rowKey="id"
         filterMultiple="filterMultiple"
-        :columns="columns"
+        :columns="columns"  
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
@@ -250,9 +256,72 @@
     }
   }
 </script>
-<style scoped>
+<style lang='less' scoped>
+
+  // 组件内直接引入ant组件样式覆盖
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
   .ant-card-body .table-operator {
-    margin-bottom: 18px;
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+
+  // tab的下面横线样式
+  .ant-tabs {
+    :global(.ant-tabs-bar) {
+      :global(.ant-tabs-nav-container) {
+        :global(.ant-tabs-nav-scroll) {      
+          :global(.ant-tabs-nav) {     
+            :global(.ant-tabs-ink-bar) {
+              width:24px!important;
+              height:3px!important;
+              border-radius:2px!important;
+              margin-left:30px!important;
+            }
+          }
+        }
+      }
+    }
   }
 
   .ant-table-tbody .ant-table-row td {

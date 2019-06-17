@@ -13,18 +13,18 @@
           </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
+          <a-icon type="caret-down"/>
         </a-button>
       </a-dropdown>
+
+      <div class="ant-alert ant-alert-info">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -153,9 +153,32 @@
     }
   }
 </script>
-<style scoped>
+<style lang="less" scoped>
   .ant-card {
     margin-left: -30px;
     margin-right: -30px;
+  }
+  /* 没有搜索框的list样式 */
+  .ant-btn-primary {
+    height: 40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
   }
 </style>
