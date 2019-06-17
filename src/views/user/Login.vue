@@ -155,7 +155,7 @@
                 :value="`${d.prjCode}.${d.orgCode}`"
               >
                 <span style="float: left">{{ d.departName }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{ d.prjCode }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{d.prjName}}{{ d.corpName }}</span>
               </a-select-option>
             </a-select>
           </a-form-item>
