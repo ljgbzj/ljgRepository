@@ -2,22 +2,22 @@
   <div class="register">
     <!-- 注册用户 -->
     <div class="register-one" v-show="step1">
-      <div class="step1">
+      <div class="step1" v-if="device === 'desktop'">
         <img src="@/assets/img/register/step1.png">
       </div>
       <a-form :form="form">
         <!-- 用户名 -->
         <a-form-item label="用户名" class="item">
           <a-input
-            class="username"
+            class="userName"
             placeholder="请输入用户名"
-            v-decorator="['username',{ rules:[{required: true, message: '请输入用户名'}]}]"
+            v-decorator="['userName',{ rules:[{required: true, message: '请输入用户名'}]}]"
           ></a-input>
         </a-form-item>
         <a-form-item label="真实姓名" class="item">
           <a-input
-            class="realname"
-            v-decorator="['realname',{ rules:[{required: true, message: '请输入真实姓名'}]}]"
+            class="realName"
+            v-decorator="['realName',{ rules:[{required: true, message: '请输入真实姓名'}]}]"
             placeholder="请输入真实姓名"
           ></a-input>
         </a-form-item>
@@ -62,7 +62,7 @@
         </a-checkbox>
         <!-- 提交 下一步 -->
         <div class="next-container">
-          <span class="login">
+          <span class="login" @click="registered">
             已有账号登录
             <img src="@/assets/img/register/left.png">
           </span>
@@ -74,7 +74,7 @@
 
     <!-- 创建团队 -->
     <div class="register-two" v-show="step2">
-      <div class="step step2">
+      <div class="step step2" v-if="device === 'desktop'">
         <img src="@/assets/img/register/step2.png">
       </div>
       <a-form :form="form">
@@ -91,7 +91,7 @@
                 @change="getTeamTypeFather"
                 class="team"
                 v-decorator="['teamType',{ initialValue: '企业',
-                  rules:[{required: true, message: '请输入图形验证码'}]}]"
+                  rules:[{required: true, message: '请选择行业类别'}]}]"
               >
                 <a-icon slot="suffixIcon" type="caret-down"/>
                 <a-select-option
@@ -115,7 +115,7 @@
           <a-select
             placeholder="请选择"
             @change="getTeamScale"
-            v-decorator="['teamScale',{ rules:[{required: true, message: '请输入图形验证码'}]}]"
+            v-decorator="['teamScale',{ rules:[{required: true, message: '请选择团队规模'}]}]"
             class="scale"
           >
             <a-icon slot="suffixIcon" type="caret-down"/>
@@ -125,14 +125,14 @@
           </a-select>
         </a-form-item>
         <a-form-item label="团队管理者" class="item">
-          <a-input :default-value="username" disabled></a-input>
+          <a-input :default-value="userName" disabled></a-input>
         </a-form-item>
         <div class="next-container next-container2">
-          <span class="login">
+          <span class="login" @click="registered">
             已有账号登录
             <img src="@/assets/img/register/left.png">
           </span>
-          <div>
+          <div class="button-group">
             <a-button type="primary" @click="toOne" class="left">上一步</a-button>
             <a-button type="primary" @click="toDone" class="right">下一步</a-button>
           </div>
@@ -142,7 +142,7 @@
     </div>
     <!-- 注册完成 -->
     <div class="register-done" v-show="step3">
-      <div class="step">
+      <div class="step" v-if="device === 'desktop'">
         <img src="@/assets/img/register/step3.png">
       </div>
       <div class="result">
@@ -159,16 +159,18 @@
 </template>
 
 <script>
-import { postAction, getActionUrl } from '@/api/manage.js'
+import { postAction, getActionUrl, httpActionHeader } from '@/api/manage.js'
 import qs from 'qs'
 import { setInterval, clearInterval } from 'timers'
+import { mixinDevice } from '@/utils/mixin.js'
 
 export default {
+  mixins: [mixinDevice],
   name: 'UserRegister',
   data() {
     return {
       form: this.$form.createForm(this),
-      username: 'liujie08080@163.com',
+      userName: '',
       checked: '',
       teamType: '',
       teamTypeFather: 0,
@@ -352,6 +354,14 @@ export default {
       this.step2 = false
       this.step3 = false
     },
+    registered(){
+      this.$router.push('/user/login')
+      let path = this.$route.path
+      if(path === '/user/login'){
+        this.$emit('closereg')
+      }
+      
+    },
     steptoTwo() {
       if (!this.checked) {
         this.$notification['error']({
@@ -361,20 +371,21 @@ export default {
         })
       } else {
         this.form.validateFields(
-          ['username', 'realname', 'phone', 'identifyCode', 'imageIdentifyCode'],
+          ['userName', 'realName', 'phone', 'identifyCode', 'imageIdentifyCode'],
           { force: true },
           (err, values) => {
             if (!err) {
               // 将输入内容存入参数对象，并转换为 JSON字符串
-              this.username = values.username
-              let params = qs.stringify(values)
+              this.userName = values.userName
+              let params = values
               console.log(params)
               // 设置 API url
-              let url = this.url.adduser
+              let url = this.url.adduser,
+                  method = 'post'
               // 用户注册提示信息
               const hide = this.$message.loading('用户注册中，请稍后..', 0)
               // 发送用户注册请求
-              postAction(url, params)
+              httpActionHeader(url, params, method)
                 .then(res => {
                   setTimeout(hide, 2500)
                   if (res.success) {
@@ -409,15 +420,16 @@ export default {
             }
           }
         )
-      }
+      } 
     },
     toDone() {
+      
       this.form.validateFields(['teamName', 'teamType', 'teamScale'], { force: true }, (err, values) => {
         if (!err) {
           // 将输入内容存入参数对象，并转换为 JSON字符串
           console.log(values)
           let params = values
-          params = Object.assign(values, { teamManager: this.username })
+          params = Object.assign(values, { teamManager: this.userName })
           params.teamType = this.teamType
           params = qs.stringify(params)
           console.log(params)
@@ -446,7 +458,6 @@ export default {
                       this.time--
                     } else {
                       clearInterval(this.startInter)
-                      console.log(111)
                       this.$router.push('/')
                     }
                   },1000)
@@ -471,7 +482,7 @@ export default {
               })
             })
         }
-      })
+      }) 
     }
   }
 }

@@ -11,13 +11,13 @@
         </div>
 
         <!-- title-list -->
-        <ul class="title-list">
+        <ul class="title-list" v-if="device === 'desktop'">
           <router-link to="/user/login">
             <li v-for="(page,index) in pagelists" :key="index" class="title">{{page.title}}</li>
           </router-link>
         </ul>
 
-        <a class="login" href="/user/login">
+        <a class="login" href="/user/login" v-if="device === 'desktop'">
           <span>请登录</span>
           <img src="@/assets/img/login/login.png">
         </a>
@@ -94,65 +94,86 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 组件最外层容器 */
 #userLayout.user-layout-wrapper {
   height: 100%;
+  background: #f0f2f5 url(~@/assets/img/login/background.png) no-repeat 50%;
+  background-size: 100% 100%;
 
+  /* 设备为手机时样式 */
   &.mobile {
     .container {
+      overflow: hidden;
+      max-width: 368px;
+      margin: 0 auto;
+      padding-top: 58px;
+      text-align: center;
+      .desc{
+        margin-top: 50px;
+      }
       .main {
-        max-width: 368px;
         width: 98%;
       }
     }
   }
 
-  .container {
-    width: 100%;
-    min-height: 100%;
-    background: #f0f2f5 url(~@/assets/img/login/background.png) no-repeat 50%;
-    background-size: 100% 100%;
-    padding: 58px 80px 0 80px;
-    position: relative;
-
-    .header {
-      display: flex;
-      align-items: center;
-      .logo {
-        padding-right: 60px;
-      }
-      .title-list {
-        flex-grow: 1;
-        .title {
-          float: left;
-          margin-right: 48px;
-          height: 14px;
-          font-size: 13px;
-          font-family: MicrosoftYaHei;
-          font-weight: 400;
-          color: rgba(255, 255, 255, 1);
-          line-height: 32px;
-          opacity: 0.66;
-        }
-      }
-      .login {
+  /* 设备为pc时样式 */
+  &.desktop {
+    min-width: 1500px;
+    .container {
+      width: 100%;
+      padding: 58px 80px 0 80px;
+      
+      .header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
 
-        span {
-          font-size: 14px;
-          font-family: SourceHanSansCN-Regular;
-          font-weight: 400;
-          color: rgba(255, 255, 255, 1);
-          line-height: 32px;
-          opacity: 0.66;
+        .logo {
+          padding-right: 60px;
         }
 
-        img {
-          width: 12px;
-          height: 13px;
-          opacity: 0.66;
-          margin-left: 5px;
+        .title-list {
+          margin: 0;
+          flex-grow: 1;
+          .title {
+            float: left;
+            margin-right: 48px;
+            height: 14px;
+            font-size: 13px;
+            font-family: MicrosoftYaHei;
+            font-weight: 400;
+            color: #fff;
+            line-height: 14px;
+            opacity: 0.66;
+          }
+        }
+
+        .login {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          span {
+            font-size: 14px;
+            font-family: SourceHanSansCN-Regular;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 1);
+            line-height: 32px;
+            opacity: 0.66;
+          }
+
+          img {
+            width: 12px;
+            height: 13px;
+            opacity: 0.66;
+            margin-left: 5px;
+          }
+        }
+      }
+      
+      .body{
+        .desc{
+          margin: 218px 0 0 119px;
         }
       }
     }
