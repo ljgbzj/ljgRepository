@@ -30,7 +30,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <a-input placeholder="请输入开始时间" v-model="queryParam.startTime"></a-input>
+                <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/>
               </a-form-item>
             </a-col>
           </template>
@@ -56,7 +56,7 @@
         ref="table"
         size="middle"
         bordered  
-        rowKey="taskId"
+        :rowKey="rowkey"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -82,12 +82,14 @@
   import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
+  import JDate from '@/components/cmp/JDate'
 
   export default {
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      LeaveApplicationModal
+      LeaveApplicationModal,
+      JDate
     },
     data () {
       return {
@@ -108,7 +110,7 @@
 		      {
             title: '发起人',
             align:"center",
-            dataIndex: 'startUserName'
+            dataIndex: 'startUserFullname'
           },
 		      {
             title: '任务类型',
@@ -133,7 +135,7 @@
 		      {
             title: '执行人',
             align:"center",
-            dataIndex: 'assigneeName'
+            dataIndex: 'assigneeFullname'
           },
           {
             title: '操作',
@@ -147,7 +149,8 @@
 		    url: {
           list: "/flowable/tasks/list",
           form: "/flowable/tasks/form"
-        }
+        },
+        rowkey: ''
       }
     },
     methods: {
@@ -192,6 +195,60 @@
     }
   }
 </script>
-<style scoped>
-  @import '~@assets/less/common.less'
+<style lang="less" scoped>
+  @import '~@assets/less/common.less';
+    // 组件内直接引入ant组件样式覆盖
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+  //时间选择
+  .ant-calendar-picker {
+    width: 100%!important;
+    :global(.ant-input) {
+      height: 40px;
+    }
+  }
 </style>
