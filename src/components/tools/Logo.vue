@@ -1,9 +1,13 @@
 <template>
-  <div class="logo">
+  <!-- <div class="logo">
     <router-link :to="{name:'dashboard'}">
       <img src="~@/assets/logo.svg" alt="logo">
       <h1 v-if="showTitle">{{ title }}</h1>
-    </router-link>
+      </router-link>
+  </div> -->
+  <div class="loginContainer">
+      <img src="@/assets/img/login/LOGO1.png" color="#6857FF">
+      <img src="@/assets/img/login/LOGO2.png" color="#6857FF" v-if="showTitle">
   </div>
 </template>
 
@@ -45,6 +49,21 @@
     }
 
     &.light .logo {
+      background-color: #1890ff;
+    }
+  }
+  // logo覆盖
+  .sider {
+    box-shadow: none !important;
+    .loginContainer {
+      overflow: visible;
+      height: $height !important;
+      line-height: $height !important;
+      box-shadow: none !important;
+      transition: background 300ms;
+      text-align: center;
+    }
+    &.light .loginContainer {
       background-color: #1890ff;
     }
   }

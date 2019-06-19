@@ -56,7 +56,6 @@
       <a-table
         ref="table"
         size="middle"
-        bordered  
         :rowKey="rowkey"
         :columns="columns"
         :dataSource="dataSource"
@@ -119,7 +118,7 @@
 		      {
             title: '任务名称',
             align:"center",
-            dataIndex: 'taskName'
+            dataIndex: 'taskSubject'
           },
 		      {
             title: '环节名称',
