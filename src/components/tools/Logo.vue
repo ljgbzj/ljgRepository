@@ -7,7 +7,7 @@
   </div> -->
   <div class="loginContainer">
       <img src="@/assets/img/login/LOGO1.png" color="#6857FF">
-      <img src="@/assets/img/login/LOGO2.png" color="#6857FF" v-if="showTitle">
+      <img src="@/assets/img/login/LOGO3.png" color="#6857FF" v-if="showTitle">
   </div>
 </template>
 
