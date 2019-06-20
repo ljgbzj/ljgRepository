@@ -30,7 +30,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/>
+                <a-input placeholder="请输入开始时间" v-model="queryParam.startTime"></a-input>
               </a-form-item>
             </a-col>
           </template>
@@ -51,7 +51,7 @@
 
     <!-- table区域-begin -->
     <div>
-
+      
       <a-table
         ref="table"
         size="middle"
@@ -62,41 +62,28 @@
         :loading="loading"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditform(record)">执行</a>&nbsp;
-          <a @click="handleEntrust(record)">委托</a>
+          <a @click="handleEditform(record)">发起</a>
         </span>
       </a-table>
-
     </div>
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <!-- <task-modal ref="modalForm" @ok="modalFormOk"></task-modal> -->
-    <leaveApplication-modal ref="modalForm" @ok="modalFormOk"></leaveApplication-modal>
-    <task-Modal ref="modalForm1" @ok="modalFormOk"></task-Modal>
+    <component :is="comp" ref="modalForm" @ok="modalFormOk"></component>
+    <!-- <com-template ref="modalForm" @ok="modalFormOk"></com-template> -->
   </a-card>
 </template>
 
 <script>
-  // import TaskModal from './modules/TaskModal'
-  import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
-  import TaskModal from './modules/TaskModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
-  import JDate from '@/components/cmp/JDate'
 
   export default {
-    name: "TaskList",
+    name: "formFill",
     mixins:[CmpListMixin],
-    components: {
-      LeaveApplicationModal,
-      TaskModal,
-      JDate
-    },
     data () {
       return {
         description: '待办任务管理页面',
-
         // 表头
         columns: [
           {
@@ -110,34 +97,24 @@
             }
           },
 		      {
-            title: '发起人',
+            title: '表单名称',
             align:"center",
-            dataIndex: 'startUserFullname'
+            dataIndex: 'menuName'
           },
-		      {
-            title: '任务类型',
-            align:"center",
-            dataIndex: 'taskCategory'
+          {
+            title: '所在模块',
+            align: "center",
+            dataIndex: 'parentMenuName'
           },
-		      {
-            title: '任务名称',
-            align:"center",
-            dataIndex: 'taskSubject'
+          {
+            title: '表单简介',
+            align: "center",
+            dataIndex: 'description'
           },
-		      {
-            title: '环节名称',
-            align:"center",
-            dataIndex: 'nodeName'
-          },
-		      {
-            title: '开始时间',
-            align:"center",
-            dataIndex: 'startTime'
-          },
-		      {
-            title: '执行人',
-            align:"center",
-            dataIndex: 'assigneeFullname'
+          {
+            title: '技术支持',
+            align: "center",
+            dataIndex: 'maintainUserFullname'
           },
           {
             title: '操作',
@@ -146,34 +123,20 @@
             scopedSlots: { customRender: 'action' },
           }
         ],
-
-        //接口
 		    url: {
-          list: "/flowable/tasks/list",
+          list: "/flowable/formType/list",
           form: "/flowable/tasks/form"
         },
-        rowkey: ''
+        rowkey: '',
+        componentsUrl: '',
+        cmdTmc: 'oa/modules/LeaveApplicationModal'
       }
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record);
-        let params = {
-          businessKey: record.businessKey,
-          processDefinitionKey: record.processDefinitionKey, 
-          processDefinitionId: record.processDefinitionId, 
-          processInstanceId: record.processInstanceId, 
-          taskId: record.taskId
-        }
-        getAction(this.url.form, params).then((res) => {
-          if (res.success) {
-            record = Object.assign(res.result, {taskId: record.taskId}) 
-            //this.dataSource = res.result.dataList;
-            //this.ipagination.total = res.result.total;
-            this.$refs.modalForm.edit(record);
-            this.$refs.modalForm.title = "执行";
-          }
-        })
+        // this.componentsUrl = record.formPath;
+        this.$refs.modalForm.add();
+        this.$refs.modalForm.title = "新增";
       },
       loadData(arg) {
         if(!this.url.list){
@@ -187,17 +150,18 @@
         var params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
+          console.log(res,'数据出来了呀');
           if (res.success) {
-            this.dataSource = res.result.dataList;
+            this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;
           }
           this.loading = false;
         })
-      },
-      // 第二个弹窗  委托方法
-      handleEntrust(record) {
-        this.$refs.modalForm1.edit(record);
-        this.$refs.modalForm1.title = "委托";
+      }
+    },
+    computed: {
+      comp: function () {
+        return () => import(`@/views/${this.cmdTmc}.vue`)
       }
     }
   }
@@ -251,11 +215,5 @@
     border-radius:4px;
     background: rgba(109,98,255,0.1);
   }
-  //时间选择
-  .ant-calendar-picker {
-    width: 100%!important;
-    :global(.ant-input) {
-      height: 40px;
-    }
-  }
+
 </style>

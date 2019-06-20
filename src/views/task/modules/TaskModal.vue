@@ -1,120 +1,59 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+    :footer="false"
+    :width="500"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="取消">
-    
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-      
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="请假人">
-          <a-input placeholder="请输入发起人" v-decorator="['inputerFullname', {}]"/>
+          label="任务名称">
+          <a-input placeholder="任务名称" v-decorator="['taskSubject', {}]" disabled/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="请假类型">
-          <a-input placeholder="请输入任务类型" v-decorator="['type', {}]"/>
+          label="环节名称">
+          <a-input placeholder="环节名称" v-decorator="['nodeName', {}]" disabled/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="开始时间" >
-          <a-date-picker v-decorator="['timeStart', {}]" />
+          label="执行人">
+          <a-input placeholder="执行人" v-decorator="['assigneeFullname', {}]" disabled/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="结束时间">
-          <a-date-picker v-decorator="['timeEnd', {}]"/>
+          label="委托人">
+          <j-select-user-by-dep v-model="assignee" @userName="departmentUserName"></j-select-user-by-dep>
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="请假原因">
-          <a-input placeholder="请输入任务类型" v-decorator="['reason', {}]"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="部门领导">
-          <a-input placeholder="请输入任务名称" v-decorator="['departmentLeaderRealname', {}]"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="部门领导">
-          <a-input placeholder="请输入任务名称" v-decorator="['departmentLeaderUsername', {}]"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="人事部门领导">
-          <a-input placeholder="请输入环节名称" v-decorator="['hrLeaderRealname', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="人事部门领导">
-          <a-input placeholder="请输入环节名称" v-decorator="['hrLeaderUsername', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="总经理">
-          <a-input placeholder="请输入环节名称" v-decorator="['generalManagerRealname', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="总经理">
-          <a-input placeholder="请输入环节名称" v-decorator="['generalManagerUsername', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="备注信息">
-          <a-input placeholder="请输入执行人" v-decorator="['remarks', {}]" />
-        </a-form-item>
-        
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="审批意见">
-          <a-textarea placeholder="请输入审批意见" v-decorator="['_taskComment', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-        >
-          <a-radio-group @change="onChange" v-model="value" >
-            <a-radio-button 
-            :style="radioStyle" 
-            v-for="item in btns"
-            :key="item.taskId"
-            :value="item.btnApi"
-            >{{item.btnName}}</a-radio-button>
-            <!-- <a-radio-button :style="radioStyle" :value="model.btns[0].btnApi">{{model.btns[0].btnName}}</a-radio-button>
-            <a-radio-button :style="radioStyle" :value="model.btns[1].btnApi">{{model.btns[1].btnName}}</a-radio-button>
-            <a-radio-button :style="radioStyle" :value="model.btns[2].btnApi">{{model.btns[2].btnName}}</a-radio-button>
-            <a-radio-button :style="radioStyle" :value="model.btns[3].btnApi">{{model.btns[3].btnName}}</a-radio-button> -->
-            
-          </a-radio-group>
-        </a-form-item>
+        <a-row :gutter="24">
+          <a-col :span="24">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              class="btnClass"
+            >
+              <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
+              <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 
 <script>
-  import { httpAction } from '@/api/manage'
+  import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
+  import { httpAction, getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
   import { format } from 'path';
@@ -122,6 +61,9 @@
 
   export default {
     name: "TaskModal",
+    components: {
+      JSelectUserByDep
+    },
     data () {
       return {
         value: '',
@@ -138,15 +80,15 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
         },  
         url: {
-          add: "/oa/leaveApplication/action",
-          /* edit: "/oa/leaveApplication/edit", */
+          add: '/flowable/task/delegateTask'
         },
+        assigneeName: '',
+        assignee: ''
       }
     },
     created () {
@@ -157,34 +99,25 @@
       },
       edit (record) {
         this.form.resetFields();
-        console.log(record,'逗你玩的千万');
-        this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
+        if(record.formData !== undefined) {
+          this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
+        } else {
+          this.model = Object.assign({}, record);
+        }
         this.visible = true;
         this.taskId = record.taskId;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
-          'inputerFullname',
-          'type',
-          'reason',
-          'departmentLeaderRealname',
-          'departmentLeaderUsername',
-          'hrLeaderRealname',
-          'hrLeaderUsername',
-          'generalManagerRealname',
-          'generalManagerUsername',
-          'remarks',
-          '_taskComment',
+          'assigneeFullname',
+          'taskSubject',
+          'nodeName',
           ))
-		  //时间格式化
-          this.form.setFieldsValue({
-            timeStart:this.model.timeStart?moment(this.model.timeStart):null,
-            timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null
-          })
         });
       },
       close () {
         this.$emit('close');
         this.visible = false;
+        this.assignee = '';
       },
       onChange(){
       },
@@ -197,29 +130,15 @@
             let httpurl = ''
             let method = ''
             httpurl += this.url.add
-            method = 'post'
-
-           /*  if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            } */
+            method = 'get'
             let formData = Object.assign(this.model, values, {api: this.value})
-            //时间格式化
-            /* formData.startTime = formData.startTime?formData.startTime.format('YYYY-MM-DD HH:mm:ss'):null; */
-            formData = {
-              api: formData.api,
-              processDefinitionKey: formData.processDefinitionKey,
-              processInstanceId: formData.processInstanceId,
-              taskId: this.taskId,
-              id: formData.id,
-              _taskComment: formData._taskComment
-            }
-            formData = qs.stringify(formData)
 
-            httpAction(httpurl,formData,method).then((res)=>{
+            formData = {
+              assignee: this.assigneeName,
+              taskId: this.taskId
+            }
+            // formData = qs.stringify(formData)
+            getAction(httpurl, formData).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -236,19 +155,96 @@
       handleCancel () {
         this.close()
       },
-    },
-    computed: {
-      rollback() {
-        return this.model.rollBackAbleNodes
+      departmentUserName(val) {
+        this.assigneeName = val;
       },
-      btns(){
-        return this.model.btns
-      }
     }
   }
 </script>
 
 <style lang="less" scoped>
   .radio-group{
-    margin-left: 160px;}
+    margin-left: 160px;
+  }
+   // 按钮及边框样式
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+      .ant-form-item > :global(.ant-form-item-label) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+  textarea.ant-input {
+    height: auto;
+  }
+  /* 下拉选框 */
+  .ant-select {
+    /* height: 40px; */
+    :global(.ant-select-selection--single) {
+      height: 40px;
+      :global(.ant-select-selection__rendered) {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    height:40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
+
+  .ant-card-body .table-operator>div {
+    flex: 1;
+    margin-left: 14px;
+  }
+
+  .ant-card-body .table-operator .ant-alert-info {
+    border: unset;
+    border-radius:4px;
+    background: rgba(109,98,255,0.1);
+  }
+
+  //按钮样式
+  .btnClass {
+    margin-top: 20px;
+    :global(.ant-form-item-control-wrapper) {
+      width: 100%;
+      text-align: center;
+      button {
+        margin: 0;
+        padding: 0;
+        border: 1px solid transparent;  //自定义边框
+        outline: none;  //消除默认点击蓝色边框效果
+      }
+      .cancel {
+        min-width:96px;
+        height:40px;
+        background:rgba(238,238,238,1);
+        border-radius:4px;
+        color:rgba(51,51,51,1);
+        padding: 5px;
+      }
+      .confirm {
+        min-width:96px;
+        height:40px;
+        background:rgba(109,98,255,1);
+        border-radius:4px;
+        color: rgba(255,255,255,1);
+        padding: 5px;
+      }
+    }
+  }
 </style>

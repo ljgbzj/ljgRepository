@@ -250,7 +250,7 @@
       },
       // 根据选择的id来查询用户信息
       queryUserByDepId(selectedKeys) {
-        queryUserByDepId({ id: selectedKeys.toString() }).then((res) => {
+        queryUserByDepId({ departId: selectedKeys.toString() }).then((res) => {
           if (res.success) {
             this.dataSource = res.result;
             this.ipagination.total = res.result.length;
