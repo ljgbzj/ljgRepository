@@ -17,10 +17,10 @@
           </router-link>
         </ul>
 
-        <a class="login" href="/user/login" v-if="device === 'desktop'">
+        <router-link class="login" to="/user/login" v-if="device === 'desktop'">
           <span>请登录</span>
           <img src="@/assets/img/login/login.png">
-        </a>
+        </router-link>
       </div>
 
       <!-- body -->

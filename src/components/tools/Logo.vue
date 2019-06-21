@@ -49,7 +49,7 @@
     }
 
     &.light .logo {
-      background-color: #1890ff;
+      background-color: #6455ff;
     }
   }
   // logo覆盖
@@ -64,7 +64,7 @@
       text-align: center;
     }
     &.light .loginContainer {
-      background-color: #1890ff;
+      background-color: #6455ff;
     }
   }
 </style>
