@@ -1,0 +1,83 @@
+.desc {
+  div {
+    height: 62px;
+    font-size: 64px;
+    font-family: SourceHanSansCN-Bold;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+    line-height: 40px;
+    margin-bottom: 39px;
+  }
+
+  p {
+    width: 360px;
+    height: 80px;
+    font-size: 16px;
+    font-family: SourceHanSansCN-Normal;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 1);
+    line-height: 32px;
+    margin-bottom: 59px;
+  }
+
+  button {
+    margin: 0 12px 0 1px;
+    width: 120px;
+    height: 44px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    line-height: 32px;
+  }
+
+  button.login {
+    color: #6857ff;
+    background-color: #fff;
+
+    &:hover {
+      background: none;
+      color: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(255, 255, 255, 1);
+      cursor: pointer;
+    }
+  }
+
+  button.register {
+    color: #fff;
+    background-color: #6857ff;
+    border: 1px solid rgba(255, 255, 255, 1);
+
+    &:hover {
+      color: #6857ff;
+      background-color: #fff;
+      border: 1px solid rgba(255, 255, 255, 1);
+      cursor: pointer;
+    }
+  }
+
+}
+
+/* 移动端适配 */
+#userLayout.user-layout-wrapper {
+  &.mobile {
+    div {
+      text-align: center;
+      font-size: 2rem;
+      margin-top: 20%;
+    }
+
+    p {
+      width: 80%;
+      margin: 10% auto 20%;
+      height: auto;
+      font-size: 1rem;
+    }
+
+    a {
+      button {
+        margin: 10px;
+      }
+    }
+  }
+}

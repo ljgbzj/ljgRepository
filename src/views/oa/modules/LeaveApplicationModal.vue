@@ -1,8 +1,8 @@
 <template>
   <a-modal
     :footer="null"
-    :title="null"
-    :width="800"
+    :title="title"
+    :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -11,17 +11,17 @@
     :okButtonProps="model.btns ? { style: 'display:none' } : {}"
     :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
     v-dialogDrag
-    :closable="false"
-    :centered="true">
-    <div style="font-size:16px;color:rgba(25,25,25,1);">
-      <!-- <a-icon :type="typeIcon" /> -->
+    :centered="true"
+    :maskClosable="false">
+    <!-- <div style="font-size:16px;color:rgba(25,25,25,1);">
+      <a-icon :type="typeIcon" />
       {{ title }}
-    </div>
+    </div> -->
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
           <a-icon type="project" />
-          发起表单
+          表单详情
         </span>
         <a-spin :spinning="confirmLoading">
           <a-form :form="form" class="">        
@@ -77,6 +77,8 @@
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="请假原因">
                   <a-textarea placeholder="请输入请假原因" :rows="4" v-decorator="[ 'reason', validatorRules.templateReason]"/>
                 </a-form-item>
@@ -128,6 +130,36 @@
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
+                  label="上传附件">
+                  <a-upload
+                    :action="uploadAction"
+                    listType="picture-card"
+                    :headers="headers"
+                    :fileList="fileList"
+                    @change="handleChange"
+                    @preview="handlePreview"
+                    :remove="mmm"
+                  >
+                    <a-button>
+                      <a-icon type="upload"/>
+                      upload
+                    </a-button>
+                  </a-upload>
+                  <!-- <img v-if="model.attachment" :src="getIdCardView()" alt="头像" @click="handlePreview" style="height:104px;max-width:300px"/> -->
+                  <a-modal :visible="previewVisible" :footer="null" @cancel="handlePicCancel">
+                    <img alt="example" style="width: 100%" :src="previewImage"/>
+                  </a-modal>
+                  <br/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="备注信息">
                   <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
                 </a-form-item>
@@ -136,6 +168,8 @@
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="审批意见"
                   v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
                   :disabled= "title == '编辑'">
@@ -173,7 +207,7 @@
                   :wrapperCol="wrapperCol"
                   class="btnClass"
                 >
-                  <a-button @click="handleSave('start')" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
+                  <a-button @click="handleSave('start')" icon="diff" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
                   <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
                   <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
                 </a-form-item>
@@ -200,13 +234,13 @@
           <div class="proc_bg">
             <h3>
               <span>已完成</span>
-              <s-table 
-                :columns="goodsColumns" 
-                :data="loadGoodsData"
-                v-if="commentList"
-                :pagination="false">
-              </s-table>
             </h3>
+            <s-table 
+              :columns="goodsColumns" 
+              :data="loadGoodsData"
+              v-if="commentList"
+              :pagination="false">
+            </s-table>
           </div>
           <div class="proc_bg">
             <h3>
@@ -257,7 +291,7 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 }
+          sm: { span: 4 }
         },
         wrapperCol: {
           xs: { span: 24 },
@@ -265,11 +299,11 @@
         },
         labelCol1: {
           xs: { span: 24 },
-          sm: { span: 5 }
+          sm: { span: 2 }
         },
         wrapperCol1: {
           xs: { span: 24 },
-          sm: { span: 16 }
+          sm: { span: 20 }
         },
         // wrapperCol1: {
         //   xs: { span: 24, offset: 0 },
@@ -296,7 +330,10 @@
           add: "/flowable/action",
           edit: "/oa/leaveApplication/edit",
           chart: '/flowable/process/diagram',
-          taskComment: '/flowable/process/taskComment'
+          taskComment: '/flowable/process/taskComment',
+          fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
+          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe'
         },
         imgurl: '',
         radioStyle: '',
@@ -307,6 +344,15 @@
         url123: '',
         goodsColumns: [
           {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
             title: '步骤名称',
             dataIndex: 'nodeName',
             key: 'nodeName'
@@ -314,27 +360,39 @@
           {
             title: '处理人',
             dataIndex: 'assigneeFullname',
-            key: 'assigneeFullname'
+            key: 'assigneeFullname',
+            align:"center",
           },
           {
             title: '到达时间',
             dataIndex: 'startTime',
-            key: 'startTime'
+            key: 'startTime',
+            align:"center",
           },
           {
             title: '完成时间',
             dataIndex: 'endTime',
             key: 'endTime',
-            align: 'right'
+            align: 'right',
+            align:"center",
           },
           {
             title: '处理意见',
             dataIndex: 'num',
-            key: 'num',
-            align: 'right'
+            key: 'num',   
           }
         ],
         goodsColumns1: [
+          {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width: 80,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
           {
             title: '步骤名称',
             dataIndex: 'nodeName',
@@ -343,12 +401,14 @@
           {
             title: '当前处理',
             dataIndex: 'assigneeFullname',
-            key: 'assigneeFullname'
+            key: 'assigneeFullname',
+            align:"center",
           },
           {
             title: '到达时间',
             dataIndex: 'startTime',
-            key: 'startTime'
+            key: 'startTime',
+            align:"center",
           }
         ],
         arr: [], //初始化完成列表
@@ -360,10 +420,18 @@
         hrLeaderUsername: '',
         hrLeaderRealname: '',
         generalManagerUsername: '',
-        generalManagerRealname: ''      
+        generalManagerRealname: '',
+        // 上传附件定义
+        headers: {},
+        fileList: [],
+        previewImage: '',
+        previewVisible: false, 
+        attachment:''    
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
     },
     methods: {
       ...mapGetters(["nickname","userInfo"]),
@@ -419,6 +487,38 @@
           }
           
         });
+
+        // 初始化上传文件
+        console.log(this.model.attachment,'jige ');
+        if (this.model.attachment !== undefined) {
+          let upData = this.model.attachment.split("  ");
+          for (let i = 0 ; i< upData.length-1 ; i++) {
+            if (upData[i].substring(upData[i].length-4) == 'jpeg' || upData[i].substring(upData[i].length-3) == 'jpg' || upData[i].substring(upData[i].length-3) == 'png') {
+              let fileChild ={
+                uid: i,
+                name: '有的',
+                status: 'done',
+                url: this.url.imgerver + "/" + upData[i]
+              };
+              this.fileList.push(fileChild);
+            } else {
+              let fileChild ={
+                uid: i,
+                name: '有的',
+                status: 'done',
+                url: this.url.pdferver + "/" + upData[i]
+              };
+              console.log(this.url.pdferver + "/" + upData[i],'lailailailaiai');
+              this.fileList.push(fileChild);
+            }
+          }
+          // fileList: [{
+          //   uid: '-1',
+          //   name: 'xxx.png',
+          //   status: 'done',
+          //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+          // }],
+        }
         //请求流程图 + 审批意见
         const that = this;
         if(JSON.stringify(record) !== "{}") {
@@ -478,6 +578,8 @@
       close () {
         this.$emit('close');
         this.visible = false;
+        this.picUrl = "";
+        this.fileList=[];
       },
       handleOk () {
         const that = this;
@@ -515,6 +617,8 @@
               formDataString.hrLeaderRealname = that.hrLeaderRealname;
               formDataString.generalManagerUsername = that.generalManagerUsername;
               formDataString.generalManagerRealname = that.generalManagerRealname;
+
+              formDataString.attachment = this.attachment;
               let params2 = {
                 flowDataString: JSON.stringify(flowDataString),
                 formDataString: JSON.stringify(formDataString),
@@ -579,6 +683,15 @@
             formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
             formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
             
+            formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
+            formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
+            formDataString.hrLeaderUsername = that.hrLeaderUsername;
+            formDataString.hrLeaderRealname = that.hrLeaderRealname;
+            formDataString.generalManagerUsername = that.generalManagerUsername;
+            formDataString.generalManagerRealname = that.generalManagerRealname;
+
+            formDataString.attachment = that.attachment;
+
             let params1 = {
               flowDataString: JSON.stringify(flowDataString),
               formDataString: JSON.stringify(formDataString),
@@ -598,9 +711,11 @@
         })
       },
       handleCancel () {
-        this.close()
+        this.close();
+        this.fileList = [];
       },
       onChange(value,id) {
+        console.log()
         var lab = '';
         if(value.btnApi == '/process/save'){
           lab = '/process/save';
@@ -671,6 +786,46 @@
       },
       ManagerUserName(val) {
         this.generalManagerUsername = val;
+      },
+      handleChange(info) {
+        console.log(info,'zaihuisho0u ');
+        this.fileList = info.fileList;
+        if (this.fileList.length == 0) {
+          this.fileList = info.fileList;
+        } else {
+          this.fileList.concat(info.fileList);
+        }
+        if (info.file.status === 'uploading') {
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          console.log(info,'上传的文件');
+          if (response.success) {
+            this.picUrl += response.message + ",";
+            this.attachment += response.message + "  ";
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+        if (info.file.status === 'removed') {
+          this.attachment = fileList;
+        }
+      },
+      handlePreview(file) {
+        if (file.url || file.thumbUrl) {
+          this.previewImage = file.url || file.thumbUrl
+        } else {
+          this.previewImage = this.getIdCardView();
+        }
+        
+        this.previewVisible = true
+      },
+      handlePicCancel() {
+        this.previewVisible = false
+      },
+      mmm(dqw) {
+        console.log(dqw,'哈哈');
       }
     },
     mounted() {
@@ -682,6 +837,9 @@
       },
       btns(){
         return this.model.btns
+      },
+      uploadAction: function () {
+        return this.url.fileUpload;
       }
     }
   }
@@ -778,18 +936,20 @@
         outline: none;  //消除默认点击蓝色边框效果
       }
       .cancel {
-        width:96px;
+        min-width:96px;
         height:40px;
         background:rgba(238,238,238,1);
         border-radius:4px;
         color:rgba(51,51,51,1);
+        padding: 5px;
       }
       .confirm {
-        width:96px;
+        min-width:96px;
         height:40px;
         background:rgba(109,98,255,1);
         border-radius:4px;
         color: rgba(255,255,255,1);
+        padding: 5px;
       }
     }
   }

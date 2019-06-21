@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click.native="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 CMP 建管云 </span>
+      <span v-if="device === 'desktop'">建管云欢迎您</span>
       <span v-else>ECIDI-CMP</span>
 
       <user-menu :theme="theme"/>
@@ -149,7 +149,7 @@
             this.topMenuStyle.headerIndexLeft = {}
           } else {
             let rightWidth = '360px'
-            this.topMenuStyle.topNavHeader = { 'min-width': '165px' }
+            this.topMenuStyle.topNavHeader = { 'min-width': '170px' }
             this.topMenuStyle.topSmenuStyle = { 'width': 'calc(100% - 165px)' }
             this.topMenuStyle.headerIndexRight = { 'min-width': rightWidth }
             this.topMenuStyle.headerIndexLeft = { 'width': `calc(100% - ${rightWidth})` }

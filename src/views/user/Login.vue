@@ -11,7 +11,7 @@
           @change="handleTabClick"
         >
           <!-- 账号密码登录 -->
-          <a-tab-pane key="tab1" tab="密码登陆">
+          <a-tab-pane key="tab1" tab="密码登录">
             <a-form-item>
               <a-input
                 size="large"
@@ -32,7 +32,7 @@
           </a-tab-pane>
 
           <!-- 手机登录 -->
-          <a-tab-pane key="tab2" tab="手机登陆">
+          <a-tab-pane key="tab2" tab="手机登录">
             <a-form-item>
               <a-input
                 v-decorator="['phone',validatorRules.phone]"
@@ -86,15 +86,16 @@
             :disabled="loginBtn"
           >登录</a-button>
         </a-form-item>
-
-        <div class="user-login-other">
-          <div class="register" @click="register">
-            <div>
-              <img src="@/assets/img/login/arrow.png">
-              注册
+        <a-form-item>
+          <div class="user-login-other">
+            <div class="register" @click="register">
+              <div>
+                <img src="@/assets/img/login/arrow.png">
+                注册
+              </div>
             </div>
           </div>
-        </div>
+        </a-form-item>
       </a-form>
 
       <!-- 三步注册组件 -->
@@ -103,10 +104,11 @@
           v-model="visibleRegister"
           width="1000px"
           :footer="null"
-          class="registerPage"
+          :class="['registerPage', device]"
           @cancel="reset"
+          
         >
-          <user-register ref="register"></user-register>
+          <user-register ref="register" @closereg="closeregister"></user-register>
         </a-modal>
       </div>
 
@@ -119,12 +121,7 @@
       ></two-step-captcha>
 
       <!-- 部门选择 -->
-      <a-modal
-        title="登录部门选择"
-        :width="450"
-        :visible="departVisible"
-        :maskClosable="false"
-      >
+      <a-modal title="登录部门选择" :width="450" :visible="departVisible" :maskClosable="false">
         <template slot="footer">
           <a-button type="primary" @click="departOk">确认</a-button>
         </template>
@@ -155,7 +152,9 @@
                 :value="`${d.prjCode}.${d.orgCode}`"
               >
                 <span style="float: left">{{ d.departName }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{d.prjName}}{{ d.corpName }}</span>
+                <span
+                  style="float: right; color: #8492a6; font-size: 13px"
+                >{{d.prjName}}{{ d.corpName }}</span>
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -177,8 +176,10 @@ import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
 import { putAction, postAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
 import qs from 'qs'
+import { mixinDevice } from '@/utils/mixin.js'
 
 export default {
+  mixins: [mixinDevice],
   components: {
     TwoStepCaptcha,
     JGraphicCode,
@@ -344,7 +345,6 @@ export default {
           const hide = this.$message.loading('验证码发送中..', 0)
           postAction(api.SendSms, params)
             .then(res => {
-              console.log('12345')
               console.log(res)
               setTimeout(hide, 2500)
               if (res.success) {
@@ -383,10 +383,12 @@ export default {
     loginSuccess() {
       this.loginBtn = false
       this.$router.push({ name: 'dashboard' })
+      console.log('开始登陆')
       this.$notification.success({
         message: '欢迎',
         description: `${timeFix()}，欢迎回来`
       })
+      console.log('开始登陆')
     },
     requestFailed(err) {
       this.$notification['error']({
@@ -492,6 +494,9 @@ export default {
       this.$refs.register.step3 = false
       this.visibleRegister = false
     },
+    closeregister() {
+      this.visibleRegister = false
+    }
   }
 }
 </script>

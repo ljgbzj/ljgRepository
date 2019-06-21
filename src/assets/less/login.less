@@ -15,10 +15,10 @@
     }
     .main {
       width:400px;
-      height:480px;
+      /* height:480px; */
       background:rgba(255,255,255,1);
       border-radius:6px;
-      padding: 59px 48px 39px;
+      padding: 59px 48px 0;
 
       #formLogin.user-layout-login{
         .ant-tabs{
@@ -97,10 +97,36 @@
           }
         }
         .user-login-other{
-          margin-top: 42px;
+          margin: 42px 0 15px;
           float: right;
           cursor: pointer;
         }
       }
     }
   }
+
+#userLayout.user-layout-wrapper.mobile{
+  .login{
+    margin: 0;
+    padding: 0;
+    .desc{
+      margin: 10% auto;
+      width: auto;
+      text-align: center;
+    }
+    .main{
+      margin: 0 auto;
+      padding: 5%;
+      width: 96%;
+      height: auto;
+
+      :global(.ant-tabs-bar){
+        margin-bottom: 15%;
+      }
+      .user-login-other{
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
