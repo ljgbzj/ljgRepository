@@ -146,7 +146,7 @@
               method = 'post';
             } else {
               httpurl += this.url.edit;
-              method = 'put';
+              method = 'post'; // put修改
             }
             let formData = Object.assign(this.model, values);
             formData.mainId = this.orderId;

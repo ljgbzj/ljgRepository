@@ -121,7 +121,7 @@
               method = 'post';
             }else{
               httpurl+=this.url.edit;
-               method = 'put';
+               method = 'post'; // put修改
             }
             let formData = Object.assign(this.model, values);
             //时间格式化

@@ -72,14 +72,12 @@
 
     <!-- 表单区域 -->
     <!-- <task-modal ref="modalForm" @ok="modalFormOk"></task-modal> -->
-    <leaveApplication-modal ref="modalForm" @ok="modalFormOk"></leaveApplication-modal>
+    <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
     <task-Modal ref="modalForm1" @ok="modalFormOk"></task-Modal>
   </a-card>
 </template>
 
 <script>
-  // import TaskModal from './modules/TaskModal'
-  import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import TaskModal from './modules/TaskModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
@@ -89,7 +87,6 @@
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      LeaveApplicationModal,
       TaskModal,
       JDate
     },
@@ -152,12 +149,13 @@
           list: "/flowable/tasks/list",
           form: "/flowable/tasks/form"
         },
-        rowkey: ''
+        rowkey: '',
+        componentsUrl: 'oa/modules/LeaveApplicationModal'
       }
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record);
+        console.log(record,'待办');
         let params = {
           businessKey: record.businessKey,
           processDefinitionKey: record.processDefinitionKey, 
@@ -166,7 +164,9 @@
           taskId: record.taskId
         }
         getAction(this.url.form, params).then((res) => {
+          console.log(res,'待办任务白哦哦');
           if (res.success) {
+            this.componentsUrl = res.result.formPath;
             record = Object.assign(res.result, {taskId: record.taskId}) 
             //this.dataSource = res.result.dataList;
             //this.ipagination.total = res.result.total;
@@ -198,6 +198,11 @@
       handleEntrust(record) {
         this.$refs.modalForm1.edit(record);
         this.$refs.modalForm1.title = "委托";
+      }
+    },
+    computed: {
+      comName: function () {
+        return () => import(`@/views/${this.componentsUrl}.vue`)
       }
     }
   }

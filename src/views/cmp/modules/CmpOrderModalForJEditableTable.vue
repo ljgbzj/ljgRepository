@@ -347,7 +347,7 @@
         let url = this.url.add, method = 'post'
         if (this.model.id) {
           url = this.url.edit
-          method = 'put'
+          method = 'post' // put修改
         }
         this.confirmLoading = true
         httpAction(url, formData, method).then((res) => {

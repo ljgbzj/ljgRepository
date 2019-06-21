@@ -43,7 +43,7 @@ export function httpActionHeader(url,parameter,method) {
 export function putAction(url,parameter) {
   return axios({
     url: url,
-    method:'put',
+    method:'post',
     data: parameter
   })
 }
@@ -71,7 +71,7 @@ export function getActionUrl(url,parameter) {
 export function deleteAction(url,parameter) {
   return axios({
     url: url,
-    method: 'delete',
+    method: 'post',
     params: parameter
   })
 }
