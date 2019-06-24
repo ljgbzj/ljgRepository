@@ -71,9 +71,6 @@
         }else{
           this.$emit("userName",userNameStr)
         }
-        if (this.cancelSelect == true) {
-          this.selectList = [];
-        }
         return names;
       }
     },

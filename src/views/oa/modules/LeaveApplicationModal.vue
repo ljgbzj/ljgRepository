@@ -62,7 +62,7 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="开始时间">
-                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
+                  <a-date-picker :disabledDate="disabledStartDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -70,7 +70,7 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="结束时间">
-                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
+                  <a-date-picker :disabledDate="disabledEndDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -91,7 +91,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="部门领导">
-                  <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep>
+                  <j-select-user-new v-model="departRealname" @input="departmentRealName" @userName="departmentUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -99,7 +100,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="人事领导">
-                  <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep>
+                  <j-select-user-new v-model="hrRealname" @input="hrRealName" @userName="hrUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
             </a-row>
@@ -109,7 +111,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="总经理">
-                  <j-select-user-by-dep v-model="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep>
+                  <j-select-user-new v-model="mgRealname" @input="ManagerRealName" @userName="ManagerUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep @input="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -135,12 +138,13 @@
                   label="上传附件">
                   <a-upload
                     :action="uploadAction"
-                    listType="picture-card"
+                    listType="picture"
                     :headers="headers"
                     :fileList="fileList"
                     @change="handleChange"
                     @preview="handlePreview"
-                    :remove="mmm"
+                    :multiple="true"
+                    class="upload-list-inline"
                   >
                     <a-button>
                       <a-icon type="upload"/>
@@ -274,6 +278,7 @@
   import STable from '@/components/table/'
   import { setTimeout } from 'timers';
   import JSearchUserByDep from '@/components/cmpbiz/JSearchUserByDep'
+  import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 
   export default {
     name: "LeaveApplicationModal",
@@ -281,7 +286,8 @@
       JSelectUserByDep,
       OptionList,
       STable,
-      JSearchUserByDep
+      JSearchUserByDep,
+      JSelectUserNew
     },
     data () {
       return {
@@ -415,10 +421,13 @@
         arr1: [], //初始化进行中列表
         selectedDepUsers: '',
         selectedDepUsersU:'',
+        departRealname: '',
         departmentLeaderUsername: '',
         departmentLeaderRealname: '',
+        hrRealname: '',
         hrLeaderUsername: '',
         hrLeaderRealname: '',
+        mgRealname: '',
         generalManagerUsername: '',
         generalManagerRealname: '',
         // 上传附件定义
@@ -426,7 +435,8 @@
         fileList: [],
         previewImage: '',
         previewVisible: false, 
-        attachment:''    
+        attachment:'',
+        cancelSelect: false   
       }
     },
     created () {
@@ -473,11 +483,17 @@
           '_taskComment'));
         
         // 初始化选人组件字段
+        // if (record) {
+        //   this.departmentLeaderRealname = this.model.departmentLeaderRealname;
+        //   this.hrLeaderRealname = this.model.hrLeaderRealname;
+        //   this.generalManagerRealname = this.model.generalManagerRealname;
+        // }
         if (record) {
-          this.departmentLeaderRealname = this.model.departmentLeaderRealname;
-          this.hrLeaderRealname = this.model.hrLeaderRealname;
-          this.generalManagerRealname = this.model.generalManagerRealname;
+          this.departRealname = this.model.departmentLeaderRealname;
+          this.hrRealname = this.model.hrLeaderRealname;
+          this.mgRealname = this.model.generalManagerRealname;
         }
+        console.log(this.departRealname,'wozhidaole ');
 		  //时间格式化
           this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
           this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
@@ -512,6 +528,7 @@
               this.fileList.push(fileChild);
             }
           }
+          this.attachment = this.model.attachment
           // fileList: [{
           //   uid: '-1',
           //   name: 'xxx.png',
@@ -519,6 +536,7 @@
           //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
           // }],
         }
+        console.log(this.fileList,'优雅');
         //请求流程图 + 审批意见
         const that = this;
         if(JSON.stringify(record) !== "{}") {
@@ -577,9 +595,10 @@
       },
       close () {
         this.$emit('close');
-        this.visible = false;
         this.picUrl = "";
         this.fileList=[];
+        this.cancelSelect = true;
+        this.visible = false;
       },
       handleOk () {
         const that = this;
@@ -603,7 +622,7 @@
                 flowDataString.processDefinitionKey = 'leave';
               }else{
                 httpurl+=this.url.edit;
-                method = 'put';
+                method = 'post'; // put修改
               }
               // let formData = Object.assign(this.model, values);
 
@@ -778,29 +797,32 @@
         this.selectedDepUsers = {}
         this.$refs.JSearchUserByDep.title = '根据部门查询用户'
       },
+      departmentRealName(val) {
+        this.departmentLeaderRealname = val;
+      },
       departmentUserName(val) {
         this.departmentLeaderUsername = val;
       },
-      hrUsername(val) {
+      hrRealName(val) {
+        this.hrLeaderRealname = val;
+      },
+      hrUserName(val) {
         this.hrLeaderUsername = val;
+      },
+      ManagerRealName(val) {
+        this.generalManagerRealname = val;
       },
       ManagerUserName(val) {
         this.generalManagerUsername = val;
       },
-      handleChange(info) {
-        console.log(info,'zaihuisho0u ');
-        this.fileList = info.fileList;
+      handleChange(info) {  
         if (this.fileList.length == 0) {
           this.fileList = info.fileList;
         } else {
           this.fileList.concat(info.fileList);
         }
-        if (info.file.status === 'uploading') {
-          return
-        }
         if (info.file.status === 'done') {
           var response = info.file.response;
-          console.log(info,'上传的文件');
           if (response.success) {
             this.picUrl += response.message + ",";
             this.attachment += response.message + "  ";
@@ -808,9 +830,41 @@
             this.$message.warning(response.message);
           }
         }
+        if (info.file.status === 'uploading') {
+          return
+        }
         if (info.file.status === 'removed') {
           this.attachment = fileList;
         }
+        // if (info.file.response == undefined) {
+        //   if (info.file.status == "removed") {
+        //     if (info.file.url.substring(info.file.url.length-4) == 'jpeg' || info.file.url.substring(info.file.url.length-3) == 'jpg' || info.file.url.substring(info.file.url.length-3) == 'png') {
+        //       let mm = info.file.url.substring(27) + '  ';
+        //       this.attachment = this.attachment.replace(mm,'');
+        //       this.fileList = info.fileList;
+        //     } else {
+        //       let mm = info.file.url.substring(43) + '  ';
+        //       this.attachment = this.attachment.replace(mm,'');
+        //       this.fileList = info.fileList;
+        //     }
+        //   } 
+        // } else {
+        //   if (info.file.status === 'done') {
+        //     var response = info.file.response;
+        //     if (response.success) {
+        //       this.picUrl += response.message + ",";
+        //       this.attachment += response.message + "  ";
+        //     } else {
+        //       this.$message.warning(response.message);
+        //     }
+        //   }
+        //   if (info.file.status === 'uploading') {
+        //     return
+        //   }
+        //   if (info.file.status === 'removed') {
+        //     this.attachment = fileList;
+        //   }
+        // }
       },
       handlePreview(file) {
         if (file.url || file.thumbUrl) {
@@ -824,8 +878,21 @@
       handlePicCancel() {
         this.previewVisible = false
       },
-      mmm(dqw) {
-        console.log(dqw,'哈哈');
+
+      // 时间选择器的禁用封装
+      disabledStartDate (startValue) {
+        const endValue = this.form.getFieldValue('timeEnd');
+        if (!startValue || !endValue) {
+          return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
+      },
+      disabledEndDate (endValue) {
+        const startValue = this.form.getFieldValue('timeStart');
+        if (!endValue || !startValue) {
+          return false;
+        }
+        return startValue.valueOf() >= endValue.valueOf();
       }
     },
     mounted() {
@@ -976,6 +1043,41 @@
     img {
       width: 100%;
       height: 100%;
+    }
+  }
+
+  .userSelect {
+    :global(.ant-select) {
+      width: 60%!important;
+    }
+    :global(>span) {
+      width: 40%!important;
+      :global(button) {
+        margin-left:10px;
+        width: 42%!important;
+        text-align: center;
+        font-size: 10px!important;
+        padding: unset;
+      }
+    }
+  }
+
+  /* tile uploaded pictures */
+  .upload-list-inline {
+    :global(.ant-upload-list-item) {
+      float: left;
+      width: 200px;
+      margin-right: 8px;
+    }
+  }
+  .upload-list-inline {
+    :global(.ant-upload-animate-enter) {
+      animation-name: uploadAnimateInlineIn;
+    }
+  }
+  .upload-list-inline {
+    :global(.ant-upload-animate-leave) {
+      animation-name: uploadAnimateInlineOut;
     }
   }
 </style>
