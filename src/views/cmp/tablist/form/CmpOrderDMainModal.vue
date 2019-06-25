@@ -123,7 +123,7 @@
               method = 'post';
             } else {
               httpurl += this.url.edit;
-              method = 'put';
+              method = 'post'; // put修改
             }
             let orderMainData = Object.assign(this.orderMainModel, values);
             //时间格式化

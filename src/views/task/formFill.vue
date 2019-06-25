@@ -69,8 +69,7 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <component :is="comp" ref="modalForm" @ok="modalFormOk"></component>
-    <!-- <com-template ref="modalForm" @ok="modalFormOk"></com-template> -->
+    <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
   </a-card>
 </template>
 
@@ -128,13 +127,13 @@
           form: "/flowable/tasks/form"
         },
         rowkey: '',
-        componentsUrl: '',
-        cmdTmc: 'oa/modules/LeaveApplicationModal'
+        componentsUrl: 'oa/modules/LeaveApplicationModal',
       }
     },
     methods: {
       handleEditform: function (record) {
-        // this.componentsUrl = record.formPath;
+        this.componentsUrl = record.formPath;
+        console.log(record,'来来来');
         this.$refs.modalForm.add();
         this.$refs.modalForm.title = "新增";
       },
@@ -160,8 +159,8 @@
       }
     },
     computed: {
-      comp: function () {
-        return () => import(`@/views/${this.cmdTmc}.vue`)
+      comName: function () {
+        return () => import(`@/views/${this.componentsUrl}.vue`)
       }
     }
   }

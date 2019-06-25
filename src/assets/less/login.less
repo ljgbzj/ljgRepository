@@ -1,129 +1,126 @@
-.login{
-    margin: 93px 0 0 120px;
-    .ant-input:focus{
-      box-shadow: none;
-    }
-    .desc{
-      width:327px;
-      height:35px;
-      font-size:36px;
-      font-family:SourceHanSansCN-Bold;
-      font-weight:bold;
-      color:rgba(255,255,255,1);
-      line-height:32px;
-      margin-bottom: 30px;
-    }
-    .main {
-      width:400px;
-      /* height:480px; */
-      background:rgba(255,255,255,1);
-      border-radius:6px;
-      padding: 59px 48px 0;
+.login {
+  margin: 93px 0 0 120px;
 
-      #formLogin.user-layout-login{
-        .ant-tabs{
-          :global(.ant-tabs-nav .ant-tabs-tab){
-            margin: 0 40px 16px 0;
-            padding: 0;
-            font-size: 16px;
-            color: rgba(179,181,186,1);
-          }
-          :global(.ant-tabs-nav .ant-tabs-tab-active){
-            color: rgba(100,85,2551);
-          }
-          :global(.ant-input){
-            background-color: rgba(245,245,245,1);
-          }
-          // input输入框hover边框颜色
-          :global(.ant-input:hover){
-            border-color: rgba(100,85,255,1);
-          }
-          // input输入框选中边框颜色
-          :global(.ant-input:focus){
-            border: 1px solid rgba(100,85,255,1);
-          }
-          :global(.ant-tabs-ink-bar){
-            background-color: rgba(100,85,255,1);
-          }
-          :global(.ant-tabs-bar){
-            margin-bottom: 40px;
-          }
-          :global(.ant-input-lg){
-            height: 44px;
-          }
-          :global(.ant-form-explain){
-            height: 2px;
-          }
+  .ant-input:focus {
+    box-shadow: none;
+  }
 
-          .getCaptcha{
-            float: right;
-            height: 44px;
-            width: 99px;
-            background-color: rgba(100,85,255,1);
-            color: white;
-            border-color: rgba(100,85,255,1);
+  .desc {
+    width: 327px;
+    height: 35px;
+    font-size: 36px;
+    font-family: SourceHanSansCN-Bold;
+    font-weight: bold;
+    color: #fff;
+    line-height: 32px;
+    margin-bottom: 30px;
+  }
+
+  .main {
+    width: 400px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 59px 48px 0;
+
+    #formLogin.user-layout-login {
+      .ant-tabs {
+        :global(.ant-tabs-nav .ant-tabs-tab) {
+          margin: 0 40px 16px 0;
+          padding: 0;
+          font-size: 16px;
+          color: #B3B5BA;
+        }
+
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+          color: rgba(100, 85, 2551);
+        }
+
+        :global(.ant-input) {
+          background-color: #f5f5f5;
+          border-color: #F5F5F5;
+
+          &:focus {
+            border-color: #6455ff;
           }
         }
-        :global(.login-button.ant-btn-primary){
-          border-color: rgba(100,85,255,1);
+
+        :global(.ant-tabs-bar) {
+          margin-bottom: 40px;
         }
-        :global(.ant-row.ant-form-item){
-          margin-bottom: 20px;
+
+        :global(.ant-input-lg) {
+          height: 44px;
         }
-        
-        .ant-row.ant-form-item.form-out{
-          :global(.ant-form-item-control){
-            line-height: 22px;
-            
-            :global(.ant-checkbox-inner){
-              border-color: rgba(100,85,255,1);
-            }
-            :global(.ant-checkbox-checked .ant-checkbox-inner){
-              background-color: rgba(100,85,255,1);
-              border-color: rgba(100,85,255,1);
-            }
-            a{
-              color: rgba(51,51,51,1)
-            }
-          }
+
+        :global(.ant-form-explain) {
+          height: 2px;
         }
-        :global(.login-btn.ant-row.ant-form-item){
-          margin-top: 25px;
-          button{
-            width: 100%;
-            height: 48px;
-            background-color: rgba(100,85,255,1);
-            font-size: 16px;
-          }
-        }
-        .user-login-other{
-          margin: 42px 0 15px;
+
+        .getCaptcha {
           float: right;
-          cursor: pointer;
+          height: 44px;
+          width: 99px;
+          background-color: #6455FF;
+          color: #fff;
+          border-color: #6455FF;
         }
+      }
+
+      :global(.ant-row.ant-form-item) {
+        margin-bottom: 20px;
+      }
+
+      .ant-row.ant-form-item.form-out {
+        :global(.ant-form-item-control) {
+          line-height: 22px;
+
+          a {
+            color: #333333;
+          }
+        }
+      }
+
+      :global(.login-btn.ant-row.ant-form-item) {
+        margin-top: 25px;
+
+        button {
+          width: 100%;
+          height: 48px;
+          font-size: 16px;
+        }
+      }
+
+      .user-login-other {
+        margin: 42px 0 15px;
+        float: right;
+        cursor: pointer;
       }
     }
   }
+}
 
-#userLayout.user-layout-wrapper.mobile{
-  .login{
+#userLayout.user-layout-wrapper.mobile {
+  .login {
     margin: 0;
     padding: 0;
-    .desc{
+
+    .desc {
       margin: 10% auto;
       width: auto;
       text-align: center;
     }
-    .main{
+
+    .main {
       margin: 0 auto;
       padding: 5%;
       width: 96%;
       height: auto;
 
-      :global(.ant-tabs-bar){
+      :global(.ant-tabs-bar) {
         margin-bottom: 15%;
       }
-      .user-login-other{
+
+      .user-login-other {
         margin-top: 0;
         margin-bottom: 0;
       }

@@ -72,24 +72,18 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <!-- <task-modal ref="modalForm" @ok="modalFormOk"></task-modal> -->
-    <leaveApplication-modal ref="modalForm" @ok="modalFormOk"></leaveApplication-modal>
-    
+    <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>  
   </a-card>
 </template>
 
 <script>
   // import TaskModal from './modules/TaskModal'
-  import LeaveApplicationModal from '../oa/modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
 
   export default {
     name: "TaskList",
     mixins:[CmpListMixin],
-    components: {
-      LeaveApplicationModal
-    },
     data () {
       return {
         description: '待办任务管理页面',
@@ -146,12 +140,13 @@
           list: "/flowable/process/list",
           form: "/flowable/tasks/form"
         },
-        rowkey: ''
+        rowkey: '',
+        componentsUrl: 'oa/modules/LeaveApplicationModal'
       }
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record);
+        console.log(record,'追踪');
         let params = {
           businessKey: record.businessKey,
           processDefinitionKey: record.processDefinitionKey, 
@@ -161,6 +156,7 @@
         }
         getAction(this.url.form, params).then((res) => {
           if (res.success) {
+            this.componentsUrl = res.result.formPath;
             record = Object.assign(res.result, {taskId: record.taskId}) 
             //this.dataSource = res.result.dataList;
             //this.ipagination.total = res.result.total;
@@ -188,6 +184,11 @@
           }
           this.loading = false;
         })
+      }
+    },
+    computed: {
+      comName: function () {
+        return () => import(`@/views/${this.componentsUrl}.vue`)
       }
     }
   }

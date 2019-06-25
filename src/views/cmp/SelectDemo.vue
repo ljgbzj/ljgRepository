@@ -89,6 +89,14 @@
           <a-col :span="12">选中的用户(v-model):{{ multiUser }}</a-col>
         </a-row>
 
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="选择用户">
+              <j-select-user-new v-model="multiUser" @userName="userResult"></j-select-user-new>
+              <span>{{ multiUser }}</span>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <!--  JCheckbox -->
         <a-row :gutter="24">
           <a-col :span="12">
@@ -229,6 +237,7 @@
   import JSelectDepart from '@/components/cmpbiz/JSelectDepart'
   import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
   import JSelectMultiUser from '@/components/cmpbiz/JSelectMultiUser'
+  import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import JCheckbox from '@/components/cmp/JCheckbox'
   import JCodeEditor from '@/components/cmp/JCodeEditor'
   import JDate from '@/components/cmp/JDate'
@@ -247,6 +256,7 @@
       JSelectDepart,
       JSelectUserByDep,
       JSelectMultiUser,
+      JSelectUserNew,
       JCheckbox,
       JCodeEditor,
       JDate, JEditor, JEllipsis, JGraphicCode, JSlider, JSelectMultiple
@@ -358,7 +368,8 @@ sayHi('hello, world!')`
           this.modal.style.top = '50px'
         }
         this.modal.fullScreen = mode
-      }
+      },
+      userResult(val) {}
 
     }
   }

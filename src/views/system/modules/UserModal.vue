@@ -456,7 +456,7 @@
           method = 'post';
         }else{
           httpurl+=this.url.editUDepartIds;
-          method = 'put';
+          method = 'post'; // put修改
         }
         httpAction(httpurl,this.userDepartModel,method).then((res)=>{
           if(res.success){

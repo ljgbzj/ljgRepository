@@ -387,7 +387,8 @@
 
             let formData = Object.assign(this.currSelected, values)
             console.log('Received values of form: ', formData)
-            httpAction(this.url.edit, formData, 'put').then((res) => {
+            // put修改
+            httpAction(this.url.edit, formData, 'post').then((res) => {
               if (res.success) {
                 this.$message.success('保存成功!')
                 this.loadTree()

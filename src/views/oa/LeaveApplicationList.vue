@@ -37,14 +37,24 @@
         <!-- <template v-if="toggleSearchStatus"> -->
           <a-col :md="6" :sm="8">
             <a-form-item label="填写时间">
-              <!-- <a-input placeholder="请输入请假开始时间" v-model="queryParam.timeStart"></a-input> -->
-              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/>
+              <!-- <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/> -->
+              <a-date-picker
+                v-model="queryParam.timeStart"
+                :disabledDate="disabledStartDate"
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="开始时间"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="至">
-              <!-- <a-input placeholder="请输入请假结束时间" v-model="queryParam.timeEnd"></a-input> -->
-              <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/>
+              <!-- <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/> -->
+              <a-date-picker
+                v-model="queryParam.timeEnd"
+                :disabledDate="disabledEndDate"
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="开始时间"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -365,13 +375,19 @@
         });
     },
     // 时间选择器的禁用封装
-    disabledStartDate(startValue) {
-      console.log('进来啦');
+    disabledStartDate (startValue) {
       const endValue = this.queryParam.timeEnd;
       if (!startValue || !endValue) {
         return false;
       }
       return startValue.valueOf() > endValue.valueOf();
+    },
+    disabledEndDate (endValue) {
+      const startValue = this.queryParam.timeStart;
+      if (!endValue || !startValue) {
+        return false;
+      }
+      return startValue.valueOf() >= endValue.valueOf();
     }
   }
   }

@@ -190,7 +190,7 @@
       z-index: 2;
       color: white;
       height: $height;
-      background-color: #1890ff;
+      background-color: #6455ff;
       transition: background 300ms;
 
       /* dark 样式 */
