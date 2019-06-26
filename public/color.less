@@ -2175,9 +2175,9 @@ this.tinycolor = tinycolor;
 .globalFooter .copyright {
   color: rgba(0, 0, 0, 0.45);
 }
-.layout .header {
+/* .layout .header {
   background-color: @primary-color !important;
-}
+} */
 i.trigger:hover {
   background: rgba(0, 0, 0, 0.025);
 }
@@ -2349,7 +2349,7 @@ i.trigger:hover {
 }
 .sider.light {
   box-shadow: 2px 116px 8px 0 rgba(29, 35, 41, 0.05);
-  background-color: white;
+  background-color: @primary-color !important;
 }
 .sider.light .logo {
   background-color: @primary-color !important;
@@ -5276,10 +5276,11 @@ form .ant-upload {
 .ant-mention-dropdown-item-divider {
   background-color: #e8e8e8;
 }
+//一级菜单颜色
 .ant-menu {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  color: rgba(0, 0, 0, 0.65);
-  background: #fff;
+  color: #fff;
+  background: @primary-color;
 }
 .ant-menu-item-group-title {
   color: rgba(0, 0, 0, 0.45);
@@ -5288,11 +5289,13 @@ form .ant-upload {
 .ant-menu-submenu-title:active {
   background: color(~`colorPalette("@{primary-color}", 1)`);
 }
+//二级菜单hover字体颜色
 .ant-menu-item > a {
-  color: rgba(0, 0, 0, 0.65);
+  color: #fff;
 }
+//二级菜单hover字体颜色
 .ant-menu-item > a:hover {
-  color: @primary-color;
+  color: #fff;
 }
 .ant-menu-item > a:before {
   background-color: transparent;
@@ -5300,12 +5303,13 @@ form .ant-upload {
 .ant-menu-item-divider {
   background-color: #e8e8e8;
 }
+// 二级菜单hover字体颜色
 .ant-menu-item:hover,
 .ant-menu-item-active,
 .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
 .ant-menu-submenu-active,
 .ant-menu-submenu-title:hover {
-  color: @primary-color;
+  color: #fff;
 }
 .ant-menu-horizontal > .ant-menu-item:hover,
 .ant-menu-horizontal > .ant-menu-item-active,
@@ -5314,10 +5318,14 @@ form .ant-upload {
 }
 .ant-menu-item-selected {
   color: @primary-color;
+  color: red !important;
+  background: @primary-color !important;
 }
 .ant-menu-item-selected > a,
 .ant-menu-item-selected > a:hover {
   color: @primary-color;
+  width: 174px;
+  background: #fff;
 }
 .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
   background-color: color(~`colorPalette("@{primary-color}", 1)`);
@@ -5352,7 +5360,8 @@ form .ant-upload {
   border-radius: 4px;
 }
 .ant-menu-submenu > .ant-menu {
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: @primary-color;
   border-radius: 4px;
 }
 .ant-menu-submenu-vertical > .ant-menu-submenu-title .ant-menu-submenu-arrow:before,
@@ -5364,7 +5373,7 @@ form .ant-upload {
 .ant-menu-submenu-vertical-right > .ant-menu-submenu-title .ant-menu-submenu-arrow:after,
 .ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow:after {
   background: #fff;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65));
+  /* background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)); */
   border-radius: 2px;
 }
 .ant-menu-submenu-vertical > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow:after,
@@ -5375,12 +5384,13 @@ form .ant-upload {
 .ant-menu-submenu-vertical-left > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow:before,
 .ant-menu-submenu-vertical-right > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow:before,
 .ant-menu-submenu-inline > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow:before {
-  background: linear-gradient(to right, @primary-color, @primary-color);
+  background: #fff;
 }
 .ant-menu-vertical .ant-menu-submenu-selected,
 .ant-menu-vertical-left .ant-menu-submenu-selected,
 .ant-menu-vertical-right .ant-menu-submenu-selected {
-  color: @primary-color;
+  /* color: @primary-color; */
+  color: #fff;
 }
 .ant-menu-vertical .ant-menu-submenu-selected > a,
 .ant-menu-vertical-left .ant-menu-submenu-selected > a,
@@ -5415,12 +5425,13 @@ form .ant-upload {
 }
 .ant-menu-horizontal > .ant-menu-item-selected > a {
   color: @primary-color;
+  
 }
 .ant-menu-vertical .ant-menu-item:after,
 .ant-menu-vertical-left .ant-menu-item:after,
 .ant-menu-vertical-right .ant-menu-item:after,
 .ant-menu-inline .ant-menu-item:after {
-  border-right: 3px solid @primary-color;
+  border-right: 0;
 }
 .ant-menu-inline-collapsed-tooltip a {
   color: rgba(255, 255, 255, 0.85);
@@ -5435,6 +5446,7 @@ form .ant-upload {
   border: 0;
   box-shadow: none;
   border-radius: 0;
+  background-color: @primary-color;
 }
 .ant-menu-item-disabled,
 .ant-menu-submenu-disabled {
@@ -5448,13 +5460,13 @@ form .ant-upload {
 }
 .ant-menu-item-disabled > .ant-menu-submenu-title,
 .ant-menu-submenu-disabled > .ant-menu-submenu-title {
-  color: rgba(0, 0, 0, 0.25) !important;
+  color: #fff !important;
 }
 .ant-menu-item-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:before,
 .ant-menu-submenu-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:before,
 .ant-menu-item-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:after,
 .ant-menu-submenu-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:after {
-  background: rgba(0, 0, 0, 0.25) !important;
+  background: #fff !important;
 }
 .ant-menu-dark,
 .ant-menu-dark .ant-menu-sub {
@@ -5551,13 +5563,14 @@ form .ant-upload {
 .ant-menu-dark .ant-menu-item-selected {
   border-right: 0;
   color: #fff;
-}
+} 
 .ant-menu-dark .ant-menu-item-selected:after {
   border-right: 0;
 }
 .ant-menu-dark .ant-menu-item-selected > a,
 .ant-menu-dark .ant-menu-item-selected > a:hover {
   color: #fff;
+  background: @primary-color;
 }
 .ant-menu.ant-menu-dark .ant-menu-item-selected,
 .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
@@ -5571,13 +5584,13 @@ form .ant-upload {
 }
 .ant-menu-dark .ant-menu-item-disabled > .ant-menu-submenu-title,
 .ant-menu-dark .ant-menu-submenu-disabled > .ant-menu-submenu-title {
-  color: rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
 }
 .ant-menu-dark .ant-menu-item-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:before,
 .ant-menu-dark .ant-menu-submenu-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:before,
 .ant-menu-dark .ant-menu-item-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:after,
 .ant-menu-dark .ant-menu-submenu-disabled > .ant-menu-submenu-title > .ant-menu-submenu-arrow:after {
-  background: rgba(255, 255, 255, 0.35) !important;
+  background: #fff !important;
 }
 .ant-message {
   color: rgba(0, 0, 0, 0.65);
