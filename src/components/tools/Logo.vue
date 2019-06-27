@@ -10,8 +10,8 @@
       <img src="@/assets/img/login/LOGO3.png" color="#6857FF" v-if="showTitle">
   </div> -->
   <div class="logo">
-      <img src="@/assets/img/login/LOGO1.png" color="#6857FF">
-      <img src="@/assets/img/login/LOGO3.png" color="#6857FF" v-if="showTitle">
+      <img src="@/assets/img/login/LOGO1.png">
+      <img src="@/assets/img/login/LOGO3.png" v-if="showTitle">
   </div>
 </template>
 
@@ -43,6 +43,7 @@
       line-height: $height !important;
       box-shadow: none !important;
       transition: background 300ms;
+      
 
       a {
         color: white;
@@ -52,12 +53,12 @@
       }
     }
 
-    &.light .logo {
+    /* &.light .logo {
       background-color: #6455ff;
-    }
+    } */
   }
   // logo覆盖
-  .sider {
+  /* .sider {
     box-shadow: none !important;
     .loginContainer {
       overflow: visible;
@@ -70,5 +71,5 @@
     &.light .loginContainer {
       background-color: #6455ff;
     }
-  }
+  } */
 </style>

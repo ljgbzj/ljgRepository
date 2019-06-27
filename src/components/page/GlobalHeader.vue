@@ -25,6 +25,7 @@
 
       <user-menu class="setting" :theme="theme"/>
     </div>
+
     <!-- 顶部导航栏模式 -->
     <div v-else :class="['top-nav-header-index', theme]">
       <div class="header-index-wide">
@@ -156,7 +157,7 @@ export default {
           this.topMenuStyle.headerIndexRight = {}
           this.topMenuStyle.headerIndexLeft = {}
         } else {
-          let rightWidth = '360px'
+          let rightWidth = '215px'
           this.topMenuStyle.topNavHeader = { 'min-width': '170px' }
           this.topMenuStyle.topSmenuStyle = { width: 'calc(100% - 165px)' }
           this.topMenuStyle.headerIndexRight = { 'min-width': rightWidth }
@@ -172,12 +173,12 @@ export default {
 <style lang="scss" scoped>
 /* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 
-$height: 76px;
+$height: 79px;
 
 .layout {
   .top-nav-header-index {
     .header-index-wide {
-      margin-left: 10px;
+      /* margin-left: 10px; */
 
       .ant-menu.ant-menu-horizontal {
         height: $height;

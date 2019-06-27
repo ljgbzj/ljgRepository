@@ -262,7 +262,11 @@
     }
 
   }
-
+  .topmenu .tab-layout-tabs.ant-tabs{
+    margin: 0;
+    padding-left: 62px;
+  }
+  
   .ant-tabs {
 
     &.ant-tabs-card .ant-tabs-tab {

@@ -8,7 +8,8 @@
         @close="() => this.collapsed = false"
         :closable="false"
         :visible="collapsed"
-        width="200px">
+        width="222px"
+      >
         <side-menu
           mode="inline"
           :menus="menus"
@@ -38,7 +39,7 @@
         @close="() => this.collapsed = false"
         :closable="false"
         :visible="collapsed"
-        width="200px"
+        width="222px"
       >
         <side-menu
           mode="inline"
@@ -51,6 +52,7 @@
       </a-drawer>
     </template>
 
+    <!-- 顶部导航模式 -->
     <a-layout
       :class="[layoutMode, `content-width-${contentWidth}`]"
       :style="{ paddingLeft: fixSiderbar && isDesktop() ? `${sidebarOpened ? 200 : 80}px` : '0' }"
@@ -392,7 +394,7 @@ body {
   }
 
   .top-nav-header-index {
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    /* box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08); */
     position: relative;
     transition: background 0.3s, width 0.2s;
 
@@ -401,7 +403,7 @@ body {
       margin: auto;
       padding: 0 20px 0 0;
       display: flex;
-      height: 59px;
+      height: 79px;
 
       .ant-menu.ant-menu-horizontal {
         border: none;
@@ -411,7 +413,11 @@ body {
 
       .header-index-left {
         flex: 1 1;
+        height: 79px;
         display: flex;
+        align-items: center;
+        margin-left: 80px;
+        padding-right: 275px;
 
         .logo.top-nav-header {
           width: 165px;
@@ -424,23 +430,37 @@ body {
           img {
             display: inline-block;
             vertical-align: middle;
-            height: 32px;
+            /* height: 32px; */
           }
 
-          h1 {
+          /* h1 {
             color: #fff;
             display: inline-block;
             vertical-align: top;
             font-size: 16px;
             margin: 0 0 0 12px;
             font-weight: 400;
-          }
+          } */
         }
+        /* ul{
+          display: flex;
+          li{
+            width: 90px;
+            padding: 0;
+            margin: 10px;
+            text-align: center;
+            div{
+              padding: 0;
+            }
+          }
+        } */
       }
 
       .header-index-right {
         float: right;
-        height: 59px;
+        display: flex;
+        align-items: center;
+        height: 79px;
         overflow: hidden;
         .action:hover {
           background-color: rgba(0, 0, 0, 0.05);
@@ -449,7 +469,7 @@ body {
     }
 
     &.light {
-      background-color: #fff;
+      /* background-color: #fff; */
 
       .header-index-wide {
         .header-index-left {
