@@ -86,10 +86,11 @@ export default {
 
     :global(li.ant-menu-item.ant-menu-item-selected > a){
         border-radius: 4px!important;
-        text-align: center;
+        /* text-align: center; */
     }
     :global(li.ant-menu-item > a){
-        text-align: center;
+        /* text-align: center; */
+        padding-left: 43px;
         margin: 0 auto;
     }
     

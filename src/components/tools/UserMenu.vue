@@ -1,11 +1,17 @@
 <template>
   <div class="user-wrapper" :class="theme">
     <span class="action">
-      <a class="logout_title" href="javascript:;" @click="handleLogout">
-        <a-icon type="logout"/>
-        <!-- <span v-if="isDesktop()">&nbsp;退出登录</span> -->
+      <a class="setting" href="javascript:;" @click.stop.prevent="showdrawer">
+        <a-icon type="setting"></a-icon>
       </a>
     </span>
+    <setting-drawer :visible="visible" @closeDrawer="closedrawer" @opendrawer="showdrawer"></setting-drawer>
+    <!-- <span class="action">
+      <a class="logout_title" href="javascript:;" @click="handleLogout">
+        <a-icon type="logout"/>
+        <span v-if="isDesktop()">&nbsp;退出登录</span>
+      </a>
+    </span> -->
     <user-password ref="userPassword"></user-password>
     <header-notice class="action"/>
     <a-dropdown>
@@ -30,6 +36,10 @@
           <a-icon type="setting"/>
           <span>密码修改</span>
         </a-menu-item>
+        <a-menu-item key="3" @click="handleLogout">
+          <a-icon type="logout"/>
+          <span>退出登录</span>
+        </a-menu-item>
         <!-- <a-menu-item key="2" disabled>
           <a-icon type="setting"/>
           <span>测试</span>
@@ -49,6 +59,7 @@
 <script>
 import HeaderNotice from './HeaderNotice'
 import UserPassword from './UserPassword'
+import SettingDrawer from '../setting/SettingDrawer'
 import { mapActions, mapGetters } from 'vuex'
 import { mixinDevice } from '@/utils/mixin.js'
 
@@ -57,13 +68,19 @@ export default {
   mixins: [mixinDevice],
   components: {
     HeaderNotice,
-    UserPassword
+    UserPassword,
+    SettingDrawer
   },
   props: {
     theme: {
       type: String,
       required: false,
       default: 'dark'
+    }
+  },
+  data() {
+    return{
+      visible: false
     }
   },
   methods: {
@@ -99,6 +116,14 @@ export default {
     updatePassword() {
       let username = this.userInfo().username
       this.$refs.userPassword.show(username)
+    },
+    showdrawer() {
+      this.visible = true
+      console.log(this.visible)
+    },
+    closedrawer(){
+      this.visible = false
+      console.log(this.visible)
     }
   }
 }
@@ -108,7 +133,7 @@ export default {
 span.action{
   padding: 0;
 }
-.logout_title {
+.setting {
   color: inherit;
   text-decoration: none;
   svg{
@@ -118,10 +143,10 @@ span.action{
 .layout .header .user-wrapper .action, .layout .top-nav-header-index .user-wrapper .action{
   display: flex;
   align-items: center;
-  padding: 0 20px 0 0;
+  padding: 0 10px;
 }
 .action.action-full.ant-dropdown-link.user-dropdown-menu {
-  padding: 0 80px 0 10px;
+  padding: 0 80px 0 20px;
   display: flex;
   align-items: center;
   .avatar {
