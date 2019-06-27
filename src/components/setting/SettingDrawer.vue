@@ -14,7 +14,7 @@
           <h3 class="setting-drawer-index-title">整体风格设置</h3>
 
           <div class="setting-drawer-index-blockChecbox">
-            <a-tooltip>
+            <!-- <a-tooltip>
               <template slot="title">
                 暗色菜单风格
               </template>
@@ -24,7 +24,7 @@
                   <a-icon type="check"/>
                 </div>
               </div>
-            </a-tooltip>
+            </a-tooltip> -->
 
             <a-tooltip>
               <template slot="title">
@@ -153,10 +153,11 @@
           </a-alert>
         </div>
       </div>
-      <div class="setting-drawer-index-handle" @click="toggle">
+
+      <!-- <div class="setting-drawer-index-handle" @click="toggle">
         <a-icon type="setting" v-if="!visible"/>
         <a-icon type="close" v-else/>
-      </div>
+      </div> -->
     </a-drawer>
   </div>
 </template>
@@ -175,23 +176,36 @@
       SettingItem
     },
     mixins: [mixin, mixinDevice],
+    props: [ 'visible' ],
     data() {
       return {
-        visible: true,
+        //visible: false,
         colorList,
-        dataFixSiderbar: false
-    }
+        dataFixSiderbar: false,
+      }
     },
+    /* computed: {
+      visible: {
+        get(){
+          this.drawerV = this.drawerVisible
+          return this.drawerV
+        },
+        set(value){
+          this.drawerV = this.drawerVisible
+          this.drawerV = value
+        }
+      }
+    }, */
     watch: {
 
     },
     mounted () {
       const vm = this
       setTimeout(() => {
-        vm.visible = false
+        vm.$emit('closedrawer')
       }, 16)
       // 当主题色不是默认色时，才进行主题编译
-      if (this.primaryColor !== config.primaryColor) {
+      if (this.primaryColor) {
         updateTheme(this.primaryColor)
       }
       if (this.colorWeak !== config.colorWeak) {
@@ -202,15 +216,15 @@
       }
     },
     methods: {
-      showDrawer() {
+      /* showDrawer() {
         this.visible = true
-      },
+      }, */
       onClose() {
-        this.visible = false
+        this.$emit('closeDrawer')
       },
-      toggle() {
+      /* toggle() {
         this.visible = !this.visible
-      },
+      }, */
       onColorWeak (checked) {
         this.$store.dispatch('ToggleWeak', checked)
         updateColorWeak(checked)

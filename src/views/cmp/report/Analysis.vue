@@ -644,7 +644,7 @@
     padding: 20px 0 8px 24px;
     font-size: 0;
     a {
-      color: rgba(0, 0, 0, 0.65);
+      color: rgba(255, 255, 255, 0.65);
       display: inline-block;
       font-size: 14px;
       margin-bottom: 13px;
