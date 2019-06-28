@@ -105,7 +105,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="办公号码">
-          <a-input placeholder="请输入办公号码" v-decorator="['officeNumber', {}]" />
+          <a-input placeholder="请输入办公号码" v-decorator="['officePhone', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -145,8 +145,9 @@
         validatorRules:{
         },
         url: {
-          add: "/test/sysUserCopy/add",
-          edit: "/test/sysUserCopy/edit",
+         // add: "/test/sysUserCopy/add",
+          // edit: "/test/sysUserCopy/edit",
+          edit: "/sys/user/edit",
         },
       }
     },
@@ -161,7 +162,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'username','realname','password', 'avatar','sex','email','phone','orgCode','status','delFlag','activitiSync','corpCode','prjCode','officeNumber','address'))
+          this.form.setFieldsValue(pick(this.model,'username','realname','password', 'avatar','sex','email','phone','orgCode','status','delFlag','activitiSync','corpCode','prjCode','officePhone','address'))
 		  //时间格式化
           this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
         });
