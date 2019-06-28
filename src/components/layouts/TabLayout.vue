@@ -300,13 +300,42 @@
   .ant-tabs.ant-tabs-card > .ant-tabs-bar {
     .ant-tabs-tab {
       border: none !important;
-      border-bottom: 1px solid transparent !important;
+      padding-left: 0!important;
+      span{
+        padding-left: 16px;
+      }
     }
     .ant-tabs-tab-active {
-      border-color: #6455ff !important;
+      /* border-color: #6455ff !important; */
       background: #fff !important;
     }
   }
+:global(.sidemenu .ant-layout-content .tab-layout-tabs.ant-tabs 
+.ant-tabs-bar.ant-tabs-top-bar.ant-tabs-card-bar .ant-tabs-tab){
 
+  span{
+    border-left: 1px solid #999999 !important;
+  }
+  
+  &:first-child{
+    span{
+      border: none!important;
+    }
+    
+  }
+}
+:global(.sidemenu .ant-layout-content .tab-layout-tabs.ant-tabs 
+.ant-tabs-bar.ant-tabs-top-bar.ant-tabs-card-bar .ant-tabs-tab-active){
+
+  span{
+      border: none!important;
+    }
+
+  & + .ant-tabs-tab{
+    span{
+      border: none!important;
+    }
+  }
+}
 
 </style>
