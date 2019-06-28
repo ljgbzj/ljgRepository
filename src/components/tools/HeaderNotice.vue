@@ -68,7 +68,7 @@
     </template>
     <span @click="fetchNotice" class="header-notice">
       <a-badge :count="msgTotal">
-        <a-icon style="font-size: 16px; padding: 4px" type="bell" />
+        <a-icon style="font-size: 16px;" type="bell" />
       </a-badge>
     </span>
     <show-announcement ref="ShowAnnouncement" @ok="modalFormOk"></show-announcement>

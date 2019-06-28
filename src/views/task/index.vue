@@ -9,6 +9,9 @@
     <a-tab-pane tab="表单查询" key="3">
       <task-search></task-search>
     </a-tab-pane>
+    <a-tab-pane tab="表单填写" key="4">
+      <form-fill></form-fill>
+    </a-tab-pane>
   </a-tabs>
 </template>
 
@@ -17,13 +20,15 @@
   import taskList from './TaskList'
   import taskSearch from './search'
   import taskTrack from './track'
+  import formFill from './formFill'
 
   export default {
     name: "task",
     components: {
       taskList,
       taskSearch,
-      taskTrack
+      taskTrack,
+      formFill
     }
   }
 

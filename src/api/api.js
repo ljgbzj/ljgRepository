@@ -80,7 +80,8 @@ const getLoginfo = (params)=>getAction("/sys/loginfo",params);
 // const getDataLogList = (params)=>getAction("/sys/dataLog/list",params);
 
 // 根据部门主键查询用户信息
-const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params);
+// const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params);
+const queryUserByDepId = (params)=>getAction("/sysdepart/sysDepart/searchDepartsAndChildrenIdsByid",params);
 
 // 查询用户角色表里的所有信息
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);

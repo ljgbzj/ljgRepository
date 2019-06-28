@@ -127,7 +127,7 @@
               method = 'post'
             } else {
               httpurl += this.url.edit
-              method = 'put'
+              method = 'post' // put修改
             }
             let formData = Object.assign(this.model, values)
             if(formData.ruleColumn && formData.ruleColumn.length>0){

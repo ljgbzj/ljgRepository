@@ -12,12 +12,12 @@
             </a-form-item>
           </a-col> -->
           <a-col :md="12" :sm="8">
-            <a-form-item label="请假人姓名">
-              <a-input placeholder="请输入请假人姓名" v-model="queryParam.realname"></a-input>
+            <a-form-item label="请假人">
+              <a-input placeholder="请输入请假人" v-model="queryParam.realname"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
-            <a-form-item label="请假类型">
+            <a-form-item label="请假类型">  
               <!-- <a-input placeholder="请输入请假类型" v-model="queryParam.type"></a-input> -->
               <a-select placeholder="请选择类型" v-model="queryParam.type">
                 <a-icon slot="suffixIcon" type="caret-down" />
@@ -29,17 +29,32 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <!-- <a-col :md="12" :sm="8">
+            <a-form-item label="选择日期">
+              <j-date-relate v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss"></j-date-relate>
+            </a-form-item>
+          </a-col> -->
         <!-- <template v-if="toggleSearchStatus"> -->
           <a-col :md="6" :sm="8">
-            <a-form-item label="填写的时间">
-              <!-- <a-input placeholder="请输入请假开始时间" v-model="queryParam.timeStart"></a-input> -->
-              <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/>
+            <a-form-item label="填写时间">
+              <!-- <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/> -->
+              <a-date-picker
+                v-model="queryParam.timeStart"
+                :disabledDate="disabledStartDate"
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="开始时间"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="至">
-              <!-- <a-input placeholder="请输入请假结束时间" v-model="queryParam.timeEnd"></a-input> -->
-              <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/>
+              <!-- <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/> -->
+              <a-date-picker
+                v-model="queryParam.timeEnd"
+                :disabledDate="disabledEndDate"
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="开始时间"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -73,24 +88,14 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
-      <!-- <a-button @click="handleEdit(record)" type="primary" icon="edit" :disabled="selectedRowKeys.length >0 && selectedRowKeys.length <=1? false : true">修改</a-button> -->
-      <a-button @click="batchAbandone" type="primary" icon="delete" :disabled="selectedRowKeys.length <=0 || selectedRowKeys.length >1? true : false">废弃</a-button>
-      <!-- <a-button type="primary" icon="download" @click="handleExportXls('请假申请')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload> -->
-      <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown> -->
+      <!-- <a-button @click="batchAbandone" type="primary" icon="delete" :disabled="selectedRowKeys.length <=0 || selectedRowKeys.length >1? true : false">废弃</a-button> -->
+      <a-button @click="batchAbandone" type="primary" icon="delete">废弃</a-button>
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
 
-      <div class="ant-alert ant-alert-info">
+      <!-- <div class="ant-alert ant-alert-info">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      </div> -->
 
     </div>
 
@@ -99,21 +104,20 @@
       <a-table
         ref="table"
         size="middle"
-        bordered
         rowKey="id"
         key="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type: 'radio'}"
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a @click="batchAbandone(record.id,record.processInstanceId)">删除</a>
+          <a @click="batchAbandone($event,record.id,record.processInstanceId)">废弃</a>
           <!-- <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -139,6 +143,7 @@
   import LeaveApplicationModal from './modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import JDate from '@/components/cmp/JDate'
+  import JDateRelate from '@/components/cmp/JDate'
   import JDictSelectTag from '../../components/dict/JDictSelectTag.vue'
   import { httpAction } from '@/api/manage'
   import qs from 'qs';
@@ -149,6 +154,7 @@
     components: {
       LeaveApplicationModal,
       JDate,
+      JDateRelate,
       JDictSelectTag
     },
     data () {
@@ -157,7 +163,7 @@
         // 表头
         columns: [
           {
-            title: '#',
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -253,11 +259,11 @@
       //       align:"center",
       //       dataIndex: 'processInstanceId'
       //      },
-		   {
-            title: '备注信息',
-            align:"center",
-            dataIndex: 'remarks'
-           },
+		  //  {
+      //       title: '备注信息',
+      //       align:"center",
+      //       dataIndex: 'remarks'
+      //      },
 		   {
             title: '状态',
             align:"center",
@@ -310,58 +316,80 @@
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
     }
   },
-    methods: {
-      // 自定义废弃方法覆盖混合模式
-      batchAbandone: function (id) {
-        if(!this.url.deleteBatch){
-          this.$message.error("请设置url.deleteBatch属性!")
-          return
-        }
-          var ids = "";
-          var processInsId= "";
-          if(this.selectedRowKeys.length > 1){
-            for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectedRowKeys[a] + ",";
-            }
-            // processInsId = this.selectionRows[0].processInstanceId;
-          } else if (this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined) {
-            ids = this.selectedRowKeys[0];
-            // processInsId = this.selectionRows[0].processInstanceId;
+  methods: {
+    // 自定义废弃方法覆盖混合模式
+    batchAbandone: function (event,id) {
+      if(!this.url.deleteBatch){
+        this.$message.error("请设置url.deleteBatch属性!")
+        return
+      }
+        var ids = "";
+        var processInsId= "";
+        if(this.selectedRowKeys.length > 1){
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          // processInsId = this.selectionRows[0].processInstanceId;
+        } else if (this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined) {
+          ids = this.selectedRowKeys[0];
+          // processInsId = this.selectionRows[0].processInstanceId;
+        } else {
+          ids = id;
+          if (id == undefined) {
+            this.$message.warning('请选择一条记录！');
+            return;
           } else {
             ids = id;
-            // processInsId = processInstanceId
           }
-          let flowDataString = {
-            api: '/process/delete',
-            // processInstanceId : processInsId
-            processDefinitionKey: 'leave'
+          console.log(id,'这是id');
+          // processInsId = processInstanceId
+        }
+        let flowDataString = {
+          api: '/process/delete',
+          // processInstanceId : processInsId
+          processDefinitionKey: 'leave'
+        }
+        let formDataString = {
+          id: ids
+        }
+        let params = {
+          flowDataString: JSON.stringify(flowDataString),
+          formDataString: JSON.stringify(formDataString),
+        };
+        let method = 'post';
+        var that = this;
+        this.$confirm({
+          title: "确认废弃",
+          content: "是否废弃选中数据?",
+          onOk: function () {
+            httpAction(that.url.deleteBatch, qs.stringify(params), method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+                that.onClearSelected();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
           }
-          let formDataString = {
-            id: ids
-          }
-          let params = {
-            flowDataString: JSON.stringify(flowDataString),
-            formDataString: JSON.stringify(formDataString),
-          };
-          let method = 'post';
-          var that = this;
-          this.$confirm({
-            title: "确认废弃",
-            content: "是否废弃选中数据?",
-            onOk: function () {
-              httpAction(that.url.deleteBatch, qs.stringify(params), method).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
+        });
+    },
+    // 时间选择器的禁用封装
+    disabledStartDate (startValue) {
+      const endValue = this.queryParam.timeEnd;
+      if (!startValue || !endValue) {
+        return false;
       }
+      return startValue.valueOf() > endValue.valueOf();
+    },
+    disabledEndDate (endValue) {
+      const startValue = this.queryParam.timeStart;
+      if (!endValue || !startValue) {
+        return false;
+      }
+      return startValue.valueOf() >= endValue.valueOf();
     }
+  }
   }
 </script>
 <style lang="less" scoped>

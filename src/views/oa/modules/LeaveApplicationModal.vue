@@ -1,8 +1,8 @@
 <template>
   <a-modal
     :footer="null"
-    :title="null"
-    :width="800"
+    :title="title"
+    :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -11,17 +11,17 @@
     :okButtonProps="model.btns ? { style: 'display:none' } : {}"
     :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
     v-dialogDrag
-    :closable="false"
-    :centered="true">
-    <div style="font-size:16px;color:rgba(25,25,25,1);">
-      <!-- <a-icon :type="typeIcon" /> -->
+    :centered="true"
+    :maskClosable="false">
+    <!-- <div style="font-size:16px;color:rgba(25,25,25,1);">
+      <a-icon :type="typeIcon" />
       {{ title }}
-    </div>
+    </div> -->
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
           <a-icon type="project" />
-          发起表单
+          表单详情
         </span>
         <a-spin :spinning="confirmLoading">
           <a-form :form="form" class="">        
@@ -62,7 +62,7 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="开始时间">
-                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
+                  <a-date-picker :disabledDate="disabledStartDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -70,13 +70,15 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="结束时间">
-                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
+                  <a-date-picker :disabledDate="disabledEndDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="请假原因">
                   <a-textarea placeholder="请输入请假原因" :rows="4" v-decorator="[ 'reason', validatorRules.templateReason]"/>
                 </a-form-item>
@@ -89,7 +91,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="部门领导">
-                  <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep>
+                  <j-select-user-new v-model="departRealname" @input="departmentRealName" @userName="departmentUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -97,7 +100,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="人事领导">
-                  <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep>
+                  <j-select-user-new v-model="hrRealname" @input="hrRealName" @userName="hrUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
             </a-row>
@@ -107,7 +111,8 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="总经理">
-                  <j-select-user-by-dep v-model="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep>
+                  <j-select-user-new v-model="mgRealname" @input="ManagerRealName" @userName="ManagerUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
+                  <!-- <j-select-user-by-dep @input="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep> -->
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -128,6 +133,37 @@
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
+                  label="上传附件">
+                  <a-upload
+                    :action="uploadAction"
+                    listType="picture"
+                    :headers="headers"
+                    :fileList="fileList"
+                    @change="handleChange"
+                    @preview="handlePreview"
+                    :multiple="true"
+                    class="upload-list-inline"
+                  >
+                    <a-button>
+                      <a-icon type="upload"/>
+                      upload
+                    </a-button>
+                  </a-upload>
+                  <!-- <img v-if="model.attachment" :src="getIdCardView()" alt="头像" @click="handlePreview" style="height:104px;max-width:300px"/> -->
+                  <a-modal :visible="previewVisible" :footer="null" @cancel="handlePicCancel">
+                    <img alt="example" style="width: 100%" :src="previewImage"/>
+                  </a-modal>
+                  <br/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="24">
+                <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="备注信息">
                   <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
                 </a-form-item>
@@ -136,6 +172,8 @@
             <a-row :gutter="24">
               <a-col :span="24">
                 <a-form-item
+                  :labelCol="labelCol1"
+                  :wrapperCol="wrapperCol1"
                   label="审批意见"
                   v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
                   :disabled= "title == '编辑'">
@@ -173,7 +211,7 @@
                   :wrapperCol="wrapperCol"
                   class="btnClass"
                 >
-                  <a-button @click="handleSave('start')" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
+                  <a-button @click="handleSave('start')" icon="diff" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
                   <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
                   <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
                 </a-form-item>
@@ -200,13 +238,13 @@
           <div class="proc_bg">
             <h3>
               <span>已完成</span>
-              <s-table 
-                :columns="goodsColumns" 
-                :data="loadGoodsData"
-                v-if="commentList"
-                :pagination="false">
-              </s-table>
             </h3>
+            <s-table 
+              :columns="goodsColumns" 
+              :data="loadGoodsData"
+              v-if="commentList"
+              :pagination="false">
+            </s-table>
           </div>
           <div class="proc_bg">
             <h3>
@@ -240,6 +278,7 @@
   import STable from '@/components/table/'
   import { setTimeout } from 'timers';
   import JSearchUserByDep from '@/components/cmpbiz/JSearchUserByDep'
+  import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 
   export default {
     name: "LeaveApplicationModal",
@@ -247,7 +286,8 @@
       JSelectUserByDep,
       OptionList,
       STable,
-      JSearchUserByDep
+      JSearchUserByDep,
+      JSelectUserNew
     },
     data () {
       return {
@@ -257,7 +297,7 @@
         model: {},
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 }
+          sm: { span: 4 }
         },
         wrapperCol: {
           xs: { span: 24 },
@@ -265,11 +305,11 @@
         },
         labelCol1: {
           xs: { span: 24 },
-          sm: { span: 5 }
+          sm: { span: 2 }
         },
         wrapperCol1: {
           xs: { span: 24 },
-          sm: { span: 16 }
+          sm: { span: 20 }
         },
         // wrapperCol1: {
         //   xs: { span: 24, offset: 0 },
@@ -296,7 +336,10 @@
           add: "/flowable/action",
           edit: "/oa/leaveApplication/edit",
           chart: '/flowable/process/diagram',
-          taskComment: '/flowable/process/taskComment'
+          taskComment: '/flowable/process/taskComment',
+          fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
+          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe'
         },
         imgurl: '',
         radioStyle: '',
@@ -307,6 +350,15 @@
         url123: '',
         goodsColumns: [
           {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
             title: '步骤名称',
             dataIndex: 'nodeName',
             key: 'nodeName'
@@ -314,27 +366,39 @@
           {
             title: '处理人',
             dataIndex: 'assigneeFullname',
-            key: 'assigneeFullname'
+            key: 'assigneeFullname',
+            align:"center",
           },
           {
             title: '到达时间',
             dataIndex: 'startTime',
-            key: 'startTime'
+            key: 'startTime',
+            align:"center",
           },
           {
             title: '完成时间',
             dataIndex: 'endTime',
             key: 'endTime',
-            align: 'right'
+            align: 'right',
+            align:"center",
           },
           {
             title: '处理意见',
             dataIndex: 'num',
-            key: 'num',
-            align: 'right'
+            key: 'num',   
           }
         ],
         goodsColumns1: [
+          {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width: 80,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
           {
             title: '步骤名称',
             dataIndex: 'nodeName',
@@ -343,27 +407,41 @@
           {
             title: '当前处理',
             dataIndex: 'assigneeFullname',
-            key: 'assigneeFullname'
+            key: 'assigneeFullname',
+            align:"center",
           },
           {
             title: '到达时间',
             dataIndex: 'startTime',
-            key: 'startTime'
+            key: 'startTime',
+            align:"center",
           }
         ],
         arr: [], //初始化完成列表
         arr1: [], //初始化进行中列表
         selectedDepUsers: '',
         selectedDepUsersU:'',
+        departRealname: '',
         departmentLeaderUsername: '',
         departmentLeaderRealname: '',
+        hrRealname: '',
         hrLeaderUsername: '',
         hrLeaderRealname: '',
+        mgRealname: '',
         generalManagerUsername: '',
-        generalManagerRealname: ''      
+        generalManagerRealname: '',
+        // 上传附件定义
+        headers: {},
+        fileList: [],
+        previewImage: '',
+        previewVisible: false, 
+        attachment:'',
+        cancelSelect: false   
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
     },
     methods: {
       ...mapGetters(["nickname","userInfo"]),
@@ -405,11 +483,17 @@
           '_taskComment'));
         
         // 初始化选人组件字段
+        // if (record) {
+        //   this.departmentLeaderRealname = this.model.departmentLeaderRealname;
+        //   this.hrLeaderRealname = this.model.hrLeaderRealname;
+        //   this.generalManagerRealname = this.model.generalManagerRealname;
+        // }
         if (record) {
-          this.departmentLeaderRealname = this.model.departmentLeaderRealname;
-          this.hrLeaderRealname = this.model.hrLeaderRealname;
-          this.generalManagerRealname = this.model.generalManagerRealname;
+          this.departRealname = this.model.departmentLeaderRealname;
+          this.hrRealname = this.model.hrLeaderRealname;
+          this.mgRealname = this.model.generalManagerRealname;
         }
+        console.log(this.departRealname,'wozhidaole ');
 		  //时间格式化
           this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
           this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
@@ -419,6 +503,40 @@
           }
           
         });
+
+        // 初始化上传文件
+        console.log(this.model.attachment,'jige ');
+        if (this.model.attachment !== undefined) {
+          let upData = this.model.attachment.split("  ");
+          for (let i = 0 ; i< upData.length-1 ; i++) {
+            if (upData[i].substring(upData[i].length-4) == 'jpeg' || upData[i].substring(upData[i].length-3) == 'jpg' || upData[i].substring(upData[i].length-3) == 'png') {
+              let fileChild ={
+                uid: i,
+                name: '有的',
+                status: 'done',
+                url: this.url.imgerver + "/" + upData[i]
+              };
+              this.fileList.push(fileChild);
+            } else {
+              let fileChild ={
+                uid: i,
+                name: '有的',
+                status: 'done',
+                url: this.url.pdferver + "/" + upData[i]
+              };
+              console.log(this.url.pdferver + "/" + upData[i],'lailailailaiai');
+              this.fileList.push(fileChild);
+            }
+          }
+          this.attachment = this.model.attachment
+          // fileList: [{
+          //   uid: '-1',
+          //   name: 'xxx.png',
+          //   status: 'done',
+          //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+          // }],
+        }
+        console.log(this.fileList,'优雅');
         //请求流程图 + 审批意见
         const that = this;
         if(JSON.stringify(record) !== "{}") {
@@ -477,6 +595,9 @@
       },
       close () {
         this.$emit('close');
+        this.picUrl = "";
+        this.fileList=[];
+        this.cancelSelect = true;
         this.visible = false;
       },
       handleOk () {
@@ -501,7 +622,7 @@
                 flowDataString.processDefinitionKey = 'leave';
               }else{
                 httpurl+=this.url.edit;
-                method = 'put';
+                method = 'post'; // put修改
               }
               // let formData = Object.assign(this.model, values);
 
@@ -515,6 +636,8 @@
               formDataString.hrLeaderRealname = that.hrLeaderRealname;
               formDataString.generalManagerUsername = that.generalManagerUsername;
               formDataString.generalManagerRealname = that.generalManagerRealname;
+
+              formDataString.attachment = this.attachment;
               let params2 = {
                 flowDataString: JSON.stringify(flowDataString),
                 formDataString: JSON.stringify(formDataString),
@@ -579,6 +702,15 @@
             formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
             formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
             
+            formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
+            formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
+            formDataString.hrLeaderUsername = that.hrLeaderUsername;
+            formDataString.hrLeaderRealname = that.hrLeaderRealname;
+            formDataString.generalManagerUsername = that.generalManagerUsername;
+            formDataString.generalManagerRealname = that.generalManagerRealname;
+
+            formDataString.attachment = that.attachment;
+
             let params1 = {
               flowDataString: JSON.stringify(flowDataString),
               formDataString: JSON.stringify(formDataString),
@@ -598,9 +730,11 @@
         })
       },
       handleCancel () {
-        this.close()
+        this.close();
+        this.fileList = [];
       },
       onChange(value,id) {
+        console.log()
         var lab = '';
         if(value.btnApi == '/process/save'){
           lab = '/process/save';
@@ -663,14 +797,102 @@
         this.selectedDepUsers = {}
         this.$refs.JSearchUserByDep.title = '根据部门查询用户'
       },
+      departmentRealName(val) {
+        this.departmentLeaderRealname = val;
+      },
       departmentUserName(val) {
         this.departmentLeaderUsername = val;
       },
-      hrUsername(val) {
+      hrRealName(val) {
+        this.hrLeaderRealname = val;
+      },
+      hrUserName(val) {
         this.hrLeaderUsername = val;
+      },
+      ManagerRealName(val) {
+        this.generalManagerRealname = val;
       },
       ManagerUserName(val) {
         this.generalManagerUsername = val;
+      },
+      handleChange(info) {  
+        if (this.fileList.length == 0) {
+          this.fileList = info.fileList;
+        } else {
+          this.fileList.concat(info.fileList);
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          if (response.success) {
+            this.picUrl += response.message + ",";
+            this.attachment += response.message + "  ";
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+        if (info.file.status === 'uploading') {
+          return
+        }
+        if (info.file.status === 'removed') {
+          this.attachment = fileList;
+        }
+        // if (info.file.response == undefined) {
+        //   if (info.file.status == "removed") {
+        //     if (info.file.url.substring(info.file.url.length-4) == 'jpeg' || info.file.url.substring(info.file.url.length-3) == 'jpg' || info.file.url.substring(info.file.url.length-3) == 'png') {
+        //       let mm = info.file.url.substring(27) + '  ';
+        //       this.attachment = this.attachment.replace(mm,'');
+        //       this.fileList = info.fileList;
+        //     } else {
+        //       let mm = info.file.url.substring(43) + '  ';
+        //       this.attachment = this.attachment.replace(mm,'');
+        //       this.fileList = info.fileList;
+        //     }
+        //   } 
+        // } else {
+        //   if (info.file.status === 'done') {
+        //     var response = info.file.response;
+        //     if (response.success) {
+        //       this.picUrl += response.message + ",";
+        //       this.attachment += response.message + "  ";
+        //     } else {
+        //       this.$message.warning(response.message);
+        //     }
+        //   }
+        //   if (info.file.status === 'uploading') {
+        //     return
+        //   }
+        //   if (info.file.status === 'removed') {
+        //     this.attachment = fileList;
+        //   }
+        // }
+      },
+      handlePreview(file) {
+        if (file.url || file.thumbUrl) {
+          this.previewImage = file.url || file.thumbUrl
+        } else {
+          this.previewImage = this.getIdCardView();
+        }
+        
+        this.previewVisible = true
+      },
+      handlePicCancel() {
+        this.previewVisible = false
+      },
+
+      // 时间选择器的禁用封装
+      disabledStartDate (startValue) {
+        const endValue = this.form.getFieldValue('timeEnd');
+        if (!startValue || !endValue) {
+          return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
+      },
+      disabledEndDate (endValue) {
+        const startValue = this.form.getFieldValue('timeStart');
+        if (!endValue || !startValue) {
+          return false;
+        }
+        return startValue.valueOf() >= endValue.valueOf();
       }
     },
     mounted() {
@@ -682,6 +904,9 @@
       },
       btns(){
         return this.model.btns
+      },
+      uploadAction: function () {
+        return this.url.fileUpload;
       }
     }
   }
@@ -778,18 +1003,20 @@
         outline: none;  //消除默认点击蓝色边框效果
       }
       .cancel {
-        width:96px;
+        min-width:96px;
         height:40px;
         background:rgba(238,238,238,1);
         border-radius:4px;
         color:rgba(51,51,51,1);
+        padding: 5px;
       }
       .confirm {
-        width:96px;
+        min-width:96px;
         height:40px;
         background:rgba(109,98,255,1);
         border-radius:4px;
         color: rgba(255,255,255,1);
+        padding: 5px;
       }
     }
   }
@@ -816,6 +1043,41 @@
     img {
       width: 100%;
       height: 100%;
+    }
+  }
+
+  .userSelect {
+    :global(.ant-select) {
+      width: 60%!important;
+    }
+    :global(>span) {
+      width: 40%!important;
+      :global(button) {
+        margin-left:10px;
+        width: 42%!important;
+        text-align: center;
+        font-size: 10px!important;
+        padding: unset;
+      }
+    }
+  }
+
+  /* tile uploaded pictures */
+  .upload-list-inline {
+    :global(.ant-upload-list-item) {
+      float: left;
+      width: 200px;
+      margin-right: 8px;
+    }
+  }
+  .upload-list-inline {
+    :global(.ant-upload-animate-enter) {
+      animation-name: uploadAnimateInlineIn;
+    }
+  }
+  .upload-list-inline {
+    :global(.ant-upload-animate-leave) {
+      animation-name: uploadAnimateInlineOut;
     }
   }
 </style>
