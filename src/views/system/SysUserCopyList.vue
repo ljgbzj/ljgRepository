@@ -13,7 +13,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="真实姓名">
-              <a-input placeholder="请输入真实姓名" v-model="queryParam.realname"></a-input>
+              <a-input placeholder="请输入真实姓名" v-model="queryParam.realname" ></a-input>
             </a-form-item>
           </a-col>
         <template v-if="toggleSearchStatus">
@@ -33,24 +33,24 @@
             </a-form-item>
           </a-col>-->
         </template>
-          <!--<a-col :md="6" :sm="8" >
+          <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              </a>-->
             </span>
-          </a-col>-->
+          </a-col>
 
         </a-row>
       </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <!--<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
+    <!--<div class="table-operator" style="float: right">
+      &lt;!&ndash;<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>&ndash;&gt;
       <a-button type="primary" icon="download" @click="handleExportXls('test')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
@@ -61,14 +61,14 @@
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-    </div>
+    </div>-->
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      </div>-->
 
       <a-table
         ref="table"
@@ -79,13 +79,12 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
+         <!-- <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -95,7 +94,7 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
 
       </a-table>
@@ -121,6 +120,7 @@
       return {
         description: 'test管理页面',
         // 表头
+        queryParam:{},
         columns: [
           {
             title: '#',
@@ -161,7 +161,7 @@
 		   {
             title: '办公号码',
             align:"center",
-            dataIndex: 'officeNumber'
+            dataIndex: 'officePhone'
            },
 		   {
             title: '办公地址',
@@ -176,11 +176,11 @@
           }
         ],
 		url: {
-          list: "/test/sysUserCopy/list",
-          delete: "/test/sysUserCopy/delete",
+          list: "/sys/user/list",
+         /* delete: "/test/sysUserCopy/delete",
           deleteBatch: "/test/sysUserCopy/deleteBatch",
           exportXlsUrl: "test/sysUserCopy/exportXls",
-          importExcelUrl: "test/sysUserCopy/importExcel",
+          importExcelUrl: "test/sysUserCopy/importExcel",*/
        },
     }
   },
@@ -190,7 +190,14 @@
     }
   },
     methods: {
+
      
+    },
+
+    watch: {
+      change: function (e) {
+        console.log(e);
+      }
     }
   }
 </script>
