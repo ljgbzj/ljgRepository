@@ -82,9 +82,9 @@
 
         @change="handleTableChange">
 
-        <span slot="action" slot-scope="text, record">
+        <!--<span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-         <!-- <a-divider type="vertical" />
+         &lt;!&ndash; <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -94,8 +94,8 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>-->
-        </span>
+          </a-dropdown>&ndash;&gt;
+        </span>-->
 
       </a-table>
     </div>
@@ -168,15 +168,16 @@
             align:"center",
             dataIndex: 'address'
            },
-          {
+          /*{
             title: '操作',
             dataIndex: 'action',
             align:"center",
             scopedSlots: { customRender: 'action' },
-          }
+          }*/
         ],
 		url: {
-          list: "/sys/user/list",
+          list: "/sys/user/list/",
+          /*list: "/sys/user/queryLikeRealName",*/
          /* delete: "/test/sysUserCopy/delete",
           deleteBatch: "/test/sysUserCopy/deleteBatch",
           exportXlsUrl: "test/sysUserCopy/exportXls",
