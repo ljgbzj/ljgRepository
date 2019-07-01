@@ -76,6 +76,7 @@
 <script>
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
+import { setTimeout } from 'timers';
 
   export default {
     name: "formFill",
@@ -127,15 +128,18 @@
           form: "/flowable/tasks/form"
         },
         rowkey: '',
-        componentsUrl: 'oa/modules/LeaveApplicationModal',
+        componentsUrl: 'stakeholder/modules/stakemodule'
       }
     },
     methods: {
       handleEditform: function (record) {
+        let oldform = this.$refs.modalForm;
         this.componentsUrl = record.formPath;
-        console.log(record,'来来来');
-        this.$refs.modalForm.add();
-        this.$refs.modalForm.title = "新增";
+        let that=this;
+        setTimeout(function(){
+          that.$refs.modalForm.add();
+          that.$refs.modalForm.title = "新增";
+        },)
       },
       loadData(arg) {
         if(!this.url.list){
@@ -149,7 +153,6 @@
         var params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
-          console.log(res,'数据出来了呀');
           if (res.success) {
             this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;
@@ -158,10 +161,15 @@
         })
       }
     },
-    computed: {
-      comName: function () {
-        return () => import(`@/views/${this.componentsUrl}.vue`)
-      }
+    created() {
+      this.loadData();
+    },
+     computed: {
+       comName: function () {
+         console.log(this.componentsUrl);
+         return () => import(`@/views/${this.componentsUrl}.vue`)
+       }
+     
     }
   }
 </script>

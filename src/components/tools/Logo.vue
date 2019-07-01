@@ -10,7 +10,7 @@
       <img src="@/assets/img/login/LOGO3.png" color="#6857FF" v-if="showTitle">
   </div>-->
   <div class="logo">
-    <router-link :to="{name:'dashboard'}">
+    <router-link :to="{name:'dashboard'}" class="logoPic">
       <img src="@/assets/img/login/LOGO1.png">
       <img src="@/assets/img/login/LOGO3.png" v-if="showTitle">
     </router-link>
@@ -36,7 +36,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 /*缩小首页布 局顶部的高度*/
-$height: 59px;
+$height: 80px;
 
 .sider {
   box-shadow: none !important;

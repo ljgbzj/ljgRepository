@@ -3,10 +3,18 @@
     <a-input-search
       v-model="selectedDepUsers"
       placeholder="请先选择用户"
-      disabled
+      @click="onSearchDepUser"
       @search="onSearchDepUser">
       <a-button slot="enterButton" :disabled="disabled">选择用户</a-button>
     </a-input-search>
+    <!-- <a-select
+      mode="multiple"
+      placeholder="请先选择用户"
+      v-model="selectedDepUsers"
+      @inputKeydown="onSearchDepUser"
+      :open="false"
+      style="width: calc(100% - 178px);">
+    </a-select> -->
     <j-select-user-by-dep-modal
       ref="selectModal"
       :modal-width="modalWidth"

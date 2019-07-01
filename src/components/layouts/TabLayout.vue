@@ -250,9 +250,9 @@
     /* border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc; */
     background-color: #EFF1F2;
-    /* padding: 0 20px; */
-    height: 36px !important;
-    margin-left: 62px;
+    padding-top: 12px;
+    height: 50px !important;
+    margin-left: 24px;
 
     .ant-tabs-bar {
       /* margin: 4px 0 0; */

@@ -14,7 +14,6 @@
       @select="onSelect"
       :mode="mode"
       :style="smenuStyle"
-      class="caidan"
     ></s-menu>
   </a-layout-sider>
 </template>
@@ -57,7 +56,7 @@ export default {
   },
   computed: {
     smenuStyle() {
-      let style = { padding: '0' }
+      let style = { paddingTop: '12px' }
       if (this.fixSiderbar) {
         style['height'] = 'calc(100% - 59px)'
         style['overflow'] = 'auto'

@@ -68,13 +68,13 @@
       />
 
       <!-- layout content -->
-      <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0' }">
+      <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0px' }">
         <slot></slot>
       </a-layout-content>
 
       <!-- layout footer -->
       <a-layout-footer style="padding: 0px">
-        <global-footer/>
+        <global-footer />
       </a-layout-footer>
     </a-layout>
 
@@ -96,7 +96,7 @@ export default {
   components: {
     SideMenu,
     GlobalHeader,
-    GlobalFooter,
+    GlobalFooter
     //SettingDrawer
   },
   mixins: [mixin, mixinDevice],
@@ -403,7 +403,7 @@ body {
       margin: auto;
       padding: 0 20px 0 0;
       display: flex;
-      height: 79px;
+      /* height: 79px; */
 
       .ant-menu.ant-menu-horizontal {
         border: none;
@@ -413,7 +413,7 @@ body {
 
       .header-index-left {
         flex: 1 1;
-        height: 79px;
+        /* height: 79px; */
         display: flex;
         align-items: center;
         margin-left: 80px;
@@ -460,7 +460,7 @@ body {
         float: right;
         display: flex;
         align-items: center;
-        height: 79px;
+        /* height: 79px; */
         overflow: hidden;
         .action:hover {
           background-color: rgba(0, 0, 0, 0.05);
@@ -550,24 +550,33 @@ body {
   .logo {
     height: 64px;
     position: relative;
-    line-height: 64px;
+    /* line-height: 64px; */
     padding-left: 24px;
     -webkit-transition: all 0.3s;
     transition: all 0.3s;
-    background: #002140;
+    /* background: #002140; */
     overflow: hidden;
 
-    img,
-    h1 {
+    .logoPic {
+      width: 184px;
+      height: 100%;
       display: inline-block;
-      vertical-align: middle;
+      margin: 0 auto;
+      padding: 0 24px;
+      border-bottom: 2px solid #7477ff;
+      border-radius: 0;
+      img {
+        vertical-align: middle;
+      }
     }
 
     img {
-      height: 32px;
+      display: inline-block;
+      vertical-align: middle;
+      height: 22px;
     }
 
-    h1 {
+    /* h1 {
       color: #fff;
       font-size: 18px;
       margin: 0 0 0 8px;
@@ -575,8 +584,9 @@ body {
         'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol';
       font-weight: 600;
-    }
+    } */
   }
+  
 
   &.light {
     background-color: #fff;
@@ -596,7 +606,24 @@ body {
     }
   }
 }
-
+.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-collapsed.sider.light {
+    .ant-layout-sider-children {
+      .logo {
+        .logoPic {
+          width: 32px;
+          height: 100%;
+          display: inline-block;
+          margin: 0;
+          padding: 0 3px;
+          border-bottom: 2px solid #7477ff;
+          border-radius: 0;
+          img {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
 // 外置的样式控制
 .user-dropdown-menu-wrapper.ant-dropdown-menu {
   padding: 4px 0;
