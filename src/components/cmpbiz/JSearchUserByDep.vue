@@ -56,6 +56,7 @@
 <script>
   import { filterObj } from '@/utils/util'
   import { queryDepartTreeList, getUserList, queryUserByDepId, queryUserRoleMap } from '@/api/api'
+  import { getAction } from '@/api/manage'
 
   export default {
     name: 'JSearchUserByDep',

@@ -2,13 +2,13 @@
   <a-modal
     centered
     :title="title"
-    :width="1500"
+    :width="1000"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
     <a-row :gutter="18">
-      <a-col :span="3">
+      <a-col :span="4">
         <a-directory-tree
           selectable
           :selectedKeys="selectedKeys"
@@ -19,7 +19,7 @@
           defaultExpandAll
         />
       </a-col>
-      <a-col :span="15">
+      <a-col :span="12">
         <a-card title="选择人员" :bordered="true">
           <!-- 查询区域 -->
           <div class="table-page-search-wrapper">
@@ -54,13 +54,12 @@
               :scroll="{ y: 240 }"
               :rowSelection="{selectedRowKeys: selectedRowKeys,onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
               @change="handleTableChange">
-
             </a-table>
           </div>
           <!-- table区域-end -->
         </a-card>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="8">
         <a-card title="用户选择" :bordered="true">
           <!-- table区域-begin -->
           <div>
@@ -74,7 +73,8 @@
               :scroll="{ y: 240 }"
             >
               <span slot="action" slot-scope="text, record">
-                <a-button type="primary" size="small" @click="handleDelete(record)" icon="delete">删除</a-button>
+                <a @click="handleDelete(record)">删除</a>
+                <!-- <a-button type="primary" size="small" @click="handleDelete(record)" icon="delete">删除</a-button> -->
               </span>
             </a-table>
           </div>
@@ -104,60 +104,21 @@
         // 查询条件
         queryParam: {},
         // 表头
-        // columns1: [
-        //   {
-        //     title: '#',
-        //     dataIndex: '',
-        //     key:'rowIndex',
-        //     width:50,
-        //     align:"center",
-        //     customRender:function (t,r,index) {
-        //       return parseInt(index)+1;
-        //     }
-        //   },
-        //   {
-        //     title: '姓名',
-        //     align:"center",
-        //     width:113,
-        //     dataIndex: 'name'
-        //   },
-        //   {
-        //     title: '年龄',
-        //     align:"center",
-        //     width:100,
-        //     dataIndex: 'age'
-        //   },
-        //   {
-        //     title: '出生日期',
-        //     align:"center",
-        //     width:100,
-        //     dataIndex: 'birthday'
-        //   }
-        // ],
         columns1: [
           {
             title: '用户账号',
-            align: 'center',
+            align:"center",
+            width:113,
             dataIndex: 'username'
           },
           {
             title: '真实姓名',
-            align: 'center',
+            align:"center",
+            width:100,
             dataIndex: 'realname'
-          },
-          {
-            title: '手机号码',
-            align: 'center',
-            dataIndex: 'phone'
-          },
-          // {
-          //   title: '邮箱',
-          //   align: 'center',
-          //   dataIndex: 'email'
-          // }
+          }
         ],
         columns2: [
-
           {
             title: '用户账号',
             align:"center",
@@ -196,9 +157,16 @@
         selectedRows: [],
         url: {
           list: "/test/cmpDemo/list",
+          UserList: "/sys/user/batchQueryByUsernames"
         },
 
       }
+    },
+    props: {
+      selectListUser: {
+        type: Array,
+        required:false
+      },
     },
     created() {
       this.loadData();
@@ -217,7 +185,6 @@
         this.visible = false;
       },
       handleOk() {
-        console.log("selectFinished",this.dataSource2);
         this.$emit("selectFinished",this.dataSource2);
         this.visible = false;
       },
@@ -237,7 +204,6 @@
         //   }
         // })
         getUserList(params).then((res) => {
-          console.log(res,'查询结果');
           if (res.success) {
             this.dataSource1 = res.result.records;
             // this.assignRoleName(this.dataSource);
@@ -265,14 +231,20 @@
             this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]),1);
           }
         }
-        // console.log(selected, selectedRows, changeRows);
       },
       onSelect (record,selected) {
         if(selected===true){
+          if (this.dataSource2 == null) {
+            this.dataSource2 = [];
+          }
+          for (let i = 0;i<this.dataSource2.length;i++) {
+            if (this.dataSource2[i].username == record.username) {
+              return;
+            }
+          }
           this.dataSource2.push(record);
         }else{
           var index = this.dataSource2.indexOf(record);
-          //console.log();
           if(index >=0 ){
             this.dataSource2.splice(this.dataSource2.indexOf(record),1);
           }
@@ -292,7 +264,6 @@
       },
       handleTableChange(pagination, filters, sorter){
         //分页、排序、筛选变化时触发
-        console.log(sorter);
         //TODO 筛选
         if (Object.keys(sorter).length>0){
           this.isorter.column = sorter.field;
@@ -326,7 +297,29 @@
             // this.assignRoleName(this.dataSource);
           }
         })
+      },
+      byUserList() {
+        // getAction(this.url.UserList,{usernames: this.selectListUser}).then((res)=>{
+        //   console.log(res,'征战一下');
+        //   this.dataSource2 = res.result;
+        //   this.handleOk();
+        // })
+        // this.dataSource2.concat(this.selectListUser);
+        this.dataSource2 = this.selectListUser;
+        // this.dataSource2.push.apply(this.dataSource2,this.selectListUser);
+        this.$emit("selectFinished",this.dataSource2);
       }
+    },
+    watch: {
+      selectListUser() {
+        this.byUserList();
+      },
+      // cancelSelect() {
+      //   if (this.cancelSelect) {
+      //     this.dataSource2 = [];
+      //     this.$emit("selectFinished",this.dataSource2);
+      //   }
+      // }
     }
   }
 </script>

@@ -24,13 +24,9 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="环节名称">
-                <a-input placeholder="请输入环节名称" v-model="queryParam.nodeName"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/>
+                <a-range-picker v-model="queryParam.startTime" dateFormat="YYYY-MM-DD HH:mm:ss"/>
+                <!-- <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/> -->
               </a-form-item>
             </a-col>
           </template>
@@ -203,6 +199,14 @@
     computed: {
       comName: function () {
         return () => import(`@/views/${this.componentsUrl}.vue`)
+      }
+    },
+    watch: {
+      'queryParam.startTime': {
+        handler(newVal, oldVal) {
+          console.log(newVal,'新值');
+          console.log(oldVal,'旧值');
+        }
       }
     }
   }

@@ -11,12 +11,8 @@
     :okButtonProps="model.btns ? { style: 'display:none' } : {}"
     :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
     v-dialogDrag
-    :centered="true"
-    :maskClosable="false">
-    <!-- <div style="font-size:16px;color:rgba(25,25,25,1);">
-      <a-icon :type="typeIcon" />
-      {{ title }}
-    </div> -->
+    :maskClosable="false"
+    style="top:5%;">
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
@@ -24,118 +20,97 @@
           表单详情
         </span>
         <a-spin :spinning="confirmLoading">
-          <a-form :form="form" class="">        
-            <!-- <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="请假人用户编码">
-              <a-input placeholder="请输入请假人用户编码" v-decorator="['username', {}]" />
-            </a-form-item> -->
+          <a-form :form="form" class="">
             <a-row :gutter="24">
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="请假人">
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="请假人">
                   <a-input placeholder="请输入请假人姓名" v-decorator="['inputerFullname', validatorRules.templateName]" disabled/>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="请假类型">
-                  <!-- <a-input placeholder="请输入请假类型" v-decorator="['type', {}]" /> -->
-                  <a-select placeholder="请选择类型" v-decorator="['type', validatorRules.templateType]">
-                    <a-select-option value="0">事假</a-select-option>
-                    <a-select-option value="1">病假</a-select-option>
-                    <a-select-option value="2">年假</a-select-option>
-                    <a-select-option value="3">婚假</a-select-option>
-                    <a-select-option value="4">出差</a-select-option>
-                  </a-select>
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="请假类型">
+                  <j-dict-select-tag  v-decorator="['type', validatorRules.templateType ]" :triggerChange="true" placeholder="请选择类型" dictCode="leave_type"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="开始时间">
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="开始时间">
                   <a-date-picker :disabledDate="disabledStartDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeStart', validatorRules.templateStartT]" />
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="结束时间">
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="结束时间">
                   <a-date-picker :disabledDate="disabledEndDate" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'timeEnd', validatorRules.templateEndT]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="24">
+              <a-col :md="24" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol1"
-                  :wrapperCol="wrapperCol1"
-                  label="请假原因">
+                :labelCol="labelCol1"
+                :wrapperCol="wrapperCol1"
+                label="请假原因">
                   <a-textarea placeholder="请输入请假原因" :rows="4" v-decorator="[ 'reason', validatorRules.templateReason]"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <!--  人员选择控件 -->
             <a-row :gutter="24">
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="部门领导">
-                  <j-select-user-new v-model="departRealname" @input="departmentRealName" @userName="departmentUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
-                  <!-- <j-select-user-by-dep v-model="departmentLeaderRealname" @userName="departmentUserName"></j-select-user-by-dep> -->
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="部门领导">
+                  <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="人事领导">
-                  <j-select-user-new v-model="hrRealname" @input="hrRealName" @userName="hrUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
-                  <!-- <j-select-user-by-dep v-model="hrLeaderRealname" @userName="hrUsername"></j-select-user-by-dep> -->
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="人事领导">
+                  <j-select-user-new :selectedDetails="hrDetails" @userDetails="userDetails1" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="总经理">
-                  <j-select-user-new v-model="mgRealname" @input="ManagerRealName" @userName="ManagerUserName" class="userSelect" :cancelSelect="cancelSelect"></j-select-user-new>
-                  <!-- <j-select-user-by-dep @input="generalManagerRealname" @userName="ManagerUserName" ></j-select-user-by-dep> -->
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="总经理">
+                  <j-select-user-new :selectedDetails="mgDetails" @userDetails="userDetails2" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+              <a-col :md="12" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="状态"
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="状态"
                   v-show="model.status !== undefined && title == '编辑'">
-                  <a-select placeholder="开启状态中" v-decorator="['status', {}]" disabled>
-                    <a-select-option value="0">暂存</a-select-option>
-                    <a-select-option value="1">流转中</a-select-option>
-                    <a-select-option value="2">已完成</a-select-option>
-                    <a-select-option value="3">废弃</a-select-option>
-                  </a-select>
+                  <j-dict-select-tag  v-decorator="['status', {} ]" :triggerChange="true" dictCode="bpm_status" disabled/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="24">
+              <a-col :md="24" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol1"
-                  :wrapperCol="wrapperCol1"
-                  label="上传附件">
+                :labelCol="labelCol1"
+                :wrapperCol="wrapperCol1"
+                label="上传附件">
                   <a-upload
                     :action="uploadAction"
                     listType="picture"
@@ -144,14 +119,15 @@
                     @change="handleChange"
                     @preview="handlePreview"
                     :multiple="true"
+                    :beforeUpload="beforeUpload"
                     class="upload-list-inline"
+                    :data="uploadParams"
                   >
                     <a-button>
                       <a-icon type="upload"/>
                       upload
                     </a-button>
                   </a-upload>
-                  <!-- <img v-if="model.attachment" :src="getIdCardView()" alt="头像" @click="handlePreview" style="height:104px;max-width:300px"/> -->
                   <a-modal :visible="previewVisible" :footer="null" @cancel="handlePicCancel">
                     <img alt="example" style="width: 100%" :src="previewImage"/>
                   </a-modal>
@@ -160,21 +136,21 @@
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="24">
+              <a-col :md="24" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol1"
-                  :wrapperCol="wrapperCol1"
-                  label="备注信息">
+                :labelCol="labelCol1"
+                :wrapperCol="wrapperCol1"
+                label="备注信息">
                   <a-textarea placeholder="请输入备注信息" :rows="4" v-decorator="[ 'remarks', validatorRules.templateContent]"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="24">
+              <a-col :md="24" :sm="8">
                 <a-form-item
-                  :labelCol="labelCol1"
-                  :wrapperCol="wrapperCol1"
-                  label="审批意见"
+                :labelCol="labelCol1"
+                :wrapperCol="wrapperCol1"
+                label="审批意见"
                   v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
                   :disabled= "title == '编辑'">
                   <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
@@ -182,12 +158,8 @@
               </a-col>
             </a-row>
             <a-row :gutter="24">
-              <a-col :span="24">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  class="btnClass"
-                >
+              <a-col :md="24" :sm="8">
+                <a-form-item class="btnClass">
                   <template v-for="(placement, index) in btns">
                     <a-dropdown placement="bottomCenter" :key="index">
                       <a-button
@@ -205,12 +177,8 @@
               </a-col>
             </a-row>
             <a-row :gutter="24" v-if="!btns">
-              <a-col :span="24">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  class="btnClass"
-                >
+              <a-col :md="24" :sm="8">
+                <a-form-item class="btnClass">
                   <a-button @click="handleSave('start')" icon="diff" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
                   <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
                   <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
@@ -218,8 +186,11 @@
               </a-col>
             </a-row>
           </a-form>
-          <!-- <option-list :commentList="commentList" v-if="commentList.length !== undefined"></option-list> -->
-          <option-list :commentList="commentList" :currentList="currentList" v-if="model.status !== undefined"></option-list>
+          <a-row :gutter="24" v-if="!btns">
+              <a-col :md="24" :sm="8">
+                <option-list :commentList="commentList" :currentList="currentList" v-if="model.status !== undefined"></option-list>
+              </a-col>
+          </a-row>
         </a-spin>
       </a-tab-pane>
       <a-tab-pane key="2" forceRender>
@@ -232,8 +203,7 @@
             <h3>
               <span>流程图</span>
             </h3>
-            <!-- <img :src="imgUrl"/> -->
-            <img :src="url123"/>
+            <img :src="urlChart"/>
           </div>
           <div class="proc_bg">
             <h3>
@@ -260,14 +230,13 @@
         </div>
       </a-tab-pane>
     </a-tabs>
-    <!-- 通过部门筛选，选择人 -->
-    <j-search-user-by-dep ref="JSearchUserByDep" @ok="onSearchDepUserCallBack"></j-search-user-by-dep>
   </a-modal>
 </template>
 
 <script>
-  import { httpAction, getActionUrl, getAction } from '@/api/manage'
+  import { httpAction, getActionUrl, getAction, httpActionHeader, downFile } from '@/api/manage'
   import OptionList from './OptionList'
+  import { CmpListMixin } from '@/mixins/CmpListMixin'
   import pick from 'lodash.pick'
   import moment from "moment"
   import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
@@ -276,9 +245,9 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import Vue from 'vue'
   import STable from '@/components/table/'
-  import { setTimeout } from 'timers';
-  import JSearchUserByDep from '@/components/cmpbiz/JSearchUserByDep'
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag'
+  import md5 from 'md5';
 
   export default {
     name: "LeaveApplicationModal",
@@ -286,9 +255,10 @@
       JSelectUserByDep,
       OptionList,
       STable,
-      JSearchUserByDep,
-      JSelectUserNew
+      JSelectUserNew,
+      JDictSelectTag
     },
+    mixins:[CmpListMixin],
     data () {
       return {
         title:"操作",
@@ -301,7 +271,7 @@
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 16 }
+          sm: { span: 20 }
         },
         labelCol1: {
           xs: { span: 24 },
@@ -309,12 +279,8 @@
         },
         wrapperCol1: {
           xs: { span: 24 },
-          sm: { span: 20 }
+          sm: { span: 22 }
         },
-        // wrapperCol1: {
-        //   xs: { span: 24, offset: 0 },
-        //   sm: { span: 16, offset: 5 }
-        // },
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -337,17 +303,20 @@
           edit: "/oa/leaveApplication/edit",
           chart: '/flowable/process/diagram',
           taskComment: '/flowable/process/taskComment',
-          fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
+          // fileUpload: window._CONFIG['domianURL'] + "/sys/common/upload",
+          fileUpload: window._CONFIG['domianURL'] + "/file/uploadFile/add",
+          fileFind: "/file/cmpFileGroup/findFilesByGroupId",
           imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
-          pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe'
+          pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe',
+          fileDownLoad: "/file/uploadFile/downloadFileById"
         },
-        imgurl: '',
-        radioStyle: '',
-        btnsValue: '',
+        // imgurl: '',
+        // radioStyle: '',
+        // btnsValue: '',
         commentList: {},
         currentList: 0,
         unfinishedList:{},
-        url123: '',
+        urlChart: '',
         goodsColumns: [
           {
             title: '序号',
@@ -419,29 +388,34 @@
         ],
         arr: [], //初始化完成列表
         arr1: [], //初始化进行中列表
-        selectedDepUsers: '',
-        selectedDepUsersU:'',
-        departRealname: '',
         departmentLeaderUsername: '',
         departmentLeaderRealname: '',
-        hrRealname: '',
         hrLeaderUsername: '',
         hrLeaderRealname: '',
-        mgRealname: '',
         generalManagerUsername: '',
         generalManagerRealname: '',
+        departDetails: [],
+        hrDetails: [],
+        mgDetails: [],
         // 上传附件定义
         headers: {},
         fileList: [],
         previewImage: '',
         previewVisible: false, 
-        attachment:'',
-        cancelSelect: false   
+        // attachment: [],
+        attachment: [{
+          groupId: '',
+          fileTokens: '',
+          fieldName: 'attachment',
+          tableName: 'oa_leave_application'
+        }],
+        uploadParams: {}
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
+      this.attachment[0].fileTokens = '';
     },
     methods: {
       ...mapGetters(["nickname","userInfo"]),
@@ -456,17 +430,6 @@
           this.model = Object.assign({}, record);
         }
         this.visible = true;
-
-        // // 根据title初始化图标
-        // if (this.title == '新增') {
-        //   this.typeIcon = 'plus'
-        // } else if (this.title == '编辑') {
-        //   this.typeIcon = 'edit'
-        // } else if (this.title == '执行') {
-        //   this.typeIcon = 'form'
-        // } else if (this.title == '查看') {
-        //   this.typeIcon = 'eye'
-        // }
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
           'inputerFullname',
@@ -483,72 +446,79 @@
           '_taskComment'));
         
         // 初始化选人组件字段
-        // if (record) {
-        //   this.departmentLeaderRealname = this.model.departmentLeaderRealname;
-        //   this.hrLeaderRealname = this.model.hrLeaderRealname;
-        //   this.generalManagerRealname = this.model.generalManagerRealname;
-        // }
-        if (record) {
-          this.departRealname = this.model.departmentLeaderRealname;
-          this.hrRealname = this.model.hrLeaderRealname;
-          this.mgRealname = this.model.generalManagerRealname;
+        this.departDetails = [];
+        this.hrDetails = [];
+        this.mgDetails = [];
+        if (JSON.stringify(record) !== "{}") {
+          this.departDetails = this.initSelect([this.model.departmentLeaderRealname,this.model.departmentLeaderUsername]);
+          this.hrDetails = this.initSelect([this.model.hrLeaderRealname,this.model.hrLeaderUsername]);
+          this.mgDetails = this.initSelect([this.model.generalManagerRealname,this.model.generalManagerUsername]);
         }
-        console.log(this.departRealname,'wozhidaole ');
-		  //时间格式化
-          this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
-          this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
-          this.form.setFieldsValue({inputerFullname: this.nickname()})
-          if(this.model.status !== undefined){
-            this.form.setFieldsValue({status: this.model.status.toString()})
-          }
-          
+        //时间格式化
+        this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
+        this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
+        this.form.setFieldsValue({inputerFullname: this.nickname()})
         });
 
-        // 初始化上传文件
-        console.log(this.model.attachment,'jige ');
+        // // 初始化上传文件
         if (this.model.attachment !== undefined) {
-          let upData = this.model.attachment.split("  ");
-          for (let i = 0 ; i< upData.length-1 ; i++) {
-            if (upData[i].substring(upData[i].length-4) == 'jpeg' || upData[i].substring(upData[i].length-3) == 'jpg' || upData[i].substring(upData[i].length-3) == 'png') {
-              let fileChild ={
-                uid: i,
-                name: '有的',
-                status: 'done',
-                url: this.url.imgerver + "/" + upData[i]
-              };
-              this.fileList.push(fileChild);
-            } else {
-              let fileChild ={
-                uid: i,
-                name: '有的',
-                status: 'done',
-                url: this.url.pdferver + "/" + upData[i]
-              };
-              console.log(this.url.pdferver + "/" + upData[i],'lailailailaiai');
-              this.fileList.push(fileChild);
+          console.log(this.model.attachment,'拿到的attachment');
+          this.attachment[0].groupId = this.model.attachment;
+          this.attachment[0].fileTokens = '';
+          getAction(this.url.fileFind,{groupId: this.model.attachment}).then((res)=>{
+            console.log(res,'请求到的attachment');
+            for (let i = 0;i < res.result.length; i++) {
+              if (res.result[i].viewPath.substring(res.result[i].viewPath.length-4) == 'jpeg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'jpg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'png') {
+                console.log('第一个进来了');
+                let fileChild = {
+                  response: {
+                    result: {
+                      fileTokens: res.result[i].fileToken
+                    }
+                  },
+                  uid: i,
+                  name: res.result[i].uploadFile.fileName,
+                  status: 'done',
+                  type: 'image/jpeg',
+                  url: this.url.imgerver + "/" + res.result[i].viewPath
+                };
+                this.fileList.push(fileChild);
+                this.attachment[0].fileTokens += res.result[i].fileToken + ','
+              } else {
+                console.log('第二个进来了');
+                let fileChild = {
+                  response: {
+                    result: {
+                      fileTokens: res.result[i].fileToken
+                    }
+                  },
+                  uid: i,
+                  name: res.result[i].uploadFile.fileName,
+                  status: 'done',
+                  type: 'text/plain',
+                  url: this.url.imgerver + "/" + res.result[i].viewPath
+                };
+                this.fileList.push(fileChild);
+                this.attachment[0].fileTokens += res.result[i].fileToken + ','
+              }
             }
-          }
-          this.attachment = this.model.attachment
-          // fileList: [{
-          //   uid: '-1',
-          //   name: 'xxx.png',
-          //   status: 'done',
-          //   url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-          // }],
+          })
+          console.log(this.attachment,'合成问题');
+        } else {
+          this.attachment[0].groupId = this.uuid();
+          this.attachment[0].fileTokens = '';
         }
-        console.log(this.fileList,'优雅');
+        console.log(this.attachment[0].groupId,'一开始的groupId');
         //请求流程图 + 审批意见
         const that = this;
         if(JSON.stringify(record) !== "{}") {
           let params = {
-            // processDefinitionId: that.model.processDefinitionId,
-            // processInstanceId: that.model.processInstanceId
             id: that.model.id
           };
           let httpGetUrlC = that.url.chart;
           let httpGetUrlTc = that.url.taskComment;
           getActionUrl(httpGetUrlC,params).then((res)=>{
-            this.url123 =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            this.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
           }).finally(() => {
             // that.confirmLoading = false;
             // that.close();
@@ -566,15 +536,9 @@
             that.arr1.length = 0;
 
             for (let i in that.finishedList) {
-                // let o = {};
-                // o[i] = that.finishedList[i];
-                // arr.push(o)
                 that.arr.push(that.finishedList[i])
             }
             for (let i in that.unfinishedList) {
-                // let o = {};
-                // o[i] = that.commentList[i];
-                // arr.push(o)
                 that.arr1.push(that.unfinishedList[i])
             }
           }).finally(() => {
@@ -585,7 +549,7 @@
           };
           let httpGetUrlC = that.url.chart;
           getActionUrl(httpGetUrlC, params).then((res)=>{
-            this.url123 =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            this.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
           }).finally(() => {
             // that.confirmLoading = false;
             // that.close();
@@ -593,17 +557,16 @@
         }
 
       },
+      loadData(){},
       close () {
         this.$emit('close');
         this.picUrl = "";
         this.fileList=[];
-        this.cancelSelect = true;
         this.visible = false;
       },
       handleOk () {
         const that = this;
         if(that.title == '查看') {
-          // that.confirmLoading = false;
           that.close();
         } else {
           // 触发表单验证
@@ -612,7 +575,6 @@
               that.confirmLoading = true;
               let httpurl = '';
               let method = '';
-              let qsMothods = '';
               let formDataString = Object.assign(this.model, values);
               let flowDataString = {};
               if(!this.model.id){
@@ -624,12 +586,12 @@
                 httpurl+=this.url.edit;
                 method = 'post'; // put修改
               }
-              // let formData = Object.assign(this.model, values);
 
               //时间格式化
               formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
               formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
 
+              // 选人控件传值
               formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
               formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
               formDataString.hrLeaderUsername = that.hrLeaderUsername;
@@ -637,36 +599,29 @@
               formDataString.generalManagerUsername = that.generalManagerUsername;
               formDataString.generalManagerRealname = that.generalManagerRealname;
 
-              formDataString.attachment = this.attachment;
+              // 上传组件
+              console.log(that.attachment,'csaccawc');
+              for (let i = 0; i<that.attachment.length; i++) {
+                formDataString.attachment = that.attachment[i].groupId
+              }
+
               let params2 = {
                 flowDataString: JSON.stringify(flowDataString),
                 formDataString: JSON.stringify(formDataString),
+                attachmentString: JSON.stringify(this.attachment)
               }
-              if(method == 'post'){
-                httpAction(httpurl,qs.stringify(params2),method).then((res)=>{
-                  if(res.success){
-                    that.$message.success(res.message);
-                    that.$emit('ok');
-                  }else{
-                    that.$message.warning(res.message);
-                  }
-                }).finally(() => {
-                  that.confirmLoading = false;
-                  that.close();
-                })
-              } else {
-                httpAction(httpurl,qs.stringify(params2), method).then((res)=>{
-                  if(res.success){
-                    that.$message.success(res.message);
-                    that.$emit('ok');
-                  }else{
-                    that.$message.warning(res.message);
-                  }
-                }).finally(() => {
-                  that.confirmLoading = false;
-                  that.close();
-                })
-              }
+              console.log(params2,'这是上传的参数');
+              httpAction(httpurl,qs.stringify(params2),method).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                }else{
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
             }
           })
         }
@@ -679,12 +634,11 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            let qsMothods = '';
+            // let qsMothods = '';
             let formDataString = Object.assign(this.model, values);
             httpurl+=this.url.add;
             method = 'post';
             let flowDataString = {};
-            // let formDataString = {};
             if (lab !== 'start') {
               flowDataString.api = lab;
               if (lab == '/task/jump') {
@@ -694,14 +648,12 @@
               flowDataString.api = '/process/start';
             }
             flowDataString.processDefinitionKey = 'leave';
-            
-            // let formData = Object.assign(this.model, values);
-            // let formData = Object.assign(this.model, values);
 
             //时间格式化
             formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
             formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
             
+            // 选人控件
             formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
             formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
             formDataString.hrLeaderUsername = that.hrLeaderUsername;
@@ -709,11 +661,15 @@
             formDataString.generalManagerUsername = that.generalManagerUsername;
             formDataString.generalManagerRealname = that.generalManagerRealname;
 
-            formDataString.attachment = that.attachment;
+            // 上传组件
+            for (let i = 0; i<this.attachment.length; i++) {
+              formDataString.attachment = that.attachment[i].groupId
+            }
 
             let params1 = {
               flowDataString: JSON.stringify(flowDataString),
               formDataString: JSON.stringify(formDataString),
+              attachmentString: JSON.stringify(that.attachment)
             }
             httpAction(httpurl,qs.stringify(params1),method).then((res)=>{
               if(res.success){
@@ -734,7 +690,6 @@
         this.fileList = [];
       },
       onChange(value,id) {
-        console.log()
         var lab = '';
         if(value.btnApi == '/process/save'){
           lab = '/process/save';
@@ -764,10 +719,6 @@
         return new Promise((resolve => {
           resolve({
             data: that.arr,
-            // pageSize: 10,
-            // pageNo: 1,
-            // totalPage: 1,
-            // totalCount: 10
           })
         })).then(res => {
           return res
@@ -778,107 +729,94 @@
         return new Promise((resolve => {
           resolve({
             data: that.arr1,
-            // pageSize: 10,
-            // pageNo: 1,
-            // totalPage: 1,
-            // totalCount: 10
           })
         })).then(res => {
           return res
         })
       },
-      onSearchDepUserCallBack(selectedDepUsers) {
-        this.selectedDepUsers = selectedDepUsers.realname;
-        this.selectedDepUsersU = selectedDepUsers.rusername;
+      userDetails(val){
+        this.departmentLeaderRealname = val.realname;
+        this.departmentLeaderUsername = val.username;
       },
-      //通过组织机构筛选选择用户
-      onSearchDepUser() {
-        this.$refs.JSearchUserByDep.showModal()
-        this.selectedDepUsers = {}
-        this.$refs.JSearchUserByDep.title = '根据部门查询用户'
+      userDetails1(val){
+        this.hrLeaderRealname = val.realname;
+        this.hrLeaderUsername = val.username;
       },
-      departmentRealName(val) {
-        this.departmentLeaderRealname = val;
+      userDetails2(val){
+        this.generalManagerRealname = val.realname;
+        this.generalManagerUsername = val.username;
       },
-      departmentUserName(val) {
-        this.departmentLeaderUsername = val;
-      },
-      hrRealName(val) {
-        this.hrLeaderRealname = val;
-      },
-      hrUserName(val) {
-        this.hrLeaderUsername = val;
-      },
-      ManagerRealName(val) {
-        this.generalManagerRealname = val;
-      },
-      ManagerUserName(val) {
-        this.generalManagerUsername = val;
-      },
-      handleChange(info) {  
-        if (this.fileList.length == 0) {
-          this.fileList = info.fileList;
-        } else {
-          this.fileList.concat(info.fileList);
+      handleChange(info) {
+        this.uploadParams = {};
+        if (info.file.status === 'removed') {
+          console.log(info,'移除返回');
+          console.log(this.attachment[0].fileTokens,'母亲');
+          console.log(info.file.response.result.fileTokens,'jialuo');
+          this.attachment[0].fileTokens = this.attachment[0].fileTokens.replace(info.file.response.result.fileTokens + ',',"");
+          console.log(this.attachment,'删除后的superstar');
+        }
+        this.fileList = info.fileList;
+        if (info.file.status === 'uploading') {
+          return
         }
         if (info.file.status === 'done') {
           var response = info.file.response;
           if (response.success) {
             this.picUrl += response.message + ",";
-            this.attachment += response.message + "  ";
+            console.log(response.result,'返回值');
+            this.attachment[0].fileTokens += response.result.fileTokens + ",";
+            console.log(this.attachment[0].fileTokens,'看看之后');
+            // this.attachment.push({ 
+            //   name: response.result.uploadFile.fileName,
+            //   url: response.result.viewPath,
+            //   id: response.result.fileTokens
+            // })
           } else {
             this.$message.warning(response.message);
           }
         }
-        if (info.file.status === 'uploading') {
-          return
-        }
-        if (info.file.status === 'removed') {
-          this.attachment = fileList;
-        }
-        // if (info.file.response == undefined) {
-        //   if (info.file.status == "removed") {
-        //     if (info.file.url.substring(info.file.url.length-4) == 'jpeg' || info.file.url.substring(info.file.url.length-3) == 'jpg' || info.file.url.substring(info.file.url.length-3) == 'png') {
-        //       let mm = info.file.url.substring(27) + '  ';
-        //       this.attachment = this.attachment.replace(mm,'');
-        //       this.fileList = info.fileList;
-        //     } else {
-        //       let mm = info.file.url.substring(43) + '  ';
-        //       this.attachment = this.attachment.replace(mm,'');
-        //       this.fileList = info.fileList;
-        //     }
-        //   } 
-        // } else {
-        //   if (info.file.status === 'done') {
-        //     var response = info.file.response;
-        //     if (response.success) {
-        //       this.picUrl += response.message + ",";
-        //       this.attachment += response.message + "  ";
-        //     } else {
-        //       this.$message.warning(response.message);
-        //     }
-        //   }
-        //   if (info.file.status === 'uploading') {
-        //     return
-        //   }
-        //   if (info.file.status === 'removed') {
-        //     this.attachment = fileList;
-        //   }
-        // }
       },
       handlePreview(file) {
-        if (file.url || file.thumbUrl) {
-          this.previewImage = file.url || file.thumbUrl
+        let fileArray = file.name.split(".");
+        let fileName = fileArray[0];
+        let fileType = fileArray[1];
+        if (file.type == "image/jpeg") {
+          if (file.url || file.thumbUrl) {
+            this.previewImage = file.url || file.thumbUrl
+          } else {
+            this.previewImage = this.getIdCardView();
+          }
+          this.previewVisible = true
         } else {
-          this.previewImage = this.getIdCardView();
+          downFile(this.url.fileDownLoad,{id: file.response.result.fileTokens}).then((data)=>{
+            if (!data) {
+              this.$message.warning("文件下载失败")
+              return
+            }
+            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+              window.navigator.msSaveBlob(new Blob([data]), fileName + '.' + fileType )
+            }else{
+              let url = window.URL.createObjectURL(new Blob([data]))
+              let link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = url
+              link.setAttribute('download', fileName + '.' + fileType )
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link); //下载完成移除元素
+              window.URL.revokeObjectURL(url); //释放掉blob对象
+            }
+          })
         }
-        
-        this.previewVisible = true
       },
       handlePicCancel() {
         this.previewVisible = false
       },
-
+      beforeUpload(file,fileList) {
+        this.uploadParams = {
+          json: '{"md5":"' + md5(JSON.stringify(file)) + '","fileName":"'+file.name + '"}'
+        }
+      },
       // 时间选择器的禁用封装
       disabledStartDate (startValue) {
         const endValue = this.form.getFieldValue('timeEnd');
@@ -893,10 +831,27 @@
           return false;
         }
         return startValue.valueOf() >= endValue.valueOf();
+      },
+      // 生成UUid  上传附件时给后端groupid
+      uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        // s[8] = s[13] = s[18] = s[23] = "-";
+        s[8] = s[13] = s[18] = s[23] = "";
+        var uuid = s.join("");
+        return uuid;
+      },
+      getIdCardView() {
+        let pics = this.model.idcardPic.split(",");
+        let pics_len = pics.length;
+        // 显示上传的最后一个图片
+        return this.url.imgerver + "/" + pics[pics_len-2];
       }
-    },
-    mounted() {
-      
     },
     computed: {
       rollback() {
@@ -913,171 +868,5 @@
 </script>
 
 <style lang="less" scoped>
-  // 弹窗规范样式
-  // 有图标的tab的下面横线样式
-  .ant-tabs {
-    :global(.ant-tabs-bar) {
-      :global(.ant-tabs-nav-container) {
-        :global(.ant-tabs-nav-scroll) {      
-          :global(.ant-tabs-nav) {     
-            :global(.ant-tabs-ink-bar) {
-              width:24px!important;
-              height:3px!important;
-              border-radius:2px!important;
-              margin-left:45px!important;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // 按钮及边框样式
-  .ant-form-item-label {
-    line-height: 40px;
-  }
-  .table-page-search-wrapper {
-    .ant-form-inline {
-      .ant-form-item > :global(.ant-form-item-label) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-input {
-    height: 40px;
-  }
-  textarea.ant-input {
-    height: auto;
-  }
-  /* 下拉选框 */
-  .ant-select {
-    /* height: 40px; */
-    :global(.ant-select-selection--single) {
-      height: 40px;
-      :global(.ant-select-selection__rendered) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-btn-primary {
-    height:40px;
-  }
-  .ant-dropdown-trigger {
-    height: 40px;
-  }
-  .ant-card-body .table-operator {
-    display: flex;
-    margin-bottom: 20px;
-    vertical-align: top;
-    height: 40px;
-  }
-
-  .ant-card-body .table-operator>div {
-    flex: 1;
-    margin-left: 14px;
-  }
-
-  .ant-card-body .table-operator .ant-alert-info {
-    border: unset;
-    border-radius:4px;
-    background: rgba(109,98,255,0.1);
-  }
-
-  //时间选择
-  .ant-calendar-picker {
-    width: 100%!important;
-    :global(.ant-input) {
-      height: 40px;
-    }
-  }
-
-  //按钮样式
-  .btnClass {
-    :global(.ant-form-item-control-wrapper) {
-      width: 100%;
-      text-align: center;
-      button {
-        margin: 0;
-        padding: 0;
-        border: 1px solid transparent;  //自定义边框
-        outline: none;  //消除默认点击蓝色边框效果
-      }
-      .cancel {
-        min-width:96px;
-        height:40px;
-        background:rgba(238,238,238,1);
-        border-radius:4px;
-        color:rgba(51,51,51,1);
-        padding: 5px;
-      }
-      .confirm {
-        min-width:96px;
-        height:40px;
-        background:rgba(109,98,255,1);
-        border-radius:4px;
-        color: rgba(255,255,255,1);
-        padding: 5px;
-      }
-    }
-  }
-
-  .proc_bg {
-    margin-top: 10px;
-    padding: 10px 15px;
-    height: auto;
-    overflow: hidden;
-    background: #FFF;
-    border: 1px solid #EEE;
-    -moz-border-radius: 6px 6px 6px 6px;
-    -webkit-border-radius: 6px 6px 6px 6px;
-    border-radius: 6px 6px 6px 6px;
-    ul li{
-      float: left;
-      margin-left: 22px;
-      display: block;
-      height: 18px;
-      line-height: 18px;
-      color: #888;
-      text-indent: 30px;
-    }
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  .userSelect {
-    :global(.ant-select) {
-      width: 60%!important;
-    }
-    :global(>span) {
-      width: 40%!important;
-      :global(button) {
-        margin-left:10px;
-        width: 42%!important;
-        text-align: center;
-        font-size: 10px!important;
-        padding: unset;
-      }
-    }
-  }
-
-  /* tile uploaded pictures */
-  .upload-list-inline {
-    :global(.ant-upload-list-item) {
-      float: left;
-      width: 200px;
-      margin-right: 8px;
-    }
-  }
-  .upload-list-inline {
-    :global(.ant-upload-animate-enter) {
-      animation-name: uploadAnimateInlineIn;
-    }
-  }
-  .upload-list-inline {
-    :global(.ant-upload-animate-leave) {
-      animation-name: uploadAnimateInlineOut;
-    }
-  }
+  @import '~@assets/less/modal.less';
 </style>
