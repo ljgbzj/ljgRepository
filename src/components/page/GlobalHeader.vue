@@ -173,7 +173,7 @@ export default {
 <style lang="scss" scoped>
 /* update_begin author:scott date:20190220 for: 缩小首页布局顶部的高度*/
 
-$height: 79px;
+$height: 64px;
 
 .layout {
   .top-nav-header-index {
@@ -199,7 +199,7 @@ $height: 79px;
     z-index: 2;
     color: #666;
     height: $height;
-    background-color: #eff1f2;
+    /* background-color: #eff1f2; */
     transition: background 300ms;
     padding-right: 0;
 
@@ -207,7 +207,7 @@ $height: 79px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-left: 80px;
+      margin-left: 15px;
       i{
         padding: 0;
         margin-right: 12px;

@@ -5309,6 +5309,13 @@ form .ant-upload {
     padding-left: 20px;
   }
 }
+.ant-menu.ant-menu-inline.ant-menu-root.ant-menu-light,
+.ant-menu.ant-menu-vertical.ant-menu-root.ant-menu-light.ant-menu-inline-collapsed
+{
+  > .ant-menu-item:first-child{
+    display: none;
+  }
+}
 i.anticon.anticon-home{
   display: none !important;
 }
@@ -5488,7 +5495,7 @@ i.anticon.anticon-home + span{
 .ant-menu-horizontal > .ant-menu-item,
 .ant-menu-horizontal > .ant-menu-submenu {
   border-bottom: 2px solid transparent;
-  color: #a69dff;
+  /* color: #a69dff; */
 }
 .ant-menu-horizontal > .ant-menu-item:hover,
 .ant-menu-horizontal > .ant-menu-submenu:hover,
