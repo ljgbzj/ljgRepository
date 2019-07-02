@@ -17,35 +17,30 @@
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/个人编号">
-                <a-input placeholder v-decorator="['companyCode', {}]"/>
+                <a-input placeholder v-decorator="['companyCode', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/个人名称">
-                <a-input placeholder v-decorator="['companyName', {}]"/>
+                <a-input placeholder v-decorator="['companyName', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="干系人类型">
-                <a-select placeholder="选择" v-decorator="['stakeholderType', {}]">
+                <!-- <j-dict-select-tag v-model="stakeholderType" placeholder="请选择类型" dictCode="stakeholder_type" /> -->
+                <a-select placeholder="选择" v-decorator="['stakeholderType', {initialValue: ['1']}]">
                   <a-select-option value="0">干系人类型1</a-select-option>
                   <a-select-option value="1">干系人类型2</a-select-option>
-                  <a-select-option value="2">干系人类型3</a-select-option>
-                  <a-select-option value="3">干系人类型4</a-select-option>
-                  <a-select-option value="4">干系人类型5</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/单位性质">
-                <a-select placeholder="选择" v-decorator="['companyNature', {}]">
+                <a-select placeholder="选择" v-decorator="['companyNature', {initialValue: ['0']}]">
                   <a-select-option value="0">性质1</a-select-option>
                   <a-select-option value="1">性质2</a-select-option>
-                  <a-select-option value="2">性质3</a-select-option>
-                  <a-select-option value="3">性质4</a-select-option>
-                  <a-select-option value="4">性质5</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -53,44 +48,44 @@
           <a-row :gutter="24">
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="联系电话">
-                <a-input placeholder v-decorator="['phoneNum', {}]"/>
+                <a-input placeholder v-decorator="['phoneNum', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="传真">
-                <a-input placeholder v-decorator="['fax', {}]"/>
+                <a-input placeholder v-decorator="['fax', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="邮编">
-                <a-input placeholder v-decorator="['postCode', {}]"/>
+                <a-input placeholder v-decorator="['postCode', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
 
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="地址">
-            <a-input placeholder v-decorator="['address', {}]"/>
+            <a-input placeholder v-decorator="['address', {}]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="网址">
-            <a-input placeholder v-decorator="['website', {}]"/>
+            <a-input placeholder v-decorator="['website', {}]" />
           </a-form-item>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开户行">
-                <a-input placeholder v-decorator="['openingBank', {}]"/>
+                <a-input placeholder v-decorator="['openingBank', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="账号">
-                <a-input placeholder v-decorator="['accountNumber', {}]"/>
+                <a-input placeholder v-decorator="['accountNumber', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注/服务范围">
-            <a-input placeholder v-decorator="['remarks', {}]"/>
+            <a-input placeholder v-decorator="['remarks', {}]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="上传附件">
-            <a-input placeholder v-decorator="['attachment', {}]"/>
+            <a-input placeholder v-decorator="['attachment', {}]" />
           </a-form-item>
 
           <!-- 操作按钮区域 -->
@@ -148,39 +143,46 @@
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入人">
-                <a-input placeholder v-decorator="['inputerFullname', {}]"/>
+                <a-input placeholder v-decorator="['inputerFullname', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话">
-                <a-input placeholder v-decorator="['inputerPhoneNum', {}]"/>
+                <a-input placeholder v-decorator="['inputerPhoneNum', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入人部门">
-                <a-input placeholder v-decorator="['inputerDeptName', {}]"/>
+                <a-input placeholder v-decorator="['inputerDeptName', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入时间">
-                <a-input placeholder v-decorator="['inputerTime', {}]"/>
+                <!-- <a-input placeholder v-decorator="['inputerTime', {}]"/> -->
+                <a-date-picker
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="录入时间"
+                  v-decorator="['inputerTime', {}]"
+                />
               </a-form-item>
             </a-col>
           </a-row>
 
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知方式">
-            <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
-              <a-checkbox value="email">邮件</a-checkbox>
-              <a-checkbox value="message">手机短信</a-checkbox>
-              <a-checkbox value="euc">EUC消息</a-checkbox>
+            <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['0']}]">
+              <a-checkbox value="0" disabled>邮件(默认必选)</a-checkbox>
+              <a-checkbox value="1">手机短信</a-checkbox>
+              <a-checkbox value="2">EUC消息</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="审批人">
-            <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
-              <a-select-option value="0">事假</a-select-option>
-            </a-select>
+            <!-- <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
+              <a-select-option value="0">审批人</a-select-option>
+            </a-select>-->
+            <a-input placeholder v-decorator="['subcontractor', {}]" />
           </a-form-item>
           <a-form-item class="btnClass">
             <a-button @click="handleSave" icon="save" class="cancel">暂存</a-button>
@@ -199,11 +201,16 @@ import moment from 'moment'
 import pick from 'lodash.pick'
 import { FormTypes } from '@/utils/JEditableTableUtil'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
+import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+import { httpAction } from '@/api/manage'
 
 export default {
   name: 'stakemodule',
   mixins: [JEditableTableMixin],
-
+  components: {
+    JDictSelectTag
+  },
   data() {
     return {
       // 新增时子表默认添加几行空数据
@@ -314,7 +321,7 @@ export default {
       },
       url: {
         add: '/stakeholder/stakeholder/add',
-        edit: '/stakeholder/stakeholder/edit',
+        edit: '/flowable/action',
         stakeholderDetail: {
           list: '/stakeholder/stakeholder/queryStakeholderDetailByMainId'
         }
@@ -374,6 +381,76 @@ export default {
         stakeholderDetailList: allValues.tablesValue[0].values
       }
     },
+    handleOk() {
+      /** 触发表单验证 */
+      this.getAllTable()
+        .then(tables => {
+          /** 一次性验证主表和所有的次表 */
+          return validateFormAndTables(this.form, tables)
+        })
+        .then(allValues => {
+          if (typeof this.classifyIntoFormData !== 'function') {
+            throw this.throwNotFunction('classifyIntoFormData')
+          }
+          let formData = this.classifyIntoFormData(allValues)
+
+          formData.stakeholderType = formData.stakeholderType ? '干系人类型1' : '干系人类型2'
+          formData.companyNature = formData.companyNature ? '性质1' : '性质2'
+
+          // important值true或false转换为1或0
+          let len = formData.stakeholderDetailList.length
+          for (let i = 0; i < len; i++) {
+            formData.stakeholderDetailList[i].important = formData.stakeholderDetailList[i].important ? 1 : 0
+          }
+
+          // 发起请求
+          console.log(allValues, 'allValues')
+          console.log(formData, 'formData')
+          let data = {}
+          data.flowDataString = Object.assign(
+            {},
+            {
+              api: '/process/startAndSubmit',
+              processDefinitionKey: 'stakeholder'
+            }
+          )
+          data.formDataString = Object.assign({}, formData)
+          console.log(data, 'data')
+          data = JSON.stringify(data)
+          console.log(data, 'dataString')
+          return this.request(data)
+        })
+        .catch(e => {
+          if (e.error === VALIDATE_NO_PASSED) {
+            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+          } else {
+            console.error(e)
+          }
+        })
+    },
+    request(formData) {
+      let url = this.url.add,
+        method = 'post'
+      if (this.model.id) {
+        url = this.url.edit
+        method = 'post' //put修改
+      }
+      this.confirmLoading = true
+      httpAction(url, formData, method)
+        .then(res => {
+          if (res.success) {
+            this.$message.success(res.message)
+            this.$emit('ok')
+            this.close()
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
     handleSave() {
       console.log('这是暂存！')
     }
@@ -382,12 +459,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ant-form{
+.ant-form {
   padding-right: 48px;
 }
-
-
-
 
 .table-operator {
   button {
