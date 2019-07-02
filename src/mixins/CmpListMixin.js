@@ -7,7 +7,7 @@ import { filterObj } from '@/utils/util';
 import { deleteAction, getAction,downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
-import Qs from 'qs'
+import moment from "moment"
 
 export const CmpListMixin = {
   data(){
@@ -99,6 +99,11 @@ export const CmpListMixin = {
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
       }
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+      
+      // 时间格式化
+      param.minStartTime = param.minStartTime ? moment(param.minStartTime).format('YYYY-MM-DD HH:mm:ss') : null;
+      param.maxStartTime = param.maxStartTime ? moment(param.maxStartTime).format('YYYY-MM-DD HH:mm:ss') : null;
+
       param.field = this.getQueryField();
       param.pageNo = this.ipagination.current;
       param.pageSize = this.ipagination.pageSize;
@@ -276,6 +281,28 @@ export const CmpListMixin = {
       }
       window.open(window._CONFIG['domianURL'] + "/sys/common/download/"+text);
     },
+
+    // 初始化选人组件
+    initSelect(val) {   
+      var arr2=[];
+      if (val[0].indexOf(",") !== -1) {
+        let arr = val[0].split(",");
+        let arr1 = val[1].split(",");
+        for (let i = 0; i<arr.length; i++) {
+          arr2.push({
+            "realname": arr[i],
+            "username": arr1[i]
+          })
+        }
+      } else {
+        arr2 = [{
+          "realname": val[0],
+          "username": val[1]
+        }]
+      }
+      return arr2;
+    }
+
   }
 
 }

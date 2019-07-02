@@ -5,8 +5,8 @@
       <a-form layout="inline">
         <a-row :gutter="24">
           <a-col :md="11" :sm="8">
-            <a-form-item label="干系人员类型">
-              <a-select placeholder="选择" v-model="queryParam.type">
+            <a-form-item label="干系人类型">
+              <a-select placeholder="选择" v-model="queryParam.stakeholderType">
                 <a-select-option value="0">干系人类型1</a-select-option>
                 <a-select-option value="1">干系人类型2</a-select-option>
                 <a-select-option value="2">干系人类型3</a-select-option>
@@ -17,7 +17,7 @@
           </a-col>
           <a-col :md="11" :sm="8">
             <a-form-item label="企业/个人名称">
-              <a-input placeholder="请输入企业/个人名称" v-model="queryParam.realname"></a-input>
+              <a-input placeholder="请输入企业/个人名称" v-model="queryParam.companyName"></a-input>
             </a-form-item>
           </a-col>
           <a-col>
@@ -27,7 +27,7 @@
           </a-col>
           <a-col :md="11" :sm="8">
             <a-form-item label="信息来源方式">
-              <a-select placeholder="请选择信息来源方式" v-model="queryParam.way">
+              <a-select placeholder="请选择信息来源方式" v-model="queryParam.companyName">
                 <a-select-option value="0">项目新增/企业选入</a-select-option>
                 <a-select-option value="1">信息来源方式2</a-select-option>
                 <a-select-option value="2">信息来源方式3</a-select-option>
@@ -37,7 +37,7 @@
           </a-col>
           <a-col :md="11" :sm="8">
             <a-form-item label="企业/单位性质">
-              <a-input placeholder="请输入企业/单位性质" v-model="queryParam.kind"></a-input>
+              <a-input placeholder="请输入企业/单位性质" v-model="queryParam.companyNature"></a-input>
             </a-form-item>
           </a-col>
           <!-- </template> -->
@@ -52,11 +52,10 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleChose" type="primary" icon="plus">选入</a-button>
-      <a-button @click="handleAdd" type="primary" icon="plus">添加</a-button>
-      <a-button @click="handleRevise" type="primary" icon="plus">修改</a-button>
-      <a-button @click="handleDelete" type="primary" icon="delete">删除</a-button>
-      <a-button @click="handleScan" type="primary" icon="plus">浏览</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
+      <a-button @click="handleRevise" type="primary" icon="edit">编辑</a-button>
+      <a-button @click="batchDel" type="primary" icon="delete">删除</a-button>
+      <a-button @click="handleScan" type="primary" icon="eye">浏览</a-button>
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
     </div>
 
@@ -72,7 +71,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -91,19 +90,13 @@
 <script>
 import stakemodule from './modules/stakemodule'
 import { CmpListMixin } from '@/mixins/CmpListMixin'
-import JDate from '@/components/cmp/JDate'
-import JDictSelectTag from '../../components/dict/JDictSelectTag.vue'
-import { httpAction } from '@/api/manage'
-import qs from 'qs'
 
 export default {
   name: 'stakeholder',
   mixins: [CmpListMixin],
 
   components: {
-    stakemodule,
-    JDate,
-    JDictSelectTag
+    stakemodule
   },
   data() {
     return {
@@ -112,75 +105,53 @@ export default {
       columns: [
         {
           title: '序号',
-          dataIndex: 'key',
-          key: 'key',
+          dataIndex: '',
+          key: 'rowIndex',
           width: 60,
-          align: 'center'
+          align: 'center',
+          customRender: function(t, r, index) {
+            return parseInt(index) + 1
+          }
         },
         {
           title: '干系人类型',
           align: 'center',
-          dataIndex: 'type'
+          dataIndex: 'stakeholderType'
         },
         {
           title: '企业/个人名称',
           align: 'center',
-          dataIndex: 'realname'
+          dataIndex: 'companyName'
         },
         {
           title: '企业/单位性质',
           align: 'center',
-          dataIndex: 'kind'
+          dataIndex: 'companyNature'
         },
         {
           title: '干系人信息来源方式',
           align: 'center',
-          dataIndex: 'way'
+          dataIndex: 'sourceType'
         }
       ],
-      dataSource: [
-        {
-            key: '1',
-            realname: '尼古拉斯·赵四',
-            type: '干系人类型1',
-            kind: '国企',
-            way: '项目新增/企业选入'
-        }, 
-        {
-            key: '2',
-            realname: '郭德纲',
-            type: '干系人类型2',
-            kind: '私企',
-            way: '信息来源方式2'
-        }, 
-        {
-            key: '3',
-            realname: 'CXK',
-            type: '干系人类型3',
-            kind: '央企',
-            way: '信息来源方式3'
-        }, 
-        {
-            key: '4',
-            realname: '迪丽热巴',
-            type: '干系人类型4',
-            kind: '民企',
-            way: '信息来源方式4'
-        }, 
-      ],
       url: {
-          list: ''
+        list: '/stakeholder/stakeholder/list',
+        delete: '/stakeholder/stakeholder/delete',
+        deleteBatch: '/stakeholder/stakeholder/deleteBatch',
+        exportXlsUrl: 'stakeholder/stakeholder/exportXls',
+        importExcelUrl: 'stakeholder/stakeholder/importExcel'
       }
     }
   },
-  computed: {},
+  computed: {
+    importExcelUrl: function() {
+      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+    }
+  },
   methods: {
     handleChose() {
       console.log('这是选入方法！')
     },
-    /* handleAdd() {
-      console.log('这是添加方法！')
-    }, */
     handleRevise() {
       console.log('这是修改方法！')
     },
@@ -200,59 +171,59 @@ export default {
 <style lang="less" scoped>
 @import '~@assets/less/common.less';
 
-  /* 组件内直接引入ant组件样式覆盖 */
-  .ant-form-item-label {
-    line-height: 40px;
-  }
-  .table-page-search-wrapper {
-    .ant-form-inline {
-      .ant-form-item > :global(.ant-form-item-label) {
-        line-height: 40px;
-      }
+/* 组件内直接引入ant组件样式覆盖 */
+.ant-form-item-label {
+  line-height: 40px;
+}
+.table-page-search-wrapper {
+  .ant-form-inline {
+    .ant-form-item > :global(.ant-form-item-label) {
+      line-height: 40px;
     }
   }
-  .ant-input {
+}
+.ant-input {
+  height: 40px;
+}
+/* 下拉选框 */
+.ant-select {
+  /* height: 40px; */
+  :global(.ant-select-selection--single) {
     height: 40px;
-  }
-  /* 下拉选框 */
-  .ant-select {
-    /* height: 40px; */
-    :global(.ant-select-selection--single) {
-      height: 40px;
-      :global(.ant-select-selection__rendered) {
-        line-height: 40px;
-      }
+    :global(.ant-select-selection__rendered) {
+      line-height: 40px;
     }
   }
-  .ant-btn-primary {
-    height:40px;
-  }
-  .ant-dropdown-trigger {
+}
+.ant-btn-primary {
+  height: 40px;
+}
+.ant-dropdown-trigger {
+  height: 40px;
+}
+.ant-card-body .table-operator {
+  display: flex;
+  margin-bottom: 20px;
+  vertical-align: top;
+  height: 40px;
+}
+
+.ant-card-body .table-operator > div {
+  flex: 1;
+  margin-left: 14px;
+}
+
+.ant-card-body .table-operator .ant-alert-info {
+  border: unset;
+  border-radius: 4px;
+  background: rgba(109, 98, 255, 0.1);
+}
+
+//时间选择
+.ant-calendar-picker {
+  width: 100% !important;
+  :global(.ant-input) {
     height: 40px;
   }
-  .ant-card-body .table-operator {
-    display: flex;
-    margin-bottom: 20px;
-    vertical-align: top;
-    height: 40px;
-  }
-
-  .ant-card-body .table-operator>div {
-    flex: 1;
-    margin-left: 14px;
-  }
-
-  .ant-card-body .table-operator .ant-alert-info {
-    border: unset;
-    border-radius:4px;
-    background: rgba(109,98,255,0.1);
-  }
-
-  //时间选择
-  .ant-calendar-picker {
-    width: 100%!important;
-    :global(.ant-input) {
-      height: 40px;
-    }
-  }
+}
 </style>

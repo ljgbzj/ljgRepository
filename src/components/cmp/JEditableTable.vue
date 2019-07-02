@@ -35,7 +35,7 @@
             />
           </div>
           <div v-if="rowNumber" class="td td-num" :style="style.tdLeft">
-            <span>#</span>
+            <span>序号</span>
           </div>
           <!-- 右侧动态生成td -->
           <template v-for="col in columns">
@@ -427,7 +427,7 @@
           } else if (typeof width === 'string') {
             calcWidth += width
           } else {
-            calcWidth += '120px'
+            calcWidth += '89px'
           }
 
           if (i < this.columns.length - 1) {
@@ -1408,10 +1408,10 @@
       border-bottom: @border;
 
       /** 隐藏thead的滑块   */
-      &::-webkit-scrollbar-thumb {
+      /* &::-webkit-scrollbar-thumb {
         box-shadow: none !important;
         background-color: transparent !important;
-      }
+      } */
 
       .tr {
         min-width: 100%;
@@ -1420,8 +1420,10 @@
 
       .td {
         /*flex: 1;*/
-        padding: 8px @spacing;
+        /* padding: 8px @spacing; */
+        padding: 8px 0;
         justify-content: center;
+        text-align: center;
       }
 
     }
@@ -1470,7 +1472,7 @@
 
       .td {
         /*flex: 1;*/
-        padding: 14px 0 14px @spacing;
+        padding: 14px 1px 14px 1px;
         justify-content: center;
 
         &:last-child {

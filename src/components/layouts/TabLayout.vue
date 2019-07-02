@@ -15,7 +15,8 @@
         <span slot="tab" :pagekey="page.fullPath">{{ page.meta.title }}</span>
       </a-tab-pane>
     </a-tabs>
-    <div style="margin: 12px 12px 0;">
+    <!-- <div style="margin: 12px 12px 0;"> -->
+    <div>
       <transition name="page-toggle">
         <keep-alive v-if="multipage">
           <router-view/>
@@ -240,30 +241,40 @@
 
   /*美化弹出Tab样式*/
   .ant-tabs-nav-container {
-    margin-top: 4px;
+    /* margin-top: 4px; */
+    /* margin-left: 62px; */
   }
 
   /* 修改 ant-tabs 样式 */
   .tab-layout-tabs.ant-tabs {
-    border-bottom: 1px solid #ccc;
-    border-left: 1px solid #ccc;
-    background-color: white;
-    padding: 0 20px;
+    /* border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc; */
+    background-color: #EFF1F2;
+    padding-top: 12px;
+    height: 50px !important;
+    margin-left: 24px;
 
     .ant-tabs-bar {
-      margin: 4px 0 0;
+      /* margin: 4px 0 0; */
+      margin-bottom: 0;
       border: none;
+      height: 100%;
     }
 
   }
-
+  .topmenu .tab-layout-tabs.ant-tabs{
+    margin: 0;
+    padding-left: 62px;
+  }
+  
   .ant-tabs {
 
     &.ant-tabs-card .ant-tabs-tab {
 
-      padding: 0 24px !important;
-      background-color: white !important;
-      margin-right: 10px !important;
+      padding: 0 16px !important;
+      background-color: #EFF1F2 !important;
+      /* margin-right: 10px !important; */
+      width: 168px;
 
       .ant-tabs-close-x {
         width: 12px !important;
@@ -275,6 +286,7 @@
         position: absolute;
         top: 36%;
         right: 6px;
+        opacity: 1 !important;
       }
 
       &:hover .ant-tabs-close-x {
@@ -288,12 +300,42 @@
   .ant-tabs.ant-tabs-card > .ant-tabs-bar {
     .ant-tabs-tab {
       border: none !important;
-      border-bottom: 1px solid transparent !important;
+      padding-left: 0!important;
+      span{
+        padding-left: 16px;
+      }
     }
     .ant-tabs-tab-active {
-      border-color: #6455ff !important;
+      /* border-color: #6455ff !important; */
+      background: #fff !important;
     }
   }
+:global(.sidemenu .ant-layout-content .tab-layout-tabs.ant-tabs 
+.ant-tabs-bar.ant-tabs-top-bar.ant-tabs-card-bar .ant-tabs-tab){
 
+  span{
+    border-left: 1px solid #999999 !important;
+  }
+  
+  &:first-child{
+    span{
+      border: none!important;
+    }
+    
+  }
+}
+:global(.sidemenu .ant-layout-content .tab-layout-tabs.ant-tabs 
+.ant-tabs-bar.ant-tabs-top-bar.ant-tabs-card-bar .ant-tabs-tab-active){
+
+  span{
+      border: none!important;
+    }
+
+  & + .ant-tabs-tab{
+    span{
+      border: none!important;
+    }
+  }
+}
 
 </style>

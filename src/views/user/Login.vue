@@ -325,8 +325,6 @@ export default {
 
       this.form.validateFields(['phone'], { force: true }, (err, val) => {
         if (!err) {
-          console.log(err)
-          console.log(val)
 
           this.state.smsSendBtn = true
           that.formLogin.phone = val.phone
@@ -345,7 +343,6 @@ export default {
           const hide = this.$message.loading('验证码发送中..', 0)
           postAction(api.SendSms, params)
             .then(res => {
-              console.log(res)
               setTimeout(hide, 2500)
               if (res.success) {
                 this.$notification['success']({
@@ -425,6 +422,7 @@ export default {
       }
     },
     departConfirm(res) {
+      console.log(res)
       if (res.success) {
         let multi_depart = res.result.multi_depart
         //0:无部门 1:一个部门 2:多个部门
@@ -451,6 +449,7 @@ export default {
       }
     },
     departOk() {
+      console.log(this.departSelected)
       if (!this.departSelected) {
         this.validate_status = 'error'
         return false
@@ -460,7 +459,7 @@ export default {
         orgCode: this.departSelected.split('.')[1],
         username: this.form.getFieldValue('username')
       }
-      putAction('/sys/selectDepart', obj).then(res => {
+      postAction('/sys/selectDepart', obj).then(res => {
         if (res.success) {
           this.departClear()
           this.loginSuccess()

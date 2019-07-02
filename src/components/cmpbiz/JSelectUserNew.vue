@@ -4,18 +4,18 @@
       mode="multiple"
       placeholder="请选择人员"
       :value="nameList"
-      style="width: calc(100% - 178px);"
       :open="false"
       @deselect="selectDe"
+      @dropdownVisibleChange="handleSelect"
       >
     </a-select>
-    <span style="display: inline-block;width:170px;float: right;overflow: hidden;">
+    <!-- <span style="display: inline-block;width:170px;float: right;overflow: hidden;">
       <a-button type="primary" @click="handleSelect" icon="search" style="width: 81px">选择</a-button>
       <a-button type="primary" @click="selectReset" icon="reload" style="margin-left: 8px;width: 81px">清空</a-button>
-    </span>
+    </span> -->
 
     <!-- 选择多个用户支持排序 -->
-    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK"></j-select-user-new-model>
+    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK" :selectListUser="selectedDetails"></j-select-user-new-model>
   </div>
 </template>
 
@@ -26,7 +26,7 @@
     components:{ JSelectUserNewModel },
     props:{
       value:{
-        type:String,
+        type: String,
         required:false
       },
       triggerChange:{
@@ -34,10 +34,14 @@
         required: false,
         default: false
       },
-      cancelSelect: {
+      emptyData: {
         type: Boolean,
         required: false,
         default: false
+      },
+      selectedDetails: {
+        type: Array,
+        required:false
       }
     },
     data(){
@@ -47,29 +51,62 @@
     },
     computed: {
       nameList: function () {
-        var names = [];
-        var usernames = [];
-        for (var a = 0; a < this.selectList.length; a++) {
-          names.push(this.selectList[a].realname);
-          usernames.push(this.selectList[a].username);
-        }
-        let nameStr = '';
-        let userNameStr = '';
-        if(names.length>0){
-          nameStr = names.join(",")
-        }
-        if(usernames.length>0){
-          userNameStr = usernames.join(",")
-        }
-        if(this.triggerChange){
-          this.$emit("change",nameStr)
-        }else{
-          this.$emit("input",nameStr)
-        }
-        if(this.triggerChange){
-          this.$emit("userName",userNameStr)
-        }else{
-          this.$emit("userName",userNameStr)
+        if(this.selectList == null){
+          var names = [];
+          var usernames = [];
+          let nameStr = '';
+          let userNameStr = '';
+          if(names.length>0){
+            nameStr = names.join(",")
+          }
+          if(usernames.length>0){
+            userNameStr = usernames.join(",")
+          }
+          let userDetails = {
+            username: userNameStr,
+            realname: nameStr
+          }
+          this.$emit("userDetails",userDetails)
+          // if(this.triggerChange){
+          //   this.$emit("change",nameStr)
+          // }else{
+          //   this.$emit("input",nameStr)
+          // }
+          // if(this.triggerChange){
+          //   this.$emit("userName",userNameStr)
+          // }else{
+          //   this.$emit("userName",userNameStr)
+          // }
+        } else {
+          var names = [];
+          var usernames = [];
+          for (var a = 0; a < this.selectList.length; a++) {
+            names.push(this.selectList[a].realname);
+            usernames.push(this.selectList[a].username);
+          }
+          let nameStr = '';
+          let userNameStr = '';
+          if(names.length>0){
+            nameStr = names.join(",")
+          }
+          if(usernames.length>0){
+            userNameStr = usernames.join(",")
+          }
+          // if(this.triggerChange){
+          //   this.$emit("change",nameStr)
+          // }else{
+          //   this.$emit("input",nameStr)
+          // }
+          // if(this.triggerChange){
+          //   this.$emit("userName",userNameStr)
+          // }else{
+          //   this.$emit("userName",userNameStr)
+          // }
+          let userDetails = {
+            username: userNameStr,
+            realname: nameStr
+          }
+          this.$emit("userDetails",userDetails)
         }
         return names;
       }
@@ -91,8 +128,6 @@
       selectOK: function (data) {
         this.selectList = data;
       }
-    },
-    created() {
     }
   }
 </script>

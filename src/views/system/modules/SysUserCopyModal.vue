@@ -57,13 +57,13 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="电子邮件">
-          <a-input placeholder="请输入电子邮件" v-decorator="['email', {}]" />
+          <a-input placeholder="请输入电子邮件" v-decorator="['email', validatorRules.email]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="电话">
-          <a-input placeholder="请输入电话" v-decorator="['phone', {}]" />
+          <a-input placeholder="请输入电话" v-decorator="['phone', validatorRules.phone]" />
         </a-form-item>
        <!-- <a-form-item
           :labelCol="labelCol"
@@ -105,7 +105,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="办公号码">
-          <a-input placeholder="请输入办公号码" v-decorator="['officeNumber', {}]" />
+          <a-input placeholder="请输入办公号码" v-decorator="['officePhone', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -143,10 +143,14 @@
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
+          phone:{rules: [{validator: this.validatePhone}]},
+          email:{rules: [{type: 'email', message: '请输入正确格式的电子邮箱!',}]},
+          //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
         },
         url: {
-          add: "/test/sysUserCopy/add",
-          edit: "/test/sysUserCopy/edit",
+         // add: "/test/sysUserCopy/add",
+          // edit: "/test/sysUserCopy/edit",
+          edit: "/sys/user/edit",
         },
       }
     },
@@ -161,7 +165,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'username','realname','password', 'avatar','sex','email','phone','orgCode','status','delFlag','activitiSync','corpCode','prjCode','officeNumber','address'))
+          this.form.setFieldsValue(pick(this.model,'username','realname','password', 'avatar','sex','email','phone','orgCode','status','delFlag','activitiSync','corpCode','prjCode','officePhone','address'))
 		  //时间格式化
           this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
         });

@@ -144,21 +144,21 @@
         border-bottom: 1px solid #ddd;
       }
       :global(.ant-steps-item-content) {
-        width: 96%;
+        width: 97%;
         :global(.ant-steps-item-title) {
           display: inline-block;
+          width: 27%
         }
         :global(.ant-steps-item-description) {
           display: inline-block;
-          width: 82%;
+          width: 70%;
           .shenpi-detail-content{
             width: 86%;
           }
         }
       }
-
       .shenpi-info-area {
-        width: 100px;
+        width: 100%;
         padding: 5px 0;
         // text-align: center;
         .shenpi-name {

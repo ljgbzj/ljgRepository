@@ -73,7 +73,7 @@
     </div>
 
     <!-- 创建团队 -->
-    <div class="register-two" v-show="step2">
+    <div class="register-two" v-if="step2">
       <div class="step step2" v-if="device === 'desktop'">
         <img src="@/assets/img/register/step2.png">
       </div>
@@ -201,53 +201,36 @@ export default {
       },
       industryCategory: [
         {
-          title: 'IT/互联网',
+          title: '企业',
           list: [
             {
-              name: '电子商务'
+              name: '企业1'
             },
             {
-              name: '互联网金融'
+              name: '企业2'
             },
             {
-              name: '工具软件'
+              name: '企业3'
             },
             {
-              name: '社交网络'
+              name: '企业4'
             }
           ]
         },
         {
-          title: '房地产开发',
+          title: '项目',
           list: [
             {
-              name: '大型房地产集团'
+              name: '项目1'
             },
             {
-              name: '房地产开发'
+              name: '项目2'
             },
             {
-              name: '物业管理公司'
+              name: '项目3'
             },
             {
-              name: '园林绿化'
-            }
-          ]
-        },
-        {
-          title: '金融业',
-          list: [
-            {
-              name: '银行业'
-            },
-            {
-              name: '保险业'
-            },
-            {
-              name: '证券公司'
-            },
-            {
-              name: '会计师事务所'
+              name: '项目4'
             }
           ]
         }
@@ -349,18 +332,17 @@ export default {
         }
       })
     },
+    registered() {
+      this.$router.push('/user/login')
+      let path = this.$route.path
+      if (path === '/user/login') {
+        this.$emit('closereg')
+      }
+    },
     toOne() {
       this.step1 = true
       this.step2 = false
       this.step3 = false
-    },
-    registered(){
-      this.$router.push('/user/login')
-      let path = this.$route.path
-      if(path === '/user/login'){
-        this.$emit('closereg')
-      }
-      
     },
     steptoTwo() {
       if (!this.checked) {
@@ -377,17 +359,18 @@ export default {
             if (!err) {
               // 将输入内容存入参数对象，并转换为 JSON字符串
               this.userName = values.userName
+              console.log(this.userName)
               let params = values
               console.log(params)
               // 设置 API url
               let url = this.url.adduser,
-                  method = 'post'
+                method = 'post'
               // 用户注册提示信息
               const hide = this.$message.loading('用户注册中，请稍后..', 0)
               // 发送用户注册请求
               httpActionHeader(url, params, method)
                 .then(res => {
-                  setTimeout(hide, 2500)
+                  setTimeout(hide, 1000)
                   if (res.success) {
                     this.$notification['success']({
                       message: '提示',
@@ -420,10 +403,9 @@ export default {
             }
           }
         )
-      } 
+      }
     },
     toDone() {
-      
       this.form.validateFields(['teamName', 'teamType', 'teamScale'], { force: true }, (err, values) => {
         if (!err) {
           // 将输入内容存入参数对象，并转换为 JSON字符串
@@ -451,17 +433,16 @@ export default {
                 this.step1 = false
                 this.step2 = false
                 this.step3 = true
-                if(this.time>1){
-                  this.startInter = setInterval(()=>{
-                    
-                    if(this.time>1){
+                if (this.time > 1) {
+                  this.startInter = setInterval(() => {
+                    if (this.time > 1) {
                       this.time--
                     } else {
                       clearInterval(this.startInter)
                       this.$router.push('/')
                     }
-                  },1000)
-                } 
+                  }, 1000)
+                }
               } else {
                 this.$notification['error']({
                   message: '团队注册失败',
@@ -482,7 +463,7 @@ export default {
               })
             })
         }
-      }) 
+      })
     }
   }
 }

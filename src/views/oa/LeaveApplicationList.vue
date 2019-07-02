@@ -13,44 +13,29 @@
           </a-col> -->
           <a-col :md="12" :sm="8">
             <a-form-item label="请假人">
-              <a-input placeholder="请输入请假人" v-model="queryParam.realname"></a-input>
+              <a-input placeholder="请输入请假人" v-model="queryParam.inputerFullname"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
-            <a-form-item label="请假类型">  
-              <!-- <a-input placeholder="请输入请假类型" v-model="queryParam.type"></a-input> -->
-              <a-select placeholder="请选择类型" v-model="queryParam.type">
-                <a-icon slot="suffixIcon" type="caret-down" />
-                <a-select-option value="0">事假</a-select-option>
-                <a-select-option value="1">病假</a-select-option>
-                <a-select-option value="2">年假</a-select-option>
-                <a-select-option value="3">婚假</a-select-option>
-                <a-select-option value="4">出差</a-select-option>
-              </a-select>
+            <a-form-item label="请假类型">
+              <j-dict-select-tag  v-model="queryParam.type" placeholder="请选择类型" dictCode="leave_type"/>
             </a-form-item>
           </a-col>
-          <!-- <a-col :md="12" :sm="8">
-            <a-form-item label="选择日期">
-              <j-date-relate v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss"></j-date-relate>
-            </a-form-item>
-          </a-col> -->
         <!-- <template v-if="toggleSearchStatus"> -->
           <a-col :md="6" :sm="8">
             <a-form-item label="填写时间">
-              <!-- <j-date v-model="queryParam.timeStart" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'开始时间'" size="large"/> -->
               <a-date-picker
-                v-model="queryParam.timeStart"
+                v-model="queryParam.minStartTime"
                 :disabledDate="disabledStartDate"
                 showTime
-                format="YYYY-MM-DD HH:mm:ss"
+                format='YYYY-MM-DD HH:mm:ss'
                 placeholder="开始时间"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="至">
-              <!-- <j-date v-model="queryParam.timeEnd" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'结束时间'"/> -->
               <a-date-picker
-                v-model="queryParam.timeEnd"
+                v-model="queryParam.maxStartTime"
                 :disabledDate="disabledEndDate"
                 showTime
                 format="YYYY-MM-DD HH:mm:ss"
@@ -59,14 +44,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="状态选择">
-              <!-- <a-input placeholder="请选择请假状态" v-model="queryParam.status"></a-input> -->
-              <a-select placeholder="请选择状态" v-model="queryParam.status">
-                <a-icon slot="suffixIcon" type="caret-down" />
-                <a-select-option value="0">暂存</a-select-option>
-                <a-select-option value="1">流转中</a-select-option>
-                <a-select-option value="2">已完成</a-select-option>
-                <a-select-option value="3">废弃</a-select-option>
-              </a-select>
+              <j-dict-select-tag  v-model="queryParam.status" placeholder="请选择状态" dictCode="bpm_status"/>
             </a-form-item>
           </a-col>
         <!-- </template> -->
@@ -88,15 +66,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
-      <!-- <a-button @click="batchAbandone" type="primary" icon="delete" :disabled="selectedRowKeys.length <=0 || selectedRowKeys.length >1? true : false">废弃</a-button> -->
       <a-button @click="batchAbandone" type="primary" icon="delete">废弃</a-button>
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
-
-      <!-- <div class="ant-alert ant-alert-info">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div> -->
-
     </div>
 
     <!-- table区域-begin -->
@@ -142,10 +113,9 @@
 <script>
   import LeaveApplicationModal from './modules/LeaveApplicationModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
-  import JDate from '@/components/cmp/JDate'
-  import JDateRelate from '@/components/cmp/JDate'
-  import JDictSelectTag from '../../components/dict/JDictSelectTag.vue'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag'
   import { httpAction } from '@/api/manage'
+  import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
   import qs from 'qs';
 
   export default {
@@ -153,8 +123,6 @@
     mixins:[CmpListMixin],
     components: {
       LeaveApplicationModal,
-      JDate,
-      JDateRelate,
       JDictSelectTag
     },
     data () {
@@ -171,124 +139,60 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-           },
-		  //  {
-      //       title: '请假人用户编码',
-      //       align:"center",
-      //       dataIndex: 'username'
-      //      },
-		   {
+            },
+          {
             title: '请假人',
             align:"center",
             dataIndex: 'inputerFullname'
-           },
-		   {
+          },
+          {
             title: '请假类型',
             align:"center",
             dataIndex: 'type',
             customRender: (text, record, index) => {
-              let re = "";
-              if (text === '0') {
-                re = "事假";
-              } else if (text === '1') {
-                re = '病假';
-              } else if (text === '2') {
-                re = '年假';
-              } else if (text === '3') {
-                re = '婚假';
-              } else if (text === '4') {
-                re = '出差';
-              } else {
-                re = text;
-              }
-              return re;
+              //字典值替换通用方法
+              return filterDictText(this.leaveDictOptions, text);
             }
-           },
-		   {
+          },
+          {
             title: '请假开始时间',
             align:"center",
             dataIndex: 'timeStart'
-           },
-		   {
+          },
+          {
             title: '请假结束时间',
             align:"center",
             dataIndex: 'timeEnd'
-           },
-		   {
+          },
+          {
             title: '请假原因',
             align:"center",
             dataIndex: 'reason'
-           },
-		   {
+          },
+          {
             title: '部门领导',
             align:"center",
             dataIndex: 'departmentLeaderRealname'
-           },
-		  //  {
-      //       title: '部门领导',
-      //       align:"center",
-      //       dataIndex: 'departmentLeaderRealname'
-      //      },
-		   {
+          },
+          {
             title: '人事部门领导',
             align:"center",
             dataIndex: 'hrLeaderRealname'
-           },
-		  //  {
-      //       title: '人事部门领导',
-      //       align:"center",
-      //       dataIndex: 'hrLeaderRealname'
-      //      },
-		   {
+          },
+          {
             title: '总经理',
             align:"center",
             dataIndex: 'generalManagerRealname'
-           },
-		  //  {
-      //       title: '总经理',
-      //       align:"center",
-      //       dataIndex: 'generalManagerRealname'
-      //      },
-		  //  {
-      //       title: '流程定义ID',
-      //       align:"center",
-      //       dataIndex: 'processDefinitionId'
-      //      },
-		  //  {
-      //       title: '流程实例ID',
-      //       align:"center",
-      //       dataIndex: 'processInstanceId'
-      //      },
-		  //  {
-      //       title: '备注信息',
-      //       align:"center",
-      //       dataIndex: 'remarks'
-      //      },
-		   {
+          },
+          {
             title: '状态',
             align:"center",
             dataIndex: 'status',
-            customRender: (t, r, index) => {
-              let re = "";
-              if (t === 0) {
-                re = "暂存";
-              } else if (t === 1) {
-                re = '流转中';
-              } else if (t === 2) {
-                re = '已完成';
-              } else if (t === 3) {
-                re = '废弃';
-              } else {
-                re = t;
-              }
-              return re;
+            customRender: (text, record, index) => {
+              //字典值替换通用方法
+              return filterDictText(this.statusDictOptions, text);
             }
-           },
-		  //  {
-      //       title: '所属租户',
-      //       align:"center",
-      //       dataIndex: 'corpCode'
-      //      },
+          },
           {
             title: '操作',
             dataIndex: 'action',
@@ -296,43 +200,28 @@
             scopedSlots: { customRender: 'action' },
           }
         ],
-		url: {
+        url: {
           list: "/oa/leaveApplication/list",
-          // delete: "/oa/leaveApplication/delete",
-          // deleteBatch: "/oa/leaveApplication/deleteBatch",
-          // 废弃即删除
-          // deleteBatch: "/oa/leaveApplication/action",
           deleteBatch: "/flowable/action",
-          // delete: '/oa/leaveApplication/action',
-          exportXlsUrl: "oa/leaveApplication/exportXls",
-          importExcelUrl: "oa/leaveApplication/importExcel",
-          list1: "/flowable/tasks/list",
-          form: "/flowable/tasks/form"
-       },
-    }
-  },
-  computed: {
-    importExcelUrl: function(){
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-    }
-  },
-  methods: {
-    // 自定义废弃方法覆盖混合模式
-    batchAbandone: function (event,id) {
-      if(!this.url.deleteBatch){
-        this.$message.error("请设置url.deleteBatch属性!")
-        return
+        },
       }
+    },
+    methods: {
+      // 自定义废弃方法覆盖混合模式
+      batchAbandone: function (event,id) {
+        if(!this.url.deleteBatch){
+          this.$message.error("请设置url.deleteBatch属性!")
+          return
+        }
         var ids = "";
         var processInsId= "";
+        // 支持多项废弃的操作，通用方法
         if(this.selectedRowKeys.length > 1){
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             ids += this.selectedRowKeys[a] + ",";
           }
-          // processInsId = this.selectionRows[0].processInstanceId;
         } else if (this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined) {
           ids = this.selectedRowKeys[0];
-          // processInsId = this.selectionRows[0].processInstanceId;
         } else {
           ids = id;
           if (id == undefined) {
@@ -341,12 +230,9 @@
           } else {
             ids = id;
           }
-          console.log(id,'这是id');
-          // processInsId = processInstanceId
         }
         let flowDataString = {
           api: '/process/delete',
-          // processInstanceId : processInsId
           processDefinitionKey: 'leave'
         }
         let formDataString = {
@@ -373,80 +259,40 @@
             });
           }
         });
-    },
-    // 时间选择器的禁用封装
-    disabledStartDate (startValue) {
-      const endValue = this.queryParam.timeEnd;
-      if (!startValue || !endValue) {
-        return false;
+      },
+      // 时间选择器的禁用封装
+      disabledStartDate (startValue) {
+        const endValue = this.queryParam.timeEnd;
+        if (!startValue || !endValue) {
+          return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
+      },
+      disabledEndDate (endValue) {
+        const startValue = this.queryParam.timeStart;
+        if (!endValue || !startValue) {
+          return false;
+        }
+        return startValue.valueOf() >= endValue.valueOf();
       }
-      return startValue.valueOf() > endValue.valueOf();
     },
-    disabledEndDate (endValue) {
-      const startValue = this.queryParam.timeStart;
-      if (!endValue || !startValue) {
-        return false;
-      }
-      return startValue.valueOf() >= endValue.valueOf();
+    beforeCreate(){
+      // 自行定义方法，引用字典
+      //初始化字典
+      initDictOptions('bpm_status').then((res) => {
+        if (res.success) {
+          this.statusDictOptions = res.result;
+        }
+      });
+      initDictOptions('leave_type').then((res) => {
+        if (res.success) {
+          this.leaveDictOptions = res.result;
+        }
+      });
     }
-  }
   }
 </script>
 <style lang="less" scoped>
   @import '~@assets/less/common.less';
-    // 组件内直接引入ant组件样式覆盖
-  .ant-form-item-label {
-    line-height: 40px;
-  }
-  .table-page-search-wrapper {
-    .ant-form-inline {
-      .ant-form-item > :global(.ant-form-item-label) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-input {
-    height: 40px;
-  }
-  /* 下拉选框 */
-  .ant-select {
-    /* height: 40px; */
-    :global(.ant-select-selection--single) {
-      height: 40px;
-      :global(.ant-select-selection__rendered) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-btn-primary {
-    height:40px;
-  }
-  .ant-dropdown-trigger {
-    height: 40px;
-  }
-  .ant-card-body .table-operator {
-    display: flex;
-    margin-bottom: 20px;
-    vertical-align: top;
-    height: 40px;
-  }
-
-  .ant-card-body .table-operator>div {
-    flex: 1;
-    margin-left: 14px;
-  }
-
-  .ant-card-body .table-operator .ant-alert-info {
-    border: unset;
-    border-radius:4px;
-    background: rgba(109,98,255,0.1);
-  }
-
-  //时间选择
-  .ant-calendar-picker {
-    width: 100%!important;
-    :global(.ant-input) {
-      height: 40px;
-    }
-  }
+  @import '~@assets/less/topBtns.less';
 </style>
