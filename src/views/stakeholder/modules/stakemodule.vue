@@ -17,35 +17,29 @@
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/个人编号">
-                <a-input placeholder v-decorator="['companyCode', {}]"/>
+                <a-input placeholder v-decorator="['companyCode', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/个人名称">
-                <a-input placeholder v-decorator="['companyName', {}]"/>
+                <a-input placeholder v-decorator="['companyName', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="干系人类型">
-                <a-select placeholder="选择" v-decorator="['stakeholderType', {}]">
+                <a-select placeholder="选择" v-decorator="['stakeholderType', {initialValue: ['0']}]">
                   <a-select-option value="0">干系人类型1</a-select-option>
                   <a-select-option value="1">干系人类型2</a-select-option>
-                  <a-select-option value="2">干系人类型3</a-select-option>
-                  <a-select-option value="3">干系人类型4</a-select-option>
-                  <a-select-option value="4">干系人类型5</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="企业/单位性质">
-                <a-select placeholder="选择" v-decorator="['companyNature', {}]">
+                <a-select placeholder="选择" v-decorator="['companyNature', {initialValue: ['0']}]">
                   <a-select-option value="0">性质1</a-select-option>
                   <a-select-option value="1">性质2</a-select-option>
-                  <a-select-option value="2">性质3</a-select-option>
-                  <a-select-option value="3">性质4</a-select-option>
-                  <a-select-option value="4">性质5</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -53,83 +47,60 @@
           <a-row :gutter="24">
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="联系电话">
-                <a-input placeholder v-decorator="['phoneNum', {}]"/>
+                <a-input placeholder v-decorator="['phoneNum', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="传真">
-                <a-input placeholder v-decorator="['fax', {}]"/>
+                <a-input placeholder v-decorator="['fax', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="8">
               <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="邮编">
-                <a-input placeholder v-decorator="['postCode', {}]"/>
+                <a-input placeholder v-decorator="['postCode', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
 
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="地址">
-            <a-input placeholder v-decorator="['address', {}]"/>
+            <a-input placeholder v-decorator="['address', {}]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="网址">
-            <a-input placeholder v-decorator="['website', {}]"/>
+            <a-input placeholder v-decorator="['website', {}]" />
           </a-form-item>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开户行">
-                <a-input placeholder v-decorator="['openingBank', {}]"/>
+                <a-input placeholder v-decorator="['openingBank', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="账号">
-                <a-input placeholder v-decorator="['accountNumber', {}]"/>
+                <a-input placeholder v-decorator="['accountNumber', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注/服务范围">
-            <a-input placeholder v-decorator="['remarks', {}]"/>
+            <a-input placeholder v-decorator="['remarks', {}]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="上传附件">
-            <a-input placeholder v-decorator="['attachment', {}]"/>
+            <!-- <a-input placeholder v-decorator="['attachment', {}]" /> -->
+            <a-upload
+              :action="uploadAction"
+              listType="picture"
+              :headers="headers"
+              :fileList="fileList"
+              @change="handleChange"
+              :multiple="true"
+              :beforeUpload="beforeUpload"
+              class="upload-list-inline"
+              :data="uploadParams"
+            >
+              <a-button>
+                <a-icon type="upload" />upload
+              </a-button>
+            </a-upload>
           </a-form-item>
-
-          <!-- 操作按钮区域 -->
-          <!-- <a-form-item>
-            <div class="table-operator">
-              <a-button @click="handleAdd" type="primary" icon="plus">添加</a-button>
-              <a-button type="primary" icon="edit">修改</a-button>
-              <a-button @click="handleDelete" type="primary" icon="delete">删除</a-button>
-              <a-button type="primary" icon="zoom-in">浏览</a-button>
-              <a-button type="primary" icon="reload">刷新</a-button>
-            </div>
-          </a-form-item>-->
-
-          <!-- table区域-begin -->
-          <!-- <a-form-item>
-            <div>
-              <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-              <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-              <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-              <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-              </div>
-              <a-table
-                ref="table"
-                size="middle"
-                bordered
-                rowKey="key"
-                :columns="columns"
-                :dataSource="dataSource"
-                :pagination="false"
-                :loading="loading"
-                @change="handleTableChange"
-                class="table"
-              >
-                <span slot="important" slot-scope="important">
-                  <a-checkbox :checked="important" class="important"></a-checkbox>
-                </span>
-              </a-table>
-            </div>
-          </a-form-item>-->
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="干系人明细" :key="refKeys[0]" :forceRender="true">
               <j-editable-table
@@ -148,39 +119,49 @@
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入人">
-                <a-input placeholder v-decorator="['inputerFullname', {}]"/>
+                <a-input placeholder v-decorator="['inputerFullname', {}]" disabled />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话">
-                <a-input placeholder v-decorator="['inputerPhoneNum', {}]"/>
+                <a-input placeholder v-decorator="['inputerPhoneNum', {}]" disabled />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row :gutter="24">
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入人部门">
-                <a-input placeholder v-decorator="['inputerDeptName', {}]"/>
+                <a-input placeholder v-decorator="['inputerDeptName', {}]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
               <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="录入时间">
-                <a-input placeholder v-decorator="['inputerTime', {}]"/>
+                <!-- <a-input placeholder v-decorator="['inputerTime', {}]"/> -->
+                <a-date-picker
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="录入时间"
+                  v-decorator="['inputerTime', {}]"
+                  disabled
+                />
               </a-form-item>
             </a-col>
           </a-row>
 
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知方式">
-            <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
-              <a-checkbox value="email">邮件</a-checkbox>
-              <a-checkbox value="message">手机短信</a-checkbox>
-              <a-checkbox value="euc">EUC消息</a-checkbox>
+            <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['0']}]">
+              <a-checkbox value="0" disabled>邮件(默认必选)</a-checkbox>
+              <a-checkbox value="1">手机短信</a-checkbox>
+              <a-checkbox value="2">EUC消息</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
           <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="审批人">
-            <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
-              <a-select-option value="0">事假</a-select-option>
-            </a-select>
+            <!-- <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
+              <a-select-option value="0">审批人</a-select-option>
+            </a-select>-->
+            <!-- <a-input placeholder v-decorator="['subcontractor', {}]" /> -->
+            <!-- <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new> -->
+            <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" />
           </a-form-item>
           <a-form-item class="btnClass">
             <a-button @click="handleSave" icon="save" class="cancel">暂存</a-button>
@@ -199,11 +180,22 @@ import moment from 'moment'
 import pick from 'lodash.pick'
 import { FormTypes } from '@/utils/JEditableTableUtil'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
+import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+import { httpAction } from '@/api/manage'
+import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import Vue from 'vue'
+import md5 from 'md5'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'stakemodule',
   mixins: [JEditableTableMixin],
-
+  components: {
+    JDictSelectTag,
+    JSelectUserNew
+  },
   data() {
     return {
       // 新增时子表默认添加几行空数据
@@ -314,17 +306,44 @@ export default {
       },
       url: {
         add: '/stakeholder/stakeholder/add',
-        edit: '/stakeholder/stakeholder/edit',
+        edit: '/flowable/action',
+        fileUpload: window._CONFIG['domianURL'] + '/file/uploadFile/add',
         stakeholderDetail: {
           list: '/stakeholder/stakeholder/queryStakeholderDetailByMainId'
         }
-      }
+      },
+      headers: {},
+      fileList: [],
+      attachment: [
+        {
+          groupId: '',
+          fileTokens: '',
+          fieldName: 'attachment',
+          tableName: 'pm_stakeholder'
+        }
+      ],
+      uploadParams: {},
+      curtime: '',
+      departDetails: [],
+      subcontractorName: [],
+      subcontractorFullname: []
     }
   },
-  created() {},
+  created() {
+    const token = Vue.ls.get(ACCESS_TOKEN)
+    this.headers = { 'X-Access-Token': token }
+    this.curtime = new Date()
+    this.attachment[0].fileTokens = ''
+  },
+  computed: {
+    uploadAction() {
+      return this.url.fileUpload
+    }
+  },
   methods: {
+    ...mapGetters(['nickname', 'userInfo']),
     /** 调用完edit()方法之后会自动调用此方法 */
-    editAfter() {
+    editAfter(record) {
       this.$nextTick(() => {
         this.form.setFieldsValue(
           pick(
@@ -349,15 +368,82 @@ export default {
             'inputerPhoneNum',
             'inputerDeptCode',
             'inputerDeptName',
-            'attachment',
+            /* 'attachment', */
             'notifyMethod',
             'status',
             'corpCode',
             'prjCode'
           )
         )
+
+        this.departDetails = []
+        if (JSON.stringify(record) !== '{}') {
+          this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname])
+        }
+
+        this.form.setFieldsValue({ inputerFullname: this.nickname() })
+        console.log(this.userInfo())
+        this.form.setFieldsValue({ inputerPhoneNum: this.userInfo().phone })
+
         // 时间格式化
+        this.form.setFieldsValue({
+          inputerTime: this.model.inputerTime ? moment(this.model.inputerTime) : moment(this.curtime)
+        })
       })
+      //  初始化上传文件
+      if (this.model.attachment !== undefined) {
+        console.log(this.model.attachment, '拿到的attachment')
+        this.attachment[0].groupId = this.model.attachment
+        this.attachment[0].fileTokens = ''
+        getAction(this.url.fileFind, { groupId: this.model.attachment }).then(res => {
+          console.log(res, '请求到的attachment')
+          for (let i = 0; i < res.result.length; i++) {
+            if (
+              res.result[i].viewPath.substring(res.result[i].viewPath.length - 4) == 'jpeg' ||
+              res.result[i].viewPath.substring(res.result[i].viewPath.length - 3) == 'jpg' ||
+              res.result[i].viewPath.substring(res.result[i].viewPath.length - 3) == 'png'
+            ) {
+              console.log('第一个进来了')
+              let fileChild = {
+                response: {
+                  result: {
+                    fileTokens: res.result[i].fileToken
+                  }
+                },
+                uid: i,
+                name: res.result[i].uploadFile.fileName,
+                status: 'done',
+                type: 'image/jpeg',
+                url: this.url.imgerver + '/' + res.result[i].viewPath
+              }
+              this.fileList.push(fileChild)
+              this.attachment[0].fileTokens += res.result[i].fileToken + ','
+            } else {
+              console.log('第二个进来了')
+              let fileChild = {
+                response: {
+                  result: {
+                    fileTokens: res.result[i].fileToken
+                  }
+                },
+                uid: i,
+                name: res.result[i].uploadFile.fileName,
+                status: 'done',
+                type: 'text/plain',
+                url: this.url.imgerver + '/' + res.result[i].viewPath
+              }
+              this.fileList.push(fileChild)
+              this.attachment[0].fileTokens += res.result[i].fileToken + ','
+            }
+          }
+        })
+        console.log(this.attachment, '合成问题')
+      } else {
+        this.attachment[0].groupId = this.uuid()
+        this.attachment[0].fileTokens = ''
+      }
+      console.log(this.attachment[0].groupId, '一开始的groupId')
+
       // 加载子表数据
       if (this.model.id) {
         let params = { id: this.model.id }
@@ -374,20 +460,158 @@ export default {
         stakeholderDetailList: allValues.tablesValue[0].values
       }
     },
+    handleOk() {
+      /** 触发表单验证 */
+      this.getAllTable()
+        .then(tables => {
+          /** 一次性验证主表和所有的次表 */
+          return validateFormAndTables(this.form, tables)
+        })
+        .then(allValues => {
+          if (typeof this.classifyIntoFormData !== 'function') {
+            throw this.throwNotFunction('classifyIntoFormData')
+          }
+          let formData = this.classifyIntoFormData(allValues)
+
+          formData.stakeholderType = formData.stakeholderType ? '干系人类型1' : '干系人类型2'
+          formData.companyNature = formData.companyNature ? '性质1' : '性质2'
+          formData.subcontractorName = this.subcontractorName
+          formData.subcontractorFullname = this.subcontractorFullname
+
+          // important值true或false转换为1或0
+          let len = formData.stakeholderDetailList.length
+          for (let i = 0; i < len; i++) {
+            formData.stakeholderDetailList[i].important = formData.stakeholderDetailList[i].important ? 1 : 0
+          }
+
+          // 发起请求
+          console.log(allValues, 'allValues')
+          console.log(formData, 'formData')
+          let data = {}
+          let flowDataString = Object.assign(
+            {},
+            {
+              api: '/process/startAndSubmit',
+              processDefinitionKey: 'stakeholder'
+            }
+          )
+          let formDataString = Object.assign({}, formData)
+          let attachmentString = this.attachment
+
+          data.flowDataString = JSON.stringify(flowDataString)
+          data.formDataString = JSON.stringify(formDataString)
+          data.attachmentString = JSON.stringify(attachmentString)
+          console.log(flowDataString,'flowDataString')
+          console.log(formDataString,'formDataString')
+          console.log(attachmentString,'attachmentString')
+          console.log(data, 'data')
+          data = JSON.stringify(data)
+          console.log(data, 'dataString')
+          return this.request(data)
+        })
+        .catch(e => {
+          if (e.error === VALIDATE_NO_PASSED) {
+            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+          } else {
+            console.error(e)
+          }
+        })
+    },
+    request(formData) {
+      /* console.log(this.model.id)
+      let url = this.url.add,
+        method = 'post' */
+      
+      let url = this.url.edit
+      let method = 'post' //put修改
+      
+      this.confirmLoading = true
+      httpAction(url, formData, method)
+        .then(res => {
+          if (res.success) {
+            this.$message.success(res.message)
+            this.$emit('ok')
+            this.close()
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
     handleSave() {
       console.log('这是暂存！')
+    },
+    // 上传文件改变时的状态，根据返回值中file的status，作出相应提示
+    handleChange(info) {
+      console.log(info, 'info', info.file.status)
+      this.uploadParams = {}
+      if (info.file.status === 'removed') {
+        console.log(info, '移除返回')
+        console.log(this.attachment[0].fileTokens, '母亲')
+        console.log(info.file.response.result.fileTokens, 'jialuo')
+        this.attachment[0].fileTokens = this.attachment[0].fileTokens.replace(
+          info.file.response.result.fileTokens + ',',
+          ''
+        )
+        console.log(this.attachment, '删除后的superstar')
+      }
+      this.fileList = info.fileList
+      if (info.file.status === 'uploading') {
+        return
+      }
+      if (info.file.status === 'done') {
+        var response = info.file.response
+        if (response.success) {
+          this.picUrl += response.message + ','
+          console.log(response.result, '返回值')
+          this.attachment[0].fileTokens += response.result.fileTokens + ','
+          console.log(this.attachment[0].fileTokens, '看看之后')
+          // this.attachment.push({
+          //   name: response.result.uploadFile.fileName,
+          //   url: response.result.viewPath,
+          //   id: response.result.fileTokens
+          // })
+        } else {
+          this.$message.warning(response.message)
+        }
+      }
+    },
+    // 上传文件前的钩子函数
+    beforeUpload(file, fileList) {
+      this.uploadParams = {
+        json: '{"md5":"' + md5(JSON.stringify(file)) + '","fileName":"' + file.name + '"}'
+      }
+    },
+    userDetails(val) {
+      this.subcontractorName = val.realname
+      this.subcontractorFullname = val.username
+    },
+    uuid() {
+      var s = []
+      var hexDigits = '0123456789abcdef'
+      for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+      }
+      s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      // s[8] = s[13] = s[18] = s[23] = "-";
+      s[8] = s[13] = s[18] = s[23] = ''
+      var uuid = s.join('')
+      return uuid
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.ant-form{
-  padding-right: 48px;
+@import '~@/assets/less/modal.less';
+
+.ant-form {
+  /* padding-right: 48px; */
 }
-
-
-
 
 .table-operator {
   button {
