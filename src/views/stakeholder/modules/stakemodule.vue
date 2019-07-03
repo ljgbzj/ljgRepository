@@ -486,8 +486,8 @@ export default {
           }
 
           // 发起请求
-          console.log(allValues, 'allValues')
-          console.log(formData, 'formData')
+          /* console.log(allValues, 'allValues')
+          console.log(formData, 'formData') */
           let data = {}
           let flowDataString = Object.assign(
             {},
@@ -498,7 +498,18 @@ export default {
           )
           let formDataString = Object.assign({}, formData)
           let attachmentString = this.attachment
+          // 手机号码和电话号码转换为数字
+          formDataString.inputerPhoneNum = Number(formDataString.inputerPhoneNum) //录入人电话
+          formDataString.phoneNum = Number(formDataString.phoneNum) //电话号码
+          formDataString.notifyMethod = this.transformNotice(formDataString.notifyMethod)
 
+          
+          formDataString.stakeholderDetailList.forEach(function(item,index){
+            item.phoneNum = Number(item.phoneNum)
+            item.telephoneNum = Number(item.telephoneNum)
+          })
+
+          console.log(formDataString.stakeholderDetailList)
           data.flowDataString = JSON.stringify(flowDataString)
           data.formDataString = JSON.stringify(formDataString)
           data.attachmentString = JSON.stringify(attachmentString)
@@ -507,7 +518,6 @@ export default {
           console.log(attachmentString,'attachmentString')
           console.log(data, 'data')
           data = qs.stringify(data)
-          console.log(data, 'dataString')
           return this.request(data)
         })
         .catch(e => {
@@ -602,6 +612,30 @@ export default {
       s[8] = s[13] = s[18] = s[23] = ''
       var uuid = s.join('')
       return uuid
+    },
+    transformNotice(arr){
+      let len = arr.length
+      if(len == 1){
+        return '100'
+      }
+      else if(len == 3){
+        return '111'
+      }
+      else if(len == 2){
+        if(arr[1] == '1'){
+          return '110'
+        }else{
+          return '101'
+        }
+      }
+    },
+    transformStakeHL(arr){
+      function trans(item, index){
+        console.log(item,index)
+        item.phoneNum = Number(item.phoneNum)
+        item.telephoneNum = Number(item.telephoneNum)
+      }
+      return arr.forEach(trans)
     }
   }
 }
