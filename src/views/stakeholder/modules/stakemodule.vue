@@ -188,6 +188,7 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 import Vue from 'vue'
 import md5 from 'md5'
 import { mapGetters } from 'vuex'
+import qs from 'qs';
 
 export default {
   name: 'stakemodule',
@@ -505,7 +506,7 @@ export default {
           console.log(formDataString,'formDataString')
           console.log(attachmentString,'attachmentString')
           console.log(data, 'data')
-          data = JSON.stringify(data)
+          data = qs.stringify(data)
           console.log(data, 'dataString')
           return this.request(data)
         })
