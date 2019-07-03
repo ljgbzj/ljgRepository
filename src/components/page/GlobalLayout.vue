@@ -563,7 +563,7 @@ body {
       display: inline-block;
       margin: 0 auto;
       padding: 0 24px;
-      border-bottom: 2px solid #7477ff;
+      border-bottom: 1px solid #fff;
       border-radius: 0;
       img {
         vertical-align: middle;
@@ -586,7 +586,6 @@ body {
       font-weight: 600;
     } */
   }
-  
 
   &.light {
     background-color: #fff;
@@ -607,23 +606,23 @@ body {
   }
 }
 .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-collapsed.sider.light {
-    .ant-layout-sider-children {
-      .logo {
-        .logoPic {
-          width: 32px;
-          height: 100%;
-          display: inline-block;
-          margin: 0;
-          padding: 0 3px;
-          border-bottom: 2px solid #7477ff;
-          border-radius: 0;
-          img {
-            vertical-align: middle;
-          }
+  .ant-layout-sider-children {
+    .logo {
+      .logoPic {
+        width: 32px;
+        height: 100%;
+        display: inline-block;
+        margin: 0;
+        padding: 0 3px;
+        border-bottom: 2px solid #7477ff;
+        border-radius: 0;
+        img {
+          vertical-align: middle;
         }
       }
     }
   }
+}
 // 外置的样式控制
 .user-dropdown-menu-wrapper.ant-dropdown-menu {
   padding: 4px 0;
