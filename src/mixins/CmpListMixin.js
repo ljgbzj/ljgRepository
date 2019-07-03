@@ -183,8 +183,10 @@ export const CmpListMixin = {
       });
     },
     handleEdit: function (record) {
+      console.log(record,'record')
+      console.log(this.$refs.modalForm)
       this.$refs.modalForm.edit(record);
-      this.$refs.modalForm.title = "编辑";
+      this.$refs.modalForm.title = "编辑111";
     },
     handleAdd: function () {
       this.$refs.modalForm.add();

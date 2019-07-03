@@ -68,6 +68,7 @@ export const JEditableTableMixin = {
       this.activeKey = this.refKeys[0]
       this.form.resetFields()
       this.model = Object.assign({}, record)
+      console.log(typeof this.editAfter)
       if (typeof this.editAfter === 'function') this.editAfter(this.model)
     },
     /** 关闭弹窗，并将所有JEditableTable实例回归到初始状态 */
@@ -82,8 +83,11 @@ export const JEditableTableMixin = {
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab) {
       tab.loading = true
+      console.log(tab, 'tab')
+      console.log(tab.loading, 'loading')
       getAction(url, params).then(res => {
-        tab.dataSource = res.result || []
+        console.log(res,'res')
+        tab.dataSource = res.result.stakeholderDetailList || []
       }).finally(() => {
         tab.loading = false
       })

@@ -182,7 +182,7 @@ import { FormTypes } from '@/utils/JEditableTableUtil'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import { httpAction } from '@/api/manage'
+import { httpAction, getAction } from '@/api/manage'
 import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import Vue from 'vue'
@@ -310,7 +310,7 @@ export default {
         edit: '/flowable/action',
         fileUpload: window._CONFIG['domianURL'] + '/file/uploadFile/add',
         stakeholderDetail: {
-          list: '/stakeholder/stakeholder/queryStakeholderDetailByMainId'
+          list: '/stakeholder/stakeholder/queryById'
         }
       },
       headers: {},
@@ -352,7 +352,7 @@ export default {
             'stakeholderType',
             'companyCode',
             'companyName',
-            'sourceType',
+            /* 'sourceType', */
             'companyNature',
             'phoneNum',
             'fax',
@@ -362,26 +362,29 @@ export default {
             'openingBank',
             'accountNumber',
             'remarks',
-            'subcontractorName',
-            'subcontractorFullname',
-            'inputerName',
+            /* 'subcontractorName',
+            'subcontractorFullname', */
+            /* 'inputerName', */
             'inputerFullname',
             'inputerPhoneNum',
-            'inputerDeptCode',
+            /* 'inputerDeptCode', */
             'inputerDeptName',
             /* 'attachment', */
             'notifyMethod',
-            'status',
-            'corpCode',
-            'prjCode'
+            /* 'status', */
+            /* 'corpCode',
+            'prjCode' */
           )
         )
+        
 
         this.departDetails = []
         if (JSON.stringify(record) !== '{}') {
           this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname])
         }
 
+        console.log(this.form,'form')
+        console.log(this.model,'model')
         this.form.setFieldsValue({ inputerFullname: this.nickname() })
         console.log(this.userInfo())
         this.form.setFieldsValue({ inputerPhoneNum: this.userInfo().phone })
@@ -444,12 +447,34 @@ export default {
         this.attachment[0].fileTokens = ''
       }
       console.log(this.attachment[0].groupId, '一开始的groupId')
-
+      console.log(this.model,'model')
       // 加载子表数据
+
       if (this.model.id) {
         let params = { id: this.model.id }
+        console.log(params,'params')
         this.requestSubTableData(this.url.stakeholderDetail.list, params, this.stakeholderDetailTable)
       }
+    },
+
+    initSelect(val) {   
+      var arr2=[];
+      if (val[0].indexOf(",") !== -1) {
+        let arr = val[0].split(",");
+        let arr1 = val[1].split(",");
+        for (let i = 0; i<arr.length; i++) {
+          arr2.push({
+            "realname": arr[i],
+            "username": arr1[i]
+          })
+        }
+      } else {
+        arr2 = [{
+          "realname": val[0],
+          "username": val[1]
+        }]
+      }
+      return arr2;
     },
 
     /** 整理成formData */
@@ -461,6 +486,7 @@ export default {
         stakeholderDetailList: allValues.tablesValue[0].values
       }
     },
+    // 新增提交
     handleOk() {
       /** 触发表单验证 */
       this.getAllTable()
@@ -501,12 +527,14 @@ export default {
           // 手机号码和电话号码转换为数字
           formDataString.inputerPhoneNum = Number(formDataString.inputerPhoneNum) //录入人电话
           formDataString.phoneNum = Number(formDataString.phoneNum) //电话号码
+          // 提醒方式数组改为字符串
           formDataString.notifyMethod = this.transformNotice(formDataString.notifyMethod)
 
           
           formDataString.stakeholderDetailList.forEach(function(item,index){
             item.phoneNum = Number(item.phoneNum)
             item.telephoneNum = Number(item.telephoneNum)
+            item.id = null
           })
 
           console.log(formDataString.stakeholderDetailList)
