@@ -149,7 +149,7 @@
               <a-select-option
                 v-for="d in departList"
                 :key="d.id"
-                :value="`${d.prjCode}.${d.orgCode}`"
+                :value="`${d.prjCode}.${d.orgCode}.${d.corpName}.${d.prjName}.${d.departName}`"
               >
                 <span style="float: left">{{ d.departName }}</span>
                 <span
@@ -454,13 +454,21 @@ export default {
         this.validate_status = 'error'
         return false
       }
+      let name = {
+        corpName: this.departSelected.split('.')[2],
+        prjName: this.departSelected.split('.')[3],
+        departName: this.departSelected.split('.')[4]
+      }
+      console.log(name)
       let obj = {
         prjCode: this.departSelected.split('.')[0],
         orgCode: this.departSelected.split('.')[1],
         username: this.form.getFieldValue('username')
       }
+      console.log('部门选择参数', obj)
       postAction('/sys/selectDepart', obj).then(res => {
         if (res.success) {
+          console.log('选择部门',res)
           this.departClear()
           this.loginSuccess()
         } else {

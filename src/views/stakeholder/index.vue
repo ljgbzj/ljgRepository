@@ -53,9 +53,9 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
-      <a-button @click="handleRevise" type="primary" icon="edit">编辑</a-button>
-      <a-button @click="batchDel" type="primary" icon="delete">删除</a-button>
-      <a-button @click="handleScan" type="primary" icon="eye">浏览</a-button>
+      <!-- <a-button @click="handleRevise" type="primary" icon="edit">编辑</a-button> -->
+      <a-button @click="batchAbandone" type="primary" icon="delete">废弃</a-button>
+      <!-- <a-button @click="handleScan" type="primary" icon="eye">浏览</a-button> -->
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
     </div>
 
@@ -84,16 +84,6 @@
 
           <a-divider type="vertical" />
           <a @click="batchAbandone($event,record.id,record.processInstanceId)">废弃</a>
-          <!-- <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown> -->
         </span>
       </a-table>
     </div>
@@ -107,6 +97,8 @@
 <script>
 import stakemodule from './modules/stakemodule'
 import { CmpListMixin } from '@/mixins/CmpListMixin'
+import { httpAction } from '@/api/manage'
+import qs from 'qs'
 
 export default {
   name: 'stakeholder',
@@ -153,14 +145,14 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          align:"center",
-          scopedSlots: { customRender: 'action' },
+          align: 'center',
+          scopedSlots: { customRender: 'action' }
         }
       ],
       url: {
         list: '/stakeholder/stakeholder/list',
         delete: '/stakeholder/stakeholder/delete',
-        deleteBatch: '/stakeholder/stakeholder/deleteBatch',
+        deleteBatch: "/flowable/action",
         exportXlsUrl: 'stakeholder/stakeholder/exportXls',
         importExcelUrl: 'stakeholder/stakeholder/importExcel'
       }
@@ -172,6 +164,58 @@ export default {
     }
   },
   methods: {
+    batchAbandone: function(event, id) {
+      if (!this.url.deleteBatch) {
+        this.$message.error('请设置url.deleteBatch属性!')
+        return
+      }
+      var ids = ''
+      var processInsId = ''
+      // 支持多项废弃的操作，通用方法
+      if (this.selectedRowKeys.length > 1) {
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectedRowKeys[a] + ','
+        }
+      } else if ((this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined)) {
+        ids = this.selectedRowKeys[0]
+      } else {
+        ids = id
+        if (id == undefined) {
+          this.$message.warning('请选择一条记录！')
+          return
+        } else {
+          ids = id
+        }
+      }
+      let flowDataString = {
+        api: '/process/delete',
+        processDefinitionKey: 'stakeholder'
+      }
+      let formDataString = {
+        id: ids
+      }
+      let params = {
+        flowDataString: JSON.stringify(flowDataString),
+        formDataString: JSON.stringify(formDataString)
+      }
+      let method = 'post'
+      var that = this
+      this.$confirm({
+        title: '确认废弃',
+        content: '是否废弃选中数据?',
+        onOk: function() {
+          httpAction(that.url.deleteBatch, qs.stringify(params), method).then(res => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.loadData()
+              that.onClearSelected()
+            } else {
+              that.$message.warning(res.message)
+            }
+          })
+        }
+      })
+    },
     handleChose() {
       console.log('这是选入方法！')
     },
