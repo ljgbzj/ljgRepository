@@ -144,14 +144,14 @@
         border-bottom: 1px solid #ddd;
       }
       :global(.ant-steps-item-content) {
-        width: 97%;
+        width: 96%;
         :global(.ant-steps-item-title) {
           display: inline-block;
-          width: 27%
+          width: 15%
         }
         :global(.ant-steps-item-description) {
           display: inline-block;
-          width: 70%;
+          width: 85%;
           .shenpi-detail-content{
             width: 86%;
           }
@@ -160,7 +160,6 @@
       .shenpi-info-area {
         width: 100%;
         padding: 5px 0;
-        // text-align: center;
         .shenpi-name {
           color: #333;
           font-weight: bold;

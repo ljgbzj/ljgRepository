@@ -262,14 +262,14 @@
       },
       // 时间选择器的禁用封装
       disabledStartDate (startValue) {
-        const endValue = this.queryParam.timeEnd;
+        const endValue = this.queryParam.maxStartTime;
         if (!startValue || !endValue) {
           return false;
         }
         return startValue.valueOf() > endValue.valueOf();
       },
       disabledEndDate (endValue) {
-        const startValue = this.queryParam.timeStart;
+        const startValue = this.queryParam.minStartTime;
         if (!endValue || !startValue) {
           return false;
         }
