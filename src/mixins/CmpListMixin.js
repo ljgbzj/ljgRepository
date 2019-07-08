@@ -4,7 +4,7 @@
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
 import { filterObj } from '@/utils/util';
-import { deleteAction, getAction,downFile } from '@/api/manage'
+import { deleteAction, getAction, downFile } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
 import moment from "moment"
@@ -183,10 +183,8 @@ export const CmpListMixin = {
       });
     },
     handleEdit: function (record) {
-      console.log(record,'record')
-      console.log(this.$refs.modalForm)
       this.$refs.modalForm.edit(record);
-      this.$refs.modalForm.title = "编辑111";
+      this.$refs.modalForm.title = "编辑";
     },
     handleAdd: function () {
       this.$refs.modalForm.add();
@@ -285,7 +283,7 @@ export const CmpListMixin = {
     },
 
     // 初始化选人组件
-    initSelect(val) {   
+    initSelect(val) {
       var arr2=[];
       if (val[0].indexOf(",") !== -1) {
         let arr = val[0].split(",");
@@ -303,8 +301,170 @@ export const CmpListMixin = {
         }]
       }
       return arr2;
-    }
+    },
 
+    // 初始化上传组件
+    initUpload(that,k){
+      if (that.model.attachment !== undefined) {
+        if (that.model.attachment == null || that.model.attachment == '') {
+          that.attachment[k].groupId = that.uuid();
+        } else {
+          that.attachment[k].groupId = that.model.attachment;
+        }
+        that.attachment[k].fileTokens = '';
+        getAction(that.url.fileFind,{groupId: that.model.attachment}).then((res)=>{
+          for (let i = 0;i < res.result.length; i++) {
+            if (res.result[i].viewPath.substring(res.result[i].viewPath.length-4) == 'jpeg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'jpg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'png') {
+              let fileChild = {
+                response: {
+                  result: {
+                    fileTokens: res.result[i].fileToken
+                  }
+                },
+                uid: i,
+                name: res.result[i].uploadFile.fileName,
+                status: 'done',
+                type: 'image/jpeg',
+                url: that.url.imgerver + "/" + res.result[i].viewPath
+              };
+              that.fileList.push(fileChild);
+              that.attachment[k].fileTokens += res.result[i].fileToken + ','
+            } else {
+              let fileChild = {
+                response: {
+                  result: {
+                    fileTokens: res.result[i].fileToken
+                  }
+                },
+                uid: i,
+                name: res.result[i].uploadFile.fileName,
+                status: 'done',
+                type: 'text/plain',
+                url: that.url.imgerver + "/" + res.result[i].viewPath
+              };
+              that.fileList.push(fileChild);
+              that.attachment[k].fileTokens += res.result[i].fileToken + ','
+            }
+          }
+        })
+      } else {
+        that.attachment[k].groupId = that.uuid();
+        that.attachment[k].fileTokens = '';
+      }
+    },
+    // 生成UUid  上传附件时给后端groupid
+    uuid() {
+      var s = [];
+      var hexDigits = "0123456789abcdef";
+      for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      }
+      s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      // s[8] = s[13] = s[18] = s[23] = "-";
+      s[8] = s[13] = s[18] = s[23] = "";
+      var uuid = s.join("");
+      return uuid;
+    },
+    // 下载预览函数
+    handlePreview(file) {
+      let fileArray = file.name.split(".");
+      let fileName = fileArray[0];
+      let fileType = fileArray[1];
+      if (file.type == "image/jpeg") {
+        if (file.url || file.thumbUrl) {
+          this.previewImage = file.url || file.thumbUrl
+        } else {
+          this.previewImage = this.getIdCardView();
+        }
+        this.previewVisible = true
+      } else {
+        downFile(this.url.fileDownLoad,{id: file.response.result.fileTokens}).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data]), fileName + '.' + fileType )
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data]))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName + '.' + fileType )
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      }
+    },
+    // 上传改变函数
+    handleChange1(info,that,k) {
+      if (info.file.status === 'removed') {
+        that.attachment[k].fileTokens = that.attachment[k].fileTokens.replace(info.file.response.result.fileTokens + ',',"");
+      }
+      that.fileList = info.fileList;
+      if (info.file.status === 'uploading') {
+        return
+      }
+      if (info.file.status === 'done') {
+        var response = info.file.response;
+        if (response.success) {
+          that.attachment[k].fileTokens += response.result.fileTokens + ",";
+        } else {
+          that.$message.warning(response.message);
+        }
+      }
+    },
+
+    // 初始化流程图和意见审批表
+    initChartAndComment(that,chartUrl,taskCommentUrl) {
+      if(JSON.stringify(record) !== "{}") {
+        let params = {
+          id: that.model.id
+        };
+        let httpGetUrlC = chartUrl;
+        let httpGetUrlTc = taskCommentUrl;
+        getActionUrl(httpGetUrlC,params).then((res)=>{
+          that.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        }).finally(() => {
+          // that.confirmLoading = false;
+          // that.close();
+        })
+        getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
+          that.commentList = res.result.taskListEnd.concat(res.result.taskListIng);
+          that.currentList = res.result.taskListEnd.length-1;
+
+          that.finishedList= Object.assign(res.result.taskListEnd);
+          that.unfinishedList= Object.assign(res.result.taskListIng);
+
+          // 渲染流程图tab中的数据列表
+          that.arr.length = 0;
+          that.arr1.length = 0;
+
+          for (let i in that.finishedList) {
+              that.arr.push(that.finishedList[i])
+          }
+          for (let i in that.unfinishedList) {
+              that.arr1.push(that.unfinishedList[i])
+          }
+        }).finally(() => {
+        })
+      } else {
+        let params = {
+          processDefinitionKey: 'leave'
+        };
+        let httpGetUrlC = that.url.chart;
+        getActionUrl(httpGetUrlC, params).then((res)=>{
+          this.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        }).finally(() => {
+          // that.confirmLoading = false;
+          // that.close();
+        })
+      }
+    }
   }
 
 }

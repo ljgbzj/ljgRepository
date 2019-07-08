@@ -110,6 +110,7 @@
                 <a-form-item
                 :labelCol="labelCol1"
                 :wrapperCol="wrapperCol1"
+                class="upload"
                 label="上传附件">
                   <a-upload
                     :action="uploadAction"
@@ -119,19 +120,28 @@
                     @change="handleChange"
                     @preview="handlePreview"
                     :multiple="true"
-                    :beforeUpload="beforeUpload"
                     class="upload-list-inline"
-                    :data="uploadParams"
                   >
                     <a-button>
                       <a-icon type="upload"/>
-                      upload
+                      上传
                     </a-button>
                   </a-upload>
                   <a-modal :visible="previewVisible" :footer="null" @cancel="handlePicCancel">
                     <img alt="example" style="width: 100%" :src="previewImage"/>
                   </a-modal>
                   <br/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :md="24" :sm="8">
+                <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
+                  <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
+                    <a-checkbox value="email">邮件</a-checkbox>
+                    <a-checkbox value="message">手机短信</a-checkbox>
+                    <a-checkbox value="euc">EUC消息</a-checkbox>
+                  </a-checkbox-group>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -179,9 +189,9 @@
             <a-row :gutter="24" v-if="!btns">
               <a-col :md="24" :sm="8">
                 <a-form-item class="btnClass">
+                  <a-button @click="handleOk" icon="check" type="primary" style="margin-right:10px" class="confirm">{{model.status == undefined ? '提交' : '保存'}}</a-button>
                   <a-button @click="handleSave('start')" icon="diff" v-if="model.status == undefined" style="margin-right:10px" class="cancel">暂存</a-button>
-                  <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
-                  <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
+                  <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">关闭</a-button>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -315,6 +325,7 @@
         // btnsValue: '',
         commentList: {},
         currentList: 0,
+        finishedList:{},
         unfinishedList:{},
         urlChart: '',
         goodsColumns: [
@@ -409,7 +420,6 @@
           fieldName: 'attachment',
           tableName: 'oa_leave_application'
         }],
-        uploadParams: {}
       }
     },
     created () {
@@ -418,7 +428,7 @@
       this.attachment[0].fileTokens = '';
     },
     methods: {
-      ...mapGetters(["nickname","userInfo"]),
+      ...mapGetters(["nickname"]),
       add () {
         this.edit({});
       },
@@ -441,6 +451,7 @@
           // 'hrLeaderRealname',
           // 'generalManagerUsername',
           // 'generalManagerRealname',
+          'notifyMethod',
           'remarks',
           'status',
           '_taskComment'));
@@ -450,112 +461,32 @@
         this.hrDetails = [];
         this.mgDetails = [];
         if (JSON.stringify(record) !== "{}") {
-          this.departDetails = this.initSelect([this.model.departmentLeaderRealname,this.model.departmentLeaderUsername]);
-          this.hrDetails = this.initSelect([this.model.hrLeaderRealname,this.model.hrLeaderUsername]);
-          this.mgDetails = this.initSelect([this.model.generalManagerRealname,this.model.generalManagerUsername]);
+          if (this.model.departmentLeaderRealname != '' && this.model.departmentLeaderUsername != '') {
+            this.departDetails = this.initSelect([this.model.departmentLeaderRealname,this.model.departmentLeaderUsername]);
+          }
+          if (this.model.hrLeaderRealname != '' && this.model.hrLeaderUsername != '') {
+            this.hrDetails = this.initSelect([this.model.hrLeaderRealname,this.model.hrLeaderUsername]);
+          }
+          if (this.model.generalManagerRealname != '' && this.model.generalManagerUsername != '') {
+            this.mgDetails = this.initSelect([this.model.generalManagerRealname,this.model.generalManagerUsername]);
+          }
         }
         //时间格式化
         this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
         this.form.setFieldsValue({timeEnd:this.model.timeEnd?moment(this.model.timeEnd):null})
         this.form.setFieldsValue({inputerFullname: this.nickname()})
+
+        // 初始化新任务通知
+        if (this.model.notifyMethod != undefined) {
+          this.form.setFieldsValue({notifyMethod: eval(this.model.notifyMethod)})
+        }
         });
+        // 初始化上传文件  0代表第1个上传附件初始化，1就代表第二个上传附件初始化，以此类推
+        this.initUpload(this,0);
 
-        // // 初始化上传文件
-        if (this.model.attachment !== undefined) {
-          console.log(this.model.attachment,'拿到的attachment');
-          this.attachment[0].groupId = this.model.attachment;
-          this.attachment[0].fileTokens = '';
-          getAction(this.url.fileFind,{groupId: this.model.attachment}).then((res)=>{
-            console.log(res,'请求到的attachment');
-            for (let i = 0;i < res.result.length; i++) {
-              if (res.result[i].viewPath.substring(res.result[i].viewPath.length-4) == 'jpeg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'jpg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'png') {
-                console.log('第一个进来了');
-                let fileChild = {
-                  response: {
-                    result: {
-                      fileTokens: res.result[i].fileToken
-                    }
-                  },
-                  uid: i,
-                  name: res.result[i].uploadFile.fileName,
-                  status: 'done',
-                  type: 'image/jpeg',
-                  url: this.url.imgerver + "/" + res.result[i].viewPath
-                };
-                this.fileList.push(fileChild);
-                this.attachment[0].fileTokens += res.result[i].fileToken + ','
-              } else {
-                console.log('第二个进来了');
-                let fileChild = {
-                  response: {
-                    result: {
-                      fileTokens: res.result[i].fileToken
-                    }
-                  },
-                  uid: i,
-                  name: res.result[i].uploadFile.fileName,
-                  status: 'done',
-                  type: 'text/plain',
-                  url: this.url.imgerver + "/" + res.result[i].viewPath
-                };
-                this.fileList.push(fileChild);
-                this.attachment[0].fileTokens += res.result[i].fileToken + ','
-              }
-            }
-          })
-          console.log(this.attachment,'合成问题');
-        } else {
-          this.attachment[0].groupId = this.uuid();
-          this.attachment[0].fileTokens = '';
-        }
-        console.log(this.attachment[0].groupId,'一开始的groupId');
         //请求流程图 + 审批意见
-        const that = this;
-        if(JSON.stringify(record) !== "{}") {
-          let params = {
-            id: that.model.id
-          };
-          let httpGetUrlC = that.url.chart;
-          let httpGetUrlTc = that.url.taskComment;
-          getActionUrl(httpGetUrlC,params).then((res)=>{
-            this.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-          }).finally(() => {
-            // that.confirmLoading = false;
-            // that.close();
-          })
-          getAction(httpGetUrlTc, { id: that.model.id }).then((res)=>{
-            this.commentList = res.result.taskListEnd.concat(res.result.taskListIng);
-            this.currentList = res.result.taskListEnd.length-1;
-
-            this.finishedList= Object.assign(res.result.taskListEnd);
-            this.unfinishedList= Object.assign(res.result.taskListIng);
-
-            // 渲染流程图tab中的数据列表
-            var that = this;
-            that.arr.length = 0;
-            that.arr1.length = 0;
-
-            for (let i in that.finishedList) {
-                that.arr.push(that.finishedList[i])
-            }
-            for (let i in that.unfinishedList) {
-                that.arr1.push(that.unfinishedList[i])
-            }
-          }).finally(() => {
-          })
-        } else {
-          let params = {
-            processDefinitionKey: 'leave'
-          };
-          let httpGetUrlC = that.url.chart;
-          getActionUrl(httpGetUrlC, params).then((res)=>{
-            this.urlChart =  'data:image/png;base64,' + btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-          }).finally(() => {
-            // that.confirmLoading = false;
-            // that.close();
-          })
-        }
-
+        // 第二个参数为流程图接口地址，第三哥参数为审批意见接口地址
+        this.initChartAndComment(this,this.url.chart,this.url.taskComment);
       },
       loadData(){},
       close () {
@@ -600,7 +531,6 @@
               formDataString.generalManagerRealname = that.generalManagerRealname;
 
               // 上传组件
-              console.log(that.attachment,'csaccawc');
               for (let i = 0; i<that.attachment.length; i++) {
                 formDataString.attachment = that.attachment[i].groupId
               }
@@ -610,7 +540,6 @@
                 formDataString: JSON.stringify(formDataString),
                 attachmentString: JSON.stringify(this.attachment)
               }
-              console.log(params2,'这是上传的参数');
               httpAction(httpurl,qs.stringify(params2),method).then((res)=>{
                 if(res.success){
                   that.$message.success(res.message);
@@ -630,11 +559,9 @@
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
-          if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            // let qsMothods = '';
             let formDataString = Object.assign(this.model, values);
             httpurl+=this.url.add;
             method = 'post';
@@ -682,7 +609,6 @@
               that.confirmLoading = false;
               that.close();
             })
-            }
         })
       },
       handleCancel () {
@@ -746,76 +672,12 @@
         this.generalManagerRealname = val.realname;
         this.generalManagerUsername = val.username;
       },
-      handleChange(info) {
-        this.uploadParams = {};
-        if (info.file.status === 'removed') {
-          console.log(info,'移除返回');
-          console.log(this.attachment[0].fileTokens,'母亲');
-          console.log(info.file.response.result.fileTokens,'jialuo');
-          this.attachment[0].fileTokens = this.attachment[0].fileTokens.replace(info.file.response.result.fileTokens + ',',"");
-          console.log(this.attachment,'删除后的superstar');
-        }
-        this.fileList = info.fileList;
-        if (info.file.status === 'uploading') {
-          return
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          if (response.success) {
-            this.picUrl += response.message + ",";
-            console.log(response.result,'返回值');
-            this.attachment[0].fileTokens += response.result.fileTokens + ",";
-            console.log(this.attachment[0].fileTokens,'看看之后');
-            // this.attachment.push({ 
-            //   name: response.result.uploadFile.fileName,
-            //   url: response.result.viewPath,
-            //   id: response.result.fileTokens
-            // })
-          } else {
-            this.$message.warning(response.message);
-          }
-        }
-      },
-      handlePreview(file) {
-        let fileArray = file.name.split(".");
-        let fileName = fileArray[0];
-        let fileType = fileArray[1];
-        if (file.type == "image/jpeg") {
-          if (file.url || file.thumbUrl) {
-            this.previewImage = file.url || file.thumbUrl
-          } else {
-            this.previewImage = this.getIdCardView();
-          }
-          this.previewVisible = true
-        } else {
-          downFile(this.url.fileDownLoad,{id: file.response.result.fileTokens}).then((data)=>{
-            if (!data) {
-              this.$message.warning("文件下载失败")
-              return
-            }
-            if (typeof window.navigator.msSaveBlob !== 'undefined') {
-              window.navigator.msSaveBlob(new Blob([data]), fileName + '.' + fileType )
-            }else{
-              let url = window.URL.createObjectURL(new Blob([data]))
-              let link = document.createElement('a')
-              link.style.display = 'none'
-              link.href = url
-              link.setAttribute('download', fileName + '.' + fileType )
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link); //下载完成移除元素
-              window.URL.revokeObjectURL(url); //释放掉blob对象
-            }
-          })
-        }
+      handleChange(info){
+        //调用改变方法
+        this.handleChange1(info,this,0);
       },
       handlePicCancel() {
         this.previewVisible = false
-      },
-      beforeUpload(file,fileList) {
-        this.uploadParams = {
-          json: '{"md5":"' + md5(JSON.stringify(file)) + '","fileName":"'+file.name + '"}'
-        }
       },
       // 时间选择器的禁用封装
       disabledStartDate (startValue) {
@@ -831,26 +693,6 @@
           return false;
         }
         return startValue.valueOf() >= endValue.valueOf();
-      },
-      // 生成UUid  上传附件时给后端groupid
-      uuid() {
-        var s = [];
-        var hexDigits = "0123456789abcdef";
-        for (var i = 0; i < 36; i++) {
-            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-        }
-        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-        // s[8] = s[13] = s[18] = s[23] = "-";
-        s[8] = s[13] = s[18] = s[23] = "";
-        var uuid = s.join("");
-        return uuid;
-      },
-      getIdCardView() {
-        let pics = this.model.idcardPic.split(",");
-        let pics_len = pics.length;
-        // 显示上传的最后一个图片
-        return this.url.imgerver + "/" + pics[pics_len-2];
       }
     },
     computed: {
