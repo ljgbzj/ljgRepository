@@ -50,6 +50,7 @@ export const JEditableTableMixin = {
     add() {
       if (typeof this.addBefore === 'function') this.addBefore()
       // 默认新增空数据
+      console.log(typeof this.addBefore, 'before')
       let rowNum = this.addDefaultRowNum
       if (typeof rowNum !== 'number') {
         rowNum = 1
@@ -63,13 +64,21 @@ export const JEditableTableMixin = {
     },
     /** 当点击了编辑（修改）按钮时调用此方法 */
     edit(record) {
-      if (typeof this.editBefore === 'function') this.editBefore(record)
+      console.log('第二步，调用子组件中的edit方法')
+      if (typeof this.editBefore === 'function') {
+        console.log('如果editBefore方法存在，则调用')
+        this.editBefore(record)
+      }
       this.visible = true
       this.activeKey = this.refKeys[0]
+      // 表单重置数据
       this.form.resetFields()
+      // 表单填充数据
       this.model = Object.assign({}, record)
-      console.log(typeof this.editAfter)
-      if (typeof this.editAfter === 'function') this.editAfter(this.model)
+      if (typeof this.editAfter === 'function') {
+        console.log('如果editAfter方法存在，则调用','并将干系人信息record传入方法')
+        this.editAfter(this.model)
+      }
     },
     /** 关闭弹窗，并将所有JEditableTable实例回归到初始状态 */
     close() {
@@ -83,11 +92,8 @@ export const JEditableTableMixin = {
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab) {
       tab.loading = true
-      console.log(tab, 'tab')
-      console.log(tab.loading, 'loading')
       getAction(url, params).then(res => {
-        console.log(res,'res')
-        tab.dataSource = res.result.stakeholderDetailList || []
+        tab.dataSource = res.result || []
       }).finally(() => {
         tab.loading = false
       })

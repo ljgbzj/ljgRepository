@@ -17,7 +17,7 @@
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
         <a-avatar shape="square" class="avatar" :src="getAvatar()"/>
-        <!-- <span v-if="isDesktop()">欢迎您，{{ nickname() }}</span> -->
+        <span v-if="isDesktop()" style="margin-left: 10px">部门名称——{{ nickname() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
@@ -146,7 +146,7 @@ span.action{
   padding: 0 10px;
 }
 .action.action-full.ant-dropdown-link.user-dropdown-menu {
-  padding: 0 80px 0 20px;
+  /* padding: 0 80px 0 20px; */
   display: flex;
   align-items: center;
   .avatar {

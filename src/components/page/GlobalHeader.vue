@@ -19,7 +19,7 @@
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
           @click.native="toggle"
         />
-        <span v-if="device === 'desktop'">建管云欢迎您</span>
+        <span v-if="device === 'desktop'">当前用户公司/项目名称</span>
         <span v-else>ECIDI-CMP</span>
       </div>
 
@@ -29,21 +29,24 @@
     <!-- 顶部导航栏模式 -->
     <div v-else :class="['top-nav-header-index', theme]">
       <div class="header-index-wide">
-        <div class="header-index-left" :style="topMenuStyle.headerIndexLeft">
+        <!-- <div class="header-index-left" :style="topMenuStyle.headerIndexLeft"> -->
+        <div class="header-index-left">
           <logo
             class="top-nav-header"
             :show-title="device !== 'mobile'"
             :style="topMenuStyle.topNavHeader"
           />
-          <div v-if="device !== 'mobile'" :style="topMenuStyle.topSmenuStyle">
-            <s-menu mode="horizontal" :menu="menus" :theme="theme"></s-menu>
+          <!-- <div v-if="device !== 'mobile'" :style="topMenuStyle.topSmenuStyle"> -->
+          <div v-if="device !== 'mobile'" class="menu-wrapper">
+            <!-- <s-menu mode="horizontal" :menu="menus" :theme="theme"></s-menu> -->
+            <su-menu mode="horizontal" :menu="menus" :theme="theme"></su-menu>
           </div>
-          <a-icon
+          <!-- <a-icon
             v-else
             class="trigger"
             :type="collapsed ? 'menu-fold' : 'menu-unfold'"
             @click.native="toggle"
-          ></a-icon>
+          ></a-icon> -->
         </div>
         <user-menu
           class="header-index-right"
@@ -59,7 +62,7 @@
 import UserMenu from '../tools/UserMenu'
 import SMenu from '../menu/'
 import Logo from '../tools/Logo'
-
+import SuMenu from '../menu/menu'
 import { mixin } from '@/utils/mixin.js'
 
 export default {
@@ -67,6 +70,7 @@ export default {
   components: {
     UserMenu,
     SMenu,
+    SuMenu,
     Logo
   },
   mixins: [mixin],
@@ -157,11 +161,11 @@ export default {
           this.topMenuStyle.headerIndexRight = {}
           this.topMenuStyle.headerIndexLeft = {}
         } else {
-          let rightWidth = '215px'
+          /* let rightWidth = '320px'
           this.topMenuStyle.topNavHeader = { 'min-width': '170px' }
           this.topMenuStyle.topSmenuStyle = { width: 'calc(100% - 165px)' }
           this.topMenuStyle.headerIndexRight = { 'min-width': rightWidth }
-          this.topMenuStyle.headerIndexLeft = { width: `calc(100% - ${rightWidth})` }
+          this.topMenuStyle.headerIndexLeft = { width: `calc(100% - ${rightWidth})` } */
         }
       }
     }
