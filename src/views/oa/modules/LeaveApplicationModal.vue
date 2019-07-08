@@ -167,7 +167,7 @@
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row :gutter="24">
+            <a-row :gutter="24" v-if="btns">
               <a-col :md="24" :sm="8">
                 <a-form-item class="btnClass">
                   <template v-for="(placement, index) in btns">
@@ -175,6 +175,7 @@
                       <a-button
                       style="margin-right:10px"
                       @click="onChange(placement)"
+                      :icon="placement.btnIcon"
                       class="cancel">{{placement.btnName}}</a-button>
                       <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
                         <a-menu-item v-for="(v,k) in rollback" :key="k">
@@ -483,10 +484,9 @@
         });
         // 初始化上传文件  0代表第1个上传附件初始化，1就代表第二个上传附件初始化，以此类推
         this.initUpload(this,0);
-
         //请求流程图 + 审批意见
         // 第二个参数为流程图接口地址，第三哥参数为审批意见接口地址
-        this.initChartAndComment(this,this.url.chart,this.url.taskComment);
+        this.initChartAndComment(this,record,this.url.chart,this.url.taskComment);
       },
       loadData(){},
       close () {
