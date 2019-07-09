@@ -250,7 +250,7 @@
     /* border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc; */
     background-color: #EFF1F2;
-    padding-top: 12px;
+    padding-top: 13px;
     height: 50px !important;
     margin-left: 24px;
 

@@ -102,7 +102,6 @@
 
 <style lang="less" scoped>
   .proc_bg {
-    margin-top: 10px;
     padding: 10px 15px;
     height: 85px;
     overflow: hidden;

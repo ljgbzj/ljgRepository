@@ -4,7 +4,7 @@
  * data中url定义 list为查询列表  delete为删除单条记录  deleteBatch为批量删除
  */
 import { filterObj } from '@/utils/util';
-import { deleteAction, getAction, downFile } from '@/api/manage'
+import { deleteAction, getAction, downFile, getActionUrl } from '@/api/manage'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from "@/store/mutation-types"
 import moment from "moment"
@@ -412,7 +412,11 @@ export const CmpListMixin = {
       if (info.file.status === 'done') {
         var response = info.file.response;
         if (response.success) {
-          that.attachment[k].fileTokens += response.result.fileTokens + ",";
+          if (that.attachment[k].fileTokens == '') {
+            that.attachment[k].fileTokens += response.result.fileTokens;
+          } else {
+            that.attachment[k].fileTokens += "," + response.result.fileTokens;
+          }
         } else {
           that.$message.warning(response.message);
         }
@@ -420,7 +424,7 @@ export const CmpListMixin = {
     },
 
     // 初始化流程图和意见审批表
-    initChartAndComment(that,chartUrl,taskCommentUrl) {
+    initChartAndComment(that,record,chartUrl,taskCommentUrl) {
       if(JSON.stringify(record) !== "{}") {
         let params = {
           id: that.model.id

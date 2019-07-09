@@ -176,6 +176,7 @@ body {
 .layout {
   min-height: 100vh !important;
   overflow-x: hidden;
+  overflow-y: hidden;
 
   &.mobile {
     .ant-layout-content {
@@ -210,6 +211,7 @@ body {
       &.content-width-Fluid {
         .header-index-wide {
           margin-left: 0;
+          display: flex;
         }
       }
     }
@@ -412,12 +414,12 @@ body {
       }
 
       .header-index-left {
-        flex: 1 1;
-        /* height: 79px; */
+        /* flex: 1 1; */
+        height: 64px;
         display: flex;
         align-items: center;
         margin-left: 80px;
-        padding-right: 275px;
+        /* padding-right: 275px; */
 
         .logo.top-nav-header {
           width: 165px;
@@ -457,10 +459,9 @@ body {
       }
 
       .header-index-right {
-        float: right;
         display: flex;
         align-items: center;
-        /* height: 79px; */
+        height: 64px;
         overflow: hidden;
         .action:hover {
           background-color: rgba(0, 0, 0, 0.05);
@@ -473,10 +474,17 @@ body {
 
       .header-index-wide {
         .header-index-left {
+          flex: 1;
+          display: flex;
           .logo {
             h1 {
               color: #002140;
             }
+          }
+          .menu-wrapper{
+            flex: 1 1;
+            height: 100%;
+            margin:0 50px;
           }
         }
       }
