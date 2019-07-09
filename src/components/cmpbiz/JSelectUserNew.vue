@@ -15,7 +15,7 @@
     </span> -->
 
     <!-- 选择多个用户支持排序 -->
-    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK" :selectListUser="selectedDetails"></j-select-user-new-model>
+    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK" :selectListUser="selectedDetails.value"></j-select-user-new-model>
   </div>
 </template>
 
@@ -40,7 +40,7 @@
         default: false
       },
       selectedDetails: {
-        type: Array,
+        type: Object,
         required:false
       }
     },
@@ -62,11 +62,15 @@
           if(usernames.length>0){
             userNameStr = usernames.join(",")
           }
-          let userDetails = {
+          let userDetails = {colum:'',target:[],value:{}}
+          userDetails.cloum=selectedDetails.colum;
+          userDetails.target=selectedDetails.target;
+          userDetails.value = {
             username: userNameStr,
             realname: nameStr
           }
-          this.$emit("userDetails",userDetails)
+          console.log(userDetails,'細節');
+          this.$emit("callback",userDetails)
           // if(this.triggerChange){
           //   this.$emit("change",nameStr)
           // }else{

@@ -283,8 +283,19 @@ export const CmpListMixin = {
     },
 
     // 初始化选人组件
-    initSelect(val) {
+    initSelect(col,val) {
       var arr2=[];
+      for(var i=0;i<val[0].split(',').length;i++ ) {
+        var item = {};
+        for (var j = 0; j < col.length; j++) {
+          this.$set(item, col[j], val[j].split(',')[i]);
+        }
+        arr2.push(item);
+      }
+
+
+
+      /*
       if (val[0].indexOf(",") !== -1) {
         let arr = val[0].split(",");
         let arr1 = val[1].split(",");
@@ -299,7 +310,7 @@ export const CmpListMixin = {
           "realname": val[0],
           "username": val[1]
         }]
-      }
+      }*/
       return arr2;
     },
 
