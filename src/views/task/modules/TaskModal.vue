@@ -32,7 +32,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="委托人">
-          <j-select-user-by-dep v-model="assignee" @userName="departmentUserName"></j-select-user-by-dep>
+          <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new>
         </a-form-item>
         <a-row :gutter="24">
           <a-col :span="24">
@@ -42,7 +42,7 @@
               class="btnClass"
             >
               <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
-              <a-button @click="handleOk" icon="check" class="confirm">提交</a-button>
+              <a-button @click="handleOk" icon="check" type="primary" class="confirm">提交</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-  import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
+  import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import { httpAction, getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -62,7 +62,7 @@
   export default {
     name: "TaskModal",
     components: {
-      JSelectUserByDep
+      JSelectUserNew
     },
     data () {
       return {
@@ -85,10 +85,11 @@
         validatorRules:{
         },  
         url: {
-          add: '/flowable/task/delegateTask'
+          add: '/flowable/task/delegate'
         },
         assigneeName: '',
-        assignee: ''
+        assignee: '',
+        departDetails: []
       }
     },
     created () {
@@ -99,6 +100,7 @@
       },
       edit (record) {
         this.form.resetFields();
+        this.departDetails = [];
         if(record.formData !== undefined) {
           this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
         } else {
@@ -155,9 +157,9 @@
       handleCancel () {
         this.close()
       },
-      departmentUserName(val) {
-        this.assigneeName = val;
-      },
+      userDetails(val) {
+        this.assigneeName = val.username;
+      }
     }
   }
 </script>
@@ -240,9 +242,9 @@
       .confirm {
         min-width:96px;
         height:40px;
-        background:rgba(109,98,255,1);
+        // background:rgba(109,98,255,1);
         border-radius:4px;
-        color: rgba(255,255,255,1);
+        // color: rgba(255,255,255,1);
         padding: 5px;
       }
     }

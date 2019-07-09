@@ -58,7 +58,7 @@
         :loading="loading"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditform(record)">执行</a>&nbsp;
+          <a @click="handleEditform(record)">审核</a>&nbsp;
           <a @click="handleEntrust(record)">委托</a>
         </span>
       </a-table>
@@ -151,7 +151,6 @@
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record,'待办');
         let params = {
           businessKey: record.businessKey,
           processDefinitionKey: record.processDefinitionKey, 
@@ -160,14 +159,13 @@
           taskId: record.taskId
         }
         getAction(this.url.form, params).then((res) => {
-          console.log(res,'待办任务白哦哦');
           if (res.success) {
             this.componentsUrl = res.result.formPath;
-            record = Object.assign(res.result, {taskId: record.taskId}) 
+            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName}) 
             //this.dataSource = res.result.dataList;
             //this.ipagination.total = res.result.total;
             this.$refs.modalForm.edit(record);
-            this.$refs.modalForm.title = "执行";
+            this.$refs.modalForm.title = "审核";
           }
         })
       },

@@ -1,7 +1,8 @@
 <template>
   <a-modal
     :footer="null"
-    :title="title"
+    :title="null"
+    :closable="false"
     :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
@@ -13,10 +14,19 @@
     v-dialogDrag
     :maskClosable="false"
     style="top:5%;">
+    <div class="title">
+      <div>
+        <img :src="title | IconUrl" />
+        {{title}}
+        <span>{{ nodeName ? '(' + nodeName + ')': ''}}</span>
+      </div>
+      <a-icon type="close" class="closeIcon" @click="handleCancel"/>
+    </div>
     <a-tabs defaultActiveKey="1">
       <a-tab-pane key="1">
         <span slot="tab">
-          <a-icon type="project" />
+          <!-- <a-icon type="project" /> -->
+          <img src="@/assets/img/login/detail.png" alt="">
           表单详情
         </span>
         <a-spin :spinning="confirmLoading">
@@ -138,7 +148,7 @@
               <a-col :md="24" :sm="8">
                 <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
                   <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
-                    <a-checkbox value="email">邮件</a-checkbox>
+                    <a-checkbox value="email" disabled>邮件</a-checkbox>
                     <a-checkbox value="message">手机短信</a-checkbox>
                     <a-checkbox value="euc">EUC消息</a-checkbox>
                   </a-checkbox-group>
@@ -161,7 +171,7 @@
                 :labelCol="labelCol1"
                 :wrapperCol="wrapperCol1"
                 label="审批意见"
-                  v-show="model.status !== undefined && model.status !== 0 && title !== '编辑'"
+                  v-show="model.status !== undefined && model.status !== 0 && title !== '编辑' && nodeName != '填写表单'"
                   :disabled= "title == '编辑'">
                   <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns"/>
                 </a-form-item>
@@ -197,7 +207,7 @@
               </a-col>
             </a-row>
           </a-form>
-          <a-row :gutter="24" v-if="!btns">
+          <a-row :gutter="24">
               <a-col :md="24" :sm="8">
                 <option-list :commentList="commentList" :currentList="currentList" v-if="model.status !== undefined"></option-list>
               </a-col>
@@ -206,7 +216,8 @@
       </a-tab-pane>
       <a-tab-pane key="2" forceRender>
         <span slot="tab">
-          <a-icon type="bell" />
+          <!-- <a-icon type="bell" /> -->
+          <img src="@/assets/img/login/process.png" alt="">
           流程图
         </span>
         <div>
@@ -421,6 +432,28 @@
           fieldName: 'attachment',
           tableName: 'oa_leave_application'
         }],
+        nodeName: ''
+      }
+    },
+    filters: {
+      IconUrl(val) {
+        console.log(val,'来吧');
+        switch (val) {
+          case "新增":
+            return require(`@/assets/img/login/add.png`)
+            break
+          case "编辑":
+            return require(`@assets/img/login/edit.png`)
+            break
+          case "查看":
+            return require(`@assets/img/login/view.png`)
+            break
+          case "审核":
+            return require(`@assets/img/login/audit.png`)
+            break
+          default:
+            break
+        } 
       }
     },
     created () {
@@ -435,11 +468,16 @@
       },
       edit (record) {
         this.form.resetFields();
+        if (record.nodeName != undefined) {
+          this.nodeName = record.nodeName;
+        }
+        console.log(record,'见证奇迹的时刻');
         if(record.formData !== undefined) {
           this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
         } else {
           this.model = Object.assign({}, record);
         }
+        console.log(this.model,'这是model');
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
@@ -558,58 +596,61 @@
       handleSave (lab,id) {
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            let formDataString = Object.assign(this.model, values);
-            httpurl+=this.url.add;
-            method = 'post';
-            let flowDataString = {};
-            if (lab !== 'start') {
-              flowDataString.api = lab;
-              if (lab == '/task/jump') {
-                flowDataString.targetNodeId = id;
-              }
-            } else {
-              flowDataString.api = '/process/start';
+        if (this.form.getFieldValue('type') == undefined) {
+          this.$message.warning('请假类型不能为空');
+        } else {
+          let values = this.form.getFieldsValue();
+          that.confirmLoading = true;
+          let httpurl = '';
+          let method = '';
+          let formDataString = Object.assign(this.model, values);
+          httpurl+=this.url.add;
+          method = 'post';
+          let flowDataString = {};
+          if (lab !== 'start') {
+            flowDataString.api = lab;
+            if (lab == '/task/jump') {
+              flowDataString.targetNodeId = id;
             }
-            flowDataString.processDefinitionKey = 'leave';
+          } else {
+            flowDataString.api = '/process/start';
+          }
+          flowDataString.processDefinitionKey = 'leave';
 
-            //时间格式化
-            formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
-            formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
-            
-            // 选人控件
-            formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
-            formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
-            formDataString.hrLeaderUsername = that.hrLeaderUsername;
-            formDataString.hrLeaderRealname = that.hrLeaderRealname;
-            formDataString.generalManagerUsername = that.generalManagerUsername;
-            formDataString.generalManagerRealname = that.generalManagerRealname;
+          //时间格式化
+          formDataString.timeStart = formDataString.timeStart?formDataString.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
+          formDataString.timeEnd = formDataString.timeEnd?formDataString.timeEnd.format('YYYY-MM-DD HH:mm:ss'):null;
+          
+          // 选人控件
+          formDataString.departmentLeaderUsername = that.departmentLeaderUsername;
+          formDataString.departmentLeaderRealname = that.departmentLeaderRealname;
+          formDataString.hrLeaderUsername = that.hrLeaderUsername;
+          formDataString.hrLeaderRealname = that.hrLeaderRealname;
+          formDataString.generalManagerUsername = that.generalManagerUsername;
+          formDataString.generalManagerRealname = that.generalManagerRealname;
 
-            // 上传组件
-            for (let i = 0; i<this.attachment.length; i++) {
-              formDataString.attachment = that.attachment[i].groupId
+          // 上传组件
+          for (let i = 0; i<this.attachment.length; i++) {
+            formDataString.attachment = that.attachment[i].groupId
+          }
+
+          let params1 = {
+            flowDataString: JSON.stringify(flowDataString),
+            formDataString: JSON.stringify(formDataString),
+            attachmentString: JSON.stringify(that.attachment)
+          }
+          httpAction(httpurl,qs.stringify(params1),method).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              that.$emit('ok');
+            }else{
+              that.$message.warning(res.message);
             }
-
-            let params1 = {
-              flowDataString: JSON.stringify(flowDataString),
-              formDataString: JSON.stringify(formDataString),
-              attachmentString: JSON.stringify(that.attachment)
-            }
-            httpAction(httpurl,qs.stringify(params1),method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
-        })
+          }).finally(() => {
+            that.confirmLoading = false;
+            that.close();
+          })
+        }
       },
       handleCancel () {
         this.close();

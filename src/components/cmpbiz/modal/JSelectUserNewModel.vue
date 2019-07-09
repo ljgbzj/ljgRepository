@@ -1,12 +1,20 @@
 <template>
   <a-modal
-    centered
-    :title="title"
+    :title="null"
+    :footer="null"
+    :closable="false"
     :width="1000"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
+    <div class="title">
+      <div>
+        <img src="@/assets/img/login/selectUser.png" />
+        用户列表
+      </div>
+      <a-icon type="close" class="closeIcon" @click="handleCancel"/>
+    </div>
     <a-row :gutter="18">
       <a-col :span="4">
         <a-directory-tree
@@ -82,6 +90,12 @@
         </a-card>
       </a-col>
     </a-row>
+    <a-row :gutter="18">
+        <div class="btnClass">
+          <a-button @click="handleOk" icon="check" type="primary" style="margin-right:10px" class="confirm">确定</a-button>
+          <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">关闭</a-button>
+        </div>
+    </a-row>
   </a-modal>
 </template>
 
@@ -106,13 +120,13 @@
         // 表头
         columns1: [
           {
-            title: '用户账号',
+            title: '用户名',
             align:"center",
             width:113,
             dataIndex: 'username'
           },
           {
-            title: '真实姓名',
+            title: '姓名',
             align:"center",
             width:100,
             dataIndex: 'realname'
@@ -120,16 +134,22 @@
         ],
         columns2: [
           {
-            title: '用户账号',
+            title: '用户名',
             align:"center",
-            width:100,
+            width:80,
+            dataIndex: 'username'
+          },
+          {
+            title: '姓名',
+            align:"center",
+            width:80,
             dataIndex: 'realname'
           },
           {
             title: '操作',
             dataIndex: 'action',
             align:"center",
-            width:100,
+            width:60,
             scopedSlots: { customRender: 'action' },
           }
         ],
@@ -183,10 +203,14 @@
       },
       handleCancel() {
         this.visible = false;
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
       },
       handleOk() {
         this.$emit("selectFinished",this.dataSource2);
         this.visible = false;
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
       },
       add() {
         this.visible = true;
@@ -337,4 +361,70 @@
   .ant-modal-cust-warp{height: 100%}
   .ant-modal-cust-warp .ant-modal-body{height:calc(100% - 110px) !important;overflow-y: auto}
   .ant-modal-cust-warp .ant-modal-content{height:90% !important;overflow-y: hidden}
+
+  .ant-modal {
+    border: 1px solid red;
+  }
+  .title {
+    width: 100%;
+    padding: 0px 24px 24px 24px;
+    div {
+      font-size:16px;
+      font-family:MicrosoftYaHeiUI;
+      font-weight:bold;
+      color:rgba(25,25,25,1);
+      line-height:32px;
+    }
+    .closeIcon {
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 10;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      transition: color 0.3s;
+      color: rgba(0, 0, 0, 0.45);
+      outline: 0;
+      padding: 0;
+      display: block;
+      font-style: normal;
+      text-align: center;
+      text-transform: none;
+      text-rendering: auto;
+      width: 76px;
+      height: 86px;
+      line-height: 86px;
+      font-size: 16px;
+    }
+  }
+  .btnClass {
+    padding: 32px 32px 0px 32px;
+    text-align: center;
+    button {
+      margin: 0;
+      padding: 0;
+      border: 1px solid transparent;  //自定义边框
+      outline: none;  //消除默认点击蓝色边框效果
+    }
+    .cancel {
+      min-width:96px;
+      height:40px;
+      background:rgba(238,238,238,1);
+      border-radius:4px;
+      color:rgba(51,51,51,1);
+      padding: 5px;
+    }
+    .confirm {
+      min-width:96px;
+      height:40px;
+      // background:rgba(109,98,255,1);
+      border-radius:4px;
+      // color: rgba(255,255,255,1);
+      padding: 5px;
+    }
+  }
 </style>

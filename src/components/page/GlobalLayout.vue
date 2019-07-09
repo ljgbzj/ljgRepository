@@ -176,6 +176,7 @@ body {
 .layout {
   min-height: 100vh !important;
   overflow-x: hidden;
+  overflow-y: hidden;
 
   &.mobile {
     .ant-layout-content {

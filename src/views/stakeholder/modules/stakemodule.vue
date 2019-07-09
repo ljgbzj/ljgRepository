@@ -430,7 +430,7 @@ export default {
           this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname])
 
           //将notifyMethod字符串或者undefined转换为数组
-          /* this.model.notifyMethod = this.transformNoticeBack(this.model.notifyMethod) */
+          this.model.notifyMethod = JSON.parse(this.model.notifyMethod)
           this.form.setFieldsValue({ notifyMethod: this.model.notifyMethod })
           // 时间格式化
           this.form.setFieldsValue({
@@ -447,6 +447,7 @@ export default {
             createTime: moment(this.curtime)
           })
         }
+        console.log(this.model)
       })
       // 初始化上传文件
       // 编辑而非启动

@@ -37,18 +37,19 @@
 
               <!-- 三级菜单 -->
               <ul v-if="secondMenu.children" class="thirdMenu">
-                <li 
-                  v-for="(thirdMenu, key) in secondMenu.children" 
+                <li
+                  v-for="(thirdMenu, key) in secondMenu.children"
                   :key="key"
                   class="thirdItem"
-                  >
+                  :class="{chosed:thirdMenu.id == ischosed}"
+                  @click="chosed(thirdMenu,secondMenu,index)"
+                >
                   <keep-alive>
                     <router-link :to="thirdMenu.path">
                       <div>{{thirdMenu.meta.title}}</div>
                     </router-link>
                   </keep-alive>
                 </li>
-
               </ul>
             </li>
           </ul>
@@ -62,7 +63,63 @@
         <img src="@/assets/img/menu/down.png" @click="down" />
       </div>
       <div class="all">
-        <img src="@/assets/img/menu/allmenu.png" />
+        <img src="@/assets/img/menu/allmenu.png" @click="toggleAll" />
+      </div>
+    </div>
+
+    <!-- 弹出框 -->
+    <div class="out" ref="out" @mouseleave="hiddenAll">
+      <div>
+        <!-- 一级菜单 -->
+        <ul class="su-menu-list FirstMenu">
+          <li
+            v-for="(item, index) in menu"
+            :key="index"
+            class="su-menu-item"
+            :class="{active: isActive == index}"
+            v-if="item.meta.title !== '首页'"
+          >
+            <div class="item-container">
+              <div class="img-container">
+                <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
+              </div>
+
+              <span>{{item.meta.title}}</span>
+            </div>
+
+            <!-- 二级菜单 -->
+            <ul v-if="item.children" class="secondMenu">
+              <li
+                v-for="(secondMenu, i) in item.children"
+                :key="i"
+                class="secondItem"
+                :class="{checked: secondMenu.id == isChecked}"
+                @click="checked(secondMenu, index)"
+              >
+                <keep-alive v-if="secondMenu.meta.keepAlive">
+                  <router-link :to="secondMenu.path" v-if="!secondMenu.children">
+                    <div>{{secondMenu.meta.title}}</div>
+                  </router-link>
+                  <div class="secondMenuTitle" v-else>
+                    {{secondMenu.meta.title}}
+                    <span></span>
+                  </div>
+                </keep-alive>
+
+                <!-- 三级菜单 -->
+                <ul v-if="secondMenu.children" class="thirdMenu">
+                  <li v-for="(thirdMenu, key) in secondMenu.children" :key="key" class="thirdItem">
+                    <keep-alive>
+                      <router-link :to="thirdMenu.path">
+                        <div>{{thirdMenu.meta.title}}</div>
+                      </router-link>
+                    </keep-alive>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -76,7 +133,9 @@ export default {
       menuTop: 0,
       menuheight: 0, // 菜单实际高度
       isActive: null,
-      isChecked: null
+      isChecked: null,
+      ischosed: null,
+      visible: false
     }
   },
   props: {
@@ -151,11 +210,29 @@ export default {
       this.isChecked = item.id
       this.isActive = index
     },
+    chosed(thirdMenu, secondMenu, index) {
+      this.ischosed = thirdMenu.id
+      this.isChecked = secondMenu.id
+      this.isActive = index
+    },
     active(index) {
       this.isActive = index
+      this.ischosed = null
     },
     inactive() {
       this.isActive = null
+    },
+    toggleAll() {
+      this.visible = !this.visible
+      if (this.visible == true) {
+        this.$refs.out.style.visibility = 'visible'
+      } else {
+        this.$refs.out.style.visibility = 'hidden'
+      }
+    },
+    hiddenAll() {
+      this.visible = false
+      this.$refs.out.style.visibility = 'hidden'
     }
   }
 }
@@ -165,6 +242,8 @@ export default {
 .su-menu-container {
   display: flex;
   height: 64px;
+  position: relative;
+  // 顶部导航条
   .menu-scroll-wrapper {
     flex: 1 1;
     position: relative;
@@ -189,7 +268,6 @@ export default {
           display: none;
         }
         &:hover {
-
           .secondMenu {
             position: relative;
             display: block;
@@ -201,16 +279,26 @@ export default {
             z-index: 999;
 
             li.secondItem {
-              padding-left: 14px;
+              padding: 0 14px;
 
-              div.secondMenuTitle{
+              div.secondMenuTitle {
                 color: #333333;
-                & + .thirdMenu{
-                  background-color: #fff;
-                  padding-left: 14px;
+
+                & + .thirdMenu {
+                  /* background-color: #fff; */
+                  .thirdItem {
+                    padding-left: 14px;
+                  }
+
+                  .thirdItem:hover,
+                  .thirdItem.chosed {
+                    border-radius: 4px;
+                    background-color: #6d62ff;
+                    a {
+                      color: #fff;
+                    }
+                  }
                 }
-
-
               }
 
               a {
@@ -221,13 +309,10 @@ export default {
               &.checked {
                 background: rgba(109, 98, 255, 0.1);
                 border-radius: 4px;
-                &>a {
+                & > a {
                   color: #6d62ff;
                 }
               }
-
-
-
             }
           }
         }
@@ -235,10 +320,13 @@ export default {
         .item-container {
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-around;
           img {
             width: 24px;
             height: 24px;
+          }
+          span{
+            font-size: 16px;
           }
         }
         &:hover .item-container,
@@ -282,6 +370,132 @@ export default {
         &:hover {
           cursor: pointer;
           opacity: 1;
+        }
+      }
+    }
+  }
+  .out {
+    width: 708px;
+    height: unset;
+    position: absolute;
+    right: -200px;
+    top: 50px;
+    z-index: 999;
+    box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
+    border-radius: 4px;
+    background: #fff;
+    visibility: hidden;
+
+    .su-menu-list.FirstMenu {
+      display: flex;
+      flex-wrap: wrap;
+      background-color: #fff;
+      border-radius: 4px;
+      padding-top: 28px;
+
+      .su-menu-item {
+        margin-left: 36px;
+        margin-bottom: 12px;
+
+        .item-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 96px;
+          height: 96px;
+          padding-top: 12px;
+          &:hover {
+            background-color: #f2f2f2;
+          }
+
+          .img-container {
+            background-color: #6d62ff;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+          }
+          span {
+            line-height: 32px;
+          }
+        }
+
+        .secondMenu {
+          display: none;
+        }
+        &:hover {
+          .secondMenu {
+            position: absolute;
+            display: block;
+            background-color: #fff;
+            width: 200px;
+            border-radius: 4px;
+            box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
+            padding: 17px 16px;
+            z-index: 999;
+            max-height: 500px;
+            overflow-y: scroll;
+
+            @scrollBarSize: 6px;
+            /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+            &::-webkit-scrollbar {
+              width: @scrollBarSize;
+              height: @scrollBarSize;
+              background-color: transparent;
+            }
+            /* 定义滚动条轨道 */
+            &::-webkit-scrollbar-track {
+              background-color: #f0f0f0;
+            }
+            /* 定义滑块 */
+            &::-webkit-scrollbar-thumb {
+              background-color: #eee;
+              box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+              &:hover {
+                background-color: #bbb;
+              }
+
+              &:active {
+                background-color: #888;
+              }
+            }
+
+            li.secondItem {
+              padding-left: 14px;
+
+              div.secondMenuTitle {
+                & + .thirdMenu {
+                  /* background-color: #fff; */
+                  .thirdItem {
+                    padding-left: 14px;
+                  }
+
+                  .thirdItem:hover,
+                  .thirdItem.chosed {
+                    border-radius: 4px;
+                    background-color: #6d62ff;
+                    a {
+                      color: #fff;
+                    }
+                  }
+                }
+              }
+
+              a {
+                color: #333333;
+                text-decoration: none;
+              }
+              &:hover,
+              &.checked {
+                background: rgba(109, 98, 255, 0.1);
+                border-radius: 4px;
+                & > a {
+                  color: #6d62ff;
+                }
+              }
+            }
+          }
         }
       }
     }
