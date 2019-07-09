@@ -7,6 +7,7 @@
 <script>
   import PageLayout from '../page/PageLayout'
   import RouteView from './RouteView'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: "IframePageContent",
@@ -28,8 +29,11 @@
       }
     },
     methods: {
+      ...mapGetters(["userInfo"]),
       goUrl () {
+        let userInfo = this.userInfo();
         let url = this.$route.meta.url
+        url = url + '?username=' + userInfo.username + ';realname=' + userInfo.realname + ';corpCode=' + userInfo.corpCode + ';prjCode=' + userInfo.prjCode;
         let id = this.$route.path
         this.id = id
         //url = "http://www.baidu.com"

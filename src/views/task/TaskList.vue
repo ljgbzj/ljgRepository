@@ -20,7 +20,12 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="任务名称">
-                <a-input placeholder="请输入任务名称" v-model="queryParam.taskName"></a-input>
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="环节名称">
+                <a-input placeholder="请输入环节名称" v-model="queryParam.taskName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -67,23 +72,21 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <!-- <task-modal ref="modalForm" @ok="modalFormOk"></task-modal> -->
     <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
-    <task-Modal ref="modalForm1" @ok="modalFormOk"></task-Modal>
   </a-card>
 </template>
 
 <script>
-  import TaskModal from './modules/TaskModal'
+  // import TaskModal from './modules/TaskModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
   import JDate from '@/components/cmp/JDate'
+  import { setTimeout } from 'timers';
 
   export default {
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      TaskModal,
       JDate
     },
     data () {
@@ -159,13 +162,16 @@
           taskId: record.taskId
         }
         getAction(this.url.form, params).then((res) => {
+          console.log(res,'dasdada');
+          let that = this;
           if (res.success) {
-            this.componentsUrl = res.result.formPath;
-            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName}) 
-            //this.dataSource = res.result.dataList;
-            //this.ipagination.total = res.result.total;
-            this.$refs.modalForm.edit(record);
-            this.$refs.modalForm.title = "审核";
+            that.componentsUrl = res.result.formPath;
+            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName})
+            console.log(record,'没数据');
+            setTimeout(function(){ 
+              that.$refs.modalForm.edit(record);
+              that.$refs.modalForm.title = "审核";
+            },)
           }
         })
       },
@@ -197,14 +203,6 @@
     computed: {
       comName: function () {
         return () => import(`@/views/${this.componentsUrl}.vue`)
-      }
-    },
-    watch: {
-      'queryParam.startTime': {
-        handler(newVal, oldVal) {
-          console.log(newVal,'新值');
-          console.log(oldVal,'旧值');
-        }
       }
     }
   }
