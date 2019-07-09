@@ -325,6 +325,9 @@ export default {
             width: 24px;
             height: 24px;
           }
+          span{
+            font-size: 16px;
+          }
         }
         &:hover .item-container,
         &.active .item-container {
