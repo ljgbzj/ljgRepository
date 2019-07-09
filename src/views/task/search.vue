@@ -20,12 +20,7 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="任务名称">
-                <a-input placeholder="请输入任务名称" v-model="queryParam.taskName"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="环节名称">
-                <a-input placeholder="请输入环节名称" v-model="queryParam.nodeName"></a-input>
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">

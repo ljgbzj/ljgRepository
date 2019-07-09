@@ -84,7 +84,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="部门领导">
-                  <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new>
+                  <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
               <a-col :md="12" :sm="8">
@@ -92,7 +92,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="人事领导">
-                  <j-select-user-new :selectedDetails="hrDetails" @userDetails="userDetails1" class="userSelect"></j-select-user-new>
+                  <j-select-user-new :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -102,7 +102,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="总经理">
-                  <j-select-user-new :selectedDetails="mgDetails" @userDetails="userDetails2" class="userSelect"></j-select-user-new>
+                  <j-select-user-new :selectedDetails="auditUsers3" @callback="setAuditUser" class="userSelect"></j-select-user-new>
                 </a-form-item>
               </a-col>
               <a-col :md="12" :sm="8">
@@ -417,14 +417,25 @@
         hrLeaderRealname: '',
         generalManagerUsername: '',
         generalManagerRealname: '',
-        departDetails: [],
-        hrDetails: [],
-        mgDetails: [],
+
+        selectUser: ['auditUsers1','auditUsers2','auditUsers3'],
+        auditUsers1: {colum:'auditUsers1', value:[],target:[
+                             {to:'departmentLeaderUsername',from:'username'},
+                             {to:'departmentLeaderRealname',from:'realname'}
+                             ]},
+        auditUsers2: {colum:'auditUsers2', value:[],target:[
+                             {to:'hrLeaderUsername',from:'username'},
+                             {to:'hrLeaderRealname',from:'realname'}
+                             ]},
+        auditUsers3: {colum:'auditUsers3', value:[],target:[
+                             {to:'generalManagerUsername',from:'username'},
+                             {to:'generalManagerRealname',from:'realname'}
+                             ]},
         // 上传附件定义
         headers: {},
         fileList: [],
         previewImage: '',
-        previewVisible: false, 
+        previewVisible: false,
         // attachment: [],
         attachment: [{
           groupId: '',
@@ -494,21 +505,41 @@
           'remarks',
           'status',
           '_taskComment'));
-        
+
         // 初始化选人组件字段
-        this.departDetails = [];
-        this.hrDetails = [];
-        this.mgDetails = [];
+        this.auditUsers1.value = [];
+        this.auditUsers2.value = [];
+        this.auditUsers3.value = [];
         if (JSON.stringify(record) !== "{}") {
-          if (this.model.departmentLeaderRealname != '' && this.model.departmentLeaderUsername != '') {
-            this.departDetails = this.initSelect([this.model.departmentLeaderRealname,this.model.departmentLeaderUsername]);
+
+        for(var i=0;i<this.selectUser.length;i++){
+            var flag=1;
+            var selectValue=[];
+            var selectColum=[];
+          for(var j=0;j<this[this.selectUser[i]].target.length;j++){
+            if(this.model[this[this.selectUser[i]].target[j].to]==''){
+              flag=0;
+              break;
+            }else{
+              selectValue.push(this.model[this[this.selectUser[i]].target[j].to]);
+              selectColum.push(this[this.selectUser[i]].target[j].from);
+            }
           }
+
+          if (flag) {
+            //[this.model.departmentLeaderRealname,this.model.departmentLeaderUsername]
+
+            this[this.selectUser[i]].value = this.initSelect(selectColum,selectValue);
+
+          }
+         }
+          /*
           if (this.model.hrLeaderRealname != '' && this.model.hrLeaderUsername != '') {
-            this.hrDetails = this.initSelect([this.model.hrLeaderRealname,this.model.hrLeaderUsername]);
+            this.auditUsers2 = this.initSelect([this.model.hrLeaderRealname,this.model.hrLeaderUsername]);
           }
           if (this.model.generalManagerRealname != '' && this.model.generalManagerUsername != '') {
-            this.mgDetails = this.initSelect([this.model.generalManagerRealname,this.model.generalManagerUsername]);
-          }
+            this.auditUsers3 = this.initSelect([this.model.generalManagerRealname,this.model.generalManagerUsername]);
+          }*/
         }
         //时间格式化
         this.form.setFieldsValue({timeStart:this.model.timeStart?moment(this.model.timeStart):null})
@@ -701,10 +732,14 @@
           return res
         })
       },
-      userDetails(val){
-        this.departmentLeaderRealname = val.realname;
-        this.departmentLeaderUsername = val.username;
+      setAuditUser(val){    //val:{ colum:'' , target   ,value }
+        //this[val.colum].value
+        for(var i=0;i<this[val.colum].target.length;i++){
+          this[this[val.colum].target[i].to] = this[val.colum].value[this[val.colum].target[i].from];
+        }
+        //this.departmentLeaderUsername = this[val.colum].value.username;
       },
+      /*
       userDetails1(val){
         this.hrLeaderRealname = val.realname;
         this.hrLeaderUsername = val.username;
@@ -712,7 +747,7 @@
       userDetails2(val){
         this.generalManagerRealname = val.realname;
         this.generalManagerUsername = val.username;
-      },
+      },*/
       handleChange(info){
         //调用改变方法
         this.handleChange1(info,this,0);

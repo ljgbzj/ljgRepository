@@ -3,7 +3,7 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <!-- <a-form layout="inline">
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="8">
@@ -46,7 +46,7 @@
           </a-col>
 
         </a-row>
-      </a-form>
+      </a-form> -->
     </div>
 
     <!-- table区域-begin -->
