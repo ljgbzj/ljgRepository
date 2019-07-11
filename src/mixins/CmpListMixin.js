@@ -98,6 +98,7 @@ export const CmpListMixin = {
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
       }
+      console.log(sqp,'sqp');
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
       
       // 时间格式化
@@ -107,6 +108,7 @@ export const CmpListMixin = {
       param.field = this.getQueryField();
       param.pageNo = this.ipagination.current;
       param.pageSize = this.ipagination.pageSize;
+      console.log(param,'param好的');
       return filterObj(param);
     },
     getQueryField() {
@@ -284,34 +286,17 @@ export const CmpListMixin = {
 
     // 初始化选人组件
     initSelect(col,val) {
-      var arr2=[];
-      for(var i=0;i<val[0].split(',').length;i++ ) {
-        var item = {};
-        for (var j = 0; j < col.length; j++) {
-          this.$set(item, col[j], val[j].split(',')[i]);
+      if (val[0] != null) {
+        var arr2=[];
+        for(var i=0;i<val[0].split(',').length;i++ ) {
+          var item = {};
+          for (var j = 0; j < col.length; j++) {
+            this.$set(item, col[j], val[j].split(',')[i]);
+          }
+          arr2.push(item);
         }
-        arr2.push(item);
+        return arr2;
       }
-
-
-
-      /*
-      if (val[0].indexOf(",") !== -1) {
-        let arr = val[0].split(",");
-        let arr1 = val[1].split(",");
-        for (let i = 0; i<arr.length; i++) {
-          arr2.push({
-            "realname": arr[i],
-            "username": arr1[i]
-          })
-        }
-      } else {
-        arr2 = [{
-          "realname": val[0],
-          "username": val[1]
-        }]
-      }*/
-      return arr2;
     },
 
     // 初始化上传组件
@@ -479,6 +464,50 @@ export const CmpListMixin = {
           // that.close();
         })
       }
+    },
+
+    // 选人控件回传值
+    setAuditUser(val){    //val:{ colum:'' , target   ,value }
+      for(var i=0;i<this[val.colum].target.length;i++){
+        this[this[val.colum].target[i].to] = val.value[this[val.colum].target[i].from];
+      }
+    },
+    // 初始化选人
+    initSelectMan(that,record) {
+      if (JSON.stringify(record) !== "{}") {
+        for(var i=0;i<that.selectUser.length;i++){
+          var flag=1;
+          var selectValue=[];
+          var selectColum=[];
+          console.log(that[that.selectUser[i]],'看看有没有');
+          for(var j=0;j<that[that.selectUser[i]].target.length;j++){
+            if(that.model[that[that.selectUser[i]].target[j].to]==''){
+              flag=0;
+              break;
+            }else{
+              selectValue.push(that.model[that[that.selectUser[i]].target[j].to]);
+              selectColum.push(that[that.selectUser[i]].target[j].from);
+            }
+          }
+          if (flag) {
+            that[that.selectUser[i]].value = that.initSelect(selectColum,selectValue);
+          }
+        }
+      }
+    },
+    uploadMan(strFormData,that) {
+      for(var i=0;i<that.selectUser.length;i++){
+        var flag=1;
+        for(var j=0;j<that[that.selectUser[i]].target.length;j++){
+          if(that[that[that.selectUser[i]].target[j].to]==''){
+            flag=0;
+            break;
+          }else{
+            strFormData[[that[that.selectUser[i]].target[j].to]] = that[that[that.selectUser[i]].target[j].to];
+          }
+        }
+      }
+      return strFormData;
     }
   }
 
