@@ -63,24 +63,13 @@
             userNameStr = usernames.join(",")
           }
           let userDetails = {colum:'',target:[],value:{}}
-          userDetails.cloum=selectedDetails.colum;
-          userDetails.target=selectedDetails.target;
+          userDetails.colum=this.selectedDetails.colum;
+          userDetails.target=this.selectedDetails.target;
           userDetails.value = {
             username: userNameStr,
             realname: nameStr
           }
-          console.log(userDetails,'細節');
           this.$emit("callback",userDetails)
-          // if(this.triggerChange){
-          //   this.$emit("change",nameStr)
-          // }else{
-          //   this.$emit("input",nameStr)
-          // }
-          // if(this.triggerChange){
-          //   this.$emit("userName",userNameStr)
-          // }else{
-          //   this.$emit("userName",userNameStr)
-          // }
         } else {
           var names = [];
           var usernames = [];
@@ -96,21 +85,15 @@
           if(usernames.length>0){
             userNameStr = usernames.join(",")
           }
-          // if(this.triggerChange){
-          //   this.$emit("change",nameStr)
-          // }else{
-          //   this.$emit("input",nameStr)
-          // }
-          // if(this.triggerChange){
-          //   this.$emit("userName",userNameStr)
-          // }else{
-          //   this.$emit("userName",userNameStr)
-          // }
-          let userDetails = {
+          let userDetails = {colum:'',target:[],value:{}}
+          userDetails.colum=this.selectedDetails.colum;
+          userDetails.target=this.selectedDetails.target;
+          userDetails.value = {
             username: userNameStr,
             realname: nameStr
           }
-          this.$emit("userDetails",userDetails)
+          console.log(userDetails,'拿到只可');
+          this.$emit("callback",userDetails);
         }
         return names;
       }
@@ -129,7 +112,8 @@
           }
         }
       },
-      selectOK: function (data) {
+      selectOK(data) {
+        console.log(data,'第二层街道');
         this.selectList = data;
       }
     }

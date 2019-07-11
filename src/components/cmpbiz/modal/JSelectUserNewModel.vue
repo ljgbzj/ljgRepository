@@ -403,7 +403,7 @@
   }
   .btnClass {
     padding: 32px 32px 0px 32px;
-    text-align: center;
+    text-align: right;
     button {
       margin: 0;
       padding: 0;
