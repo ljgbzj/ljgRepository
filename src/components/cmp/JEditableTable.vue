@@ -135,9 +135,9 @@
                           :placeholder="replaceProps(col, col.placeholder)"
                           @change="(v)=>handleChangeSelectCommon(v,id,row,col)"
                         >
-                          <!--<template v-for="(opt,optKey) in col.options">-->
-                          <!--<a-select-option :value="opt.value" :key="optKey">{{ opt.title }}</a-select-option>-->
-                          <!--</template>-->
+                          <template v-for="(opt,optKey) in col.options">
+                          <a-select-option :value="opt.value" :key="optKey">{{ opt.title }}</a-select-option>
+                          </template>
                         </a-select>
                       </span>
                     </a-tooltip>

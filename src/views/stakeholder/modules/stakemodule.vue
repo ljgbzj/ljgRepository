@@ -2,7 +2,8 @@
   <div class="stakemodule">
     <a-modal
       :footer="null"
-      :title="title"
+      :title="null"
+      :closable="false"
       :width="1000"
       :visible="visible"
       :maskClosable="false"
@@ -11,6 +12,14 @@
       @cancel="handleCancel"
       cancelText="关闭"
     >
+      <div class="title">
+        <div>
+          <img :src="title | IconUrl" />
+          {{title}}
+          <span>{{ nodeName ? '(' + nodeName + ')': ''}}</span>
+        </div>
+        <a-icon type="close" class="closeIcon" @click="handleCancel" />
+      </div>
       <a-tabs defaultActiveKey="1">
         <a-tab-pane key="1">
           <span slot="tab">
@@ -56,28 +65,31 @@
                 </a-col>
               </a-row>
               <a-row :gutter="24">
-                <a-col :span="8">
-                  <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="联系电话">
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话">
                     <a-input placeholder v-decorator="['phoneNum', {}]" />
                   </a-form-item>
                 </a-col>
-                <a-col :span="8">
-                  <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="传真">
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="传真">
                     <a-input placeholder v-decorator="['fax', {}]" />
                   </a-form-item>
                 </a-col>
-                <a-col :span="8">
-                  <a-form-item :labelCol="labelCol3" :wrapperCol="wrapperCol3" label="邮编">
+              </a-row>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="邮编">
                     <a-input placeholder v-decorator="['postCode', {}]" />
                   </a-form-item>
                 </a-col>
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="网址">
+                    <a-input placeholder v-decorator="['website', {}]" />
+                  </a-form-item>
+                </a-col>
               </a-row>
-
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="地址">
-                <a-input placeholder v-decorator="['address', {}]" />
-              </a-form-item>
-              <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="网址">
-                <a-input placeholder v-decorator="['website', {}]" />
+                <a-textarea placeholder v-decorator="['address', {}]" />
               </a-form-item>
               <a-row :gutter="24">
                 <a-col :span="12">
@@ -92,7 +104,7 @@
                 </a-col>
               </a-row>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注/服务范围">
-                <a-input placeholder v-decorator="['remarks', {}]" />
+                <a-textarea placeholder v-decorator="['remarks', {}]" />
               </a-form-item>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="上传附件">
                 <!-- <a-input placeholder v-decorator="['attachment', {}]" /> -->
@@ -115,10 +127,25 @@
               <a-tabs v-model="activeKey" @change="handleChangeTabs">
                 <a-tab-pane :key="refKeys[0]" :forceRender="true">
                   <span slot="tab">
-                    <a-icon type="file-text"/>干系人明细
+                    <a-icon type="file-text" />干系人明细1
                   </span>
                   <j-editable-table
                     :ref="refKeys[0]"
+                    :loading="stakeholderDetailTable.loading"
+                    :columns="stakeholderDetailTable.columns"
+                    :dataSource="stakeholderDetailTable.dataSource"
+                    :maxHeight="240"
+                    :rowNumber="true"
+                    :rowSelection="true"
+                    :actionButton="true"
+                  />
+                </a-tab-pane>
+                <a-tab-pane :key="refKeys[1]" :forceRender="true">
+                  <span slot="tab">
+                    <a-icon type="file-text" />干系人明细2
+                  </span>
+                  <j-editable-table
+                    :ref="refKeys[1]"
                     :loading="stakeholderDetailTable.loading"
                     :columns="stakeholderDetailTable.columns"
                     :dataSource="stakeholderDetailTable.dataSource"
@@ -170,54 +197,104 @@
                 </a-checkbox-group>
               </a-form-item>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="审批人">
+                <a-input placeholder v-decorator="['subcontractorName', {}]" />
                 <!-- <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
               <a-select-option value="0">审批人</a-select-option>
                 </a-select>-->
                 <!-- <a-input placeholder v-decorator="['subcontractor', {}]" /> -->
                 <!-- <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new> -->
-                <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" />
+                <!-- <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" /> -->
               </a-form-item>
-              <a-form-item class="btnClass">
+              <a-form-item
+                :labelCol="labelCol1"
+                :wrapperCol="wrapperCol1"
+                label="审批意见"
+                v-show="model.status !== undefined && model.status !== 0 && title !== '编辑' && nodeName != '填写表单'"
+                :disabled="title == '编辑'"
+              >
+                <a-textarea :rows="4" v-decorator="[ '_taskComment', {}]" :disabled="!model.btns" />
+              </a-form-item>
+              <!-- 异步按钮 -->
+              <a-form-item class="btnClass" v-if="model.btns">
+                <template v-for="(item, index) in model.btns">
+                  <a-dropdown placement="bottomCenter" :key="index">
+                    <a-button
+                      style="margin-right:10px"
+                      type="primary"
+                      @click="handle(item.btnApi)"
+                      :icon="item.btnIcon"
+                      class="confirm"
+                    >{{item.btnName}}</a-button>
+                    <a-menu slot="overlay" v-if="item.btnApi == '/task/jump'">
+                      <a-menu-item v-for="(v,k) in model.rollBackAbleNodes" :key="k">
+                        <div @click="goBack(v.nodeId)">{{ v.nodeName }}</div>
+                      </a-menu-item>
+                    </a-menu>
+                  </a-dropdown>
+                </template>
+              </a-form-item>
+              <!-- 同步按钮 -->
+              <a-form-item class="btnClass" v-if="!model.btns">
+                <a-button @click="handle('submit')" icon="check" type="primary" class="confirm">提交</a-button>
                 <a-button
-                  @click="handleOk"
-                  icon="check"
-                  type="primary"
-                  style="margin-right: 10px"
-                >提交</a-button>
-                <a-button
-                  @click="handleSave"
+                  @click="handle('start')"
                   v-if="this.model !== undefined"
                   icon="save"
                   type="primary"
-                  style="margin-right: 10px"
+                  class="confirm"
                 >暂存</a-button>
-                <a-button @click="handleCancel" icon="close" type="primary">取消</a-button>
+                <a-button @click="handleCancel" icon="close" type="primary" class="cancel">取消</a-button>
               </a-form-item>
               <!-- table区域-end -->
             </a-form>
+            <a-row :gutter="24">
+              <a-col :md="24" :sm="8">
+                <option-list
+                  :commentList="commentList"
+                  :currentList="currentList"
+                  v-if="model.status !== undefined"
+                ></option-list>
+              </a-col>
+            </a-row>
           </a-spin>
         </a-tab-pane>
+
         <a-tab-pane key="2">
           <span slot="tab">
-            <a-icon type="area-chart" />流程图
+            <!-- <a-icon type="area-chart" />流程图 -->
+            <img src="@/assets/img/login/process.png" alt />
+            流程图
           </span>
           <div>
-          <div class="proc_bg">
-            <h3>
-              <span>流程图</span>
-            </h3>
+            <div class="proc_bg">
+              <h3>
+                <span>流程图</span>
+              </h3>
+              <img :src="urlChart" />
+            </div>
+            <div class="proc_bg">
+              <h3>
+                <span>已完成</span>
+              </h3>
+              <s-table
+                :columns="goodsColumns"
+                :data="loadGoodsData"
+                v-if="commentList"
+                :pagination="false"
+              ></s-table>
+            </div>
+            <div class="proc_bg">
+              <h3>
+                <span>处理中</span>
+              </h3>
+              <s-table
+                :columns="goodsColumns1"
+                :data="loadGoodsData1"
+                v-if="commentList"
+                :pagination="false"
+              ></s-table>
+            </div>
           </div>
-          <div class="proc_bg">
-            <h3>
-              <span>已完成</span>
-            </h3>
-          </div>
-          <div class="proc_bg">
-            <h3>
-              <span>处理中</span>
-            </h3>
-          </div>
-        </div>
         </a-tab-pane>
       </a-tabs>
     </a-modal>
@@ -231,7 +308,7 @@ import { FormTypes } from '@/utils/JEditableTableUtil'
 import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
 import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import { httpAction, getAction } from '@/api/manage'
+import { httpAction, getAction, getActionUrl, httpActionHeader, downFile } from '@/api/manage'
 import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import Vue from 'vue'
@@ -239,45 +316,40 @@ import md5 from 'md5'
 import { mapGetters } from 'vuex'
 import qs from 'qs'
 import STable from '@/components/table/'
+import OptionList from '@/views/oa/modules/OptionList'
 
 export default {
   name: 'stakemodule',
   mixins: [JEditableTableMixin],
   components: {
     JDictSelectTag,
-    JSelectUserNew
+    JSelectUserNew,
+    OptionList,
+    STable
   },
   data() {
     return {
       // 新增时子表默认添加几行空数据
       addDefaultRowNum: 1,
       validatorRules: {},
-      refKeys: ['stakeholderDetail'],
+      refKeys: ['stakeholderDetail', 'stakeholderDetail2'],
       activeKey: 'stakeholderDetail',
 
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 8 }
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
-      },
-      labelCol3: {
-        xs: { span: 24 },
-        sm: { span: 12 }
-      },
-      wrapperCol3: {
-        xs: { span: 24 },
-        sm: { span: 12 }
+        sm: { span: 18 }
       },
       labelCol1: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 3 }
       },
       wrapperCol1: {
         xs: { span: 24 },
-        sm: { span: 20 }
+        sm: { span: 21 }
       },
       stakeholderDetailTable: {
         loading: false,
@@ -287,56 +359,70 @@ export default {
             title: '姓名',
             key: 'name',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '性别',
             key: 'sex',
-            type: FormTypes.input,
-            defaultValue: '',
+            type: FormTypes.select,
+            options: [
+              {
+                value: '男',
+                title: '男'
+              },
+              {
+                value: '女',
+                title: '女'
+              },
+              {
+                value: '保密',
+                title: '保密'
+              }
+            ],
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '职务',
             key: 'job',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '手机号',
             key: 'phoneNum',
             type: FormTypes.inputNumber,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '办公电话',
             key: 'telephoneNum',
             type: FormTypes.inputNumber,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '电子邮箱',
             key: 'email',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '地址',
             key: 'address',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
             title: '传真',
             key: 'fax',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           },
           {
@@ -349,10 +435,10 @@ export default {
             title: '备注',
             key: 'remark',
             type: FormTypes.input,
-            defaultValue: '',
+            defaultValue: ''
             /* placeholder: '${title}' */
           }
-        ],
+        ]
       },
       url: {
         add: '/stakeholder/stakeholder/add',
@@ -363,7 +449,9 @@ export default {
         fileDownLoad: '/file/uploadFile/downloadFileById',
         stakeholderDetail: {
           list: '/stakeholder/stakeholder/queryById'
-        }
+        },
+        chart: '/flowable/process/diagram',
+        taskComment: '/flowable/process/taskComment'
       },
       headers: {},
       fileList: [],
@@ -379,13 +467,112 @@ export default {
       curtime: null,
       departDetails: [], //选人组件选中对象
       subcontractorName: [],
-      subcontractorFullname: []
+      subcontractorFullname: [],
+
+      nodeName: '',
+
+      //审批意见列表
+      commentList: {},
+      currentList: 0,
+      //流程图
+      urlChart: '',
+      goodsColumns: [
+        {
+          title: '序号',
+          dataIndex: '',
+          key: 'rowIndex',
+          align: 'center',
+          customRender: function(t, r, index) {
+            return parseInt(index) + 1
+          }
+        },
+        {
+          title: '步骤名称',
+          dataIndex: 'nodeName',
+          key: 'nodeName'
+        },
+        {
+          title: '处理人',
+          dataIndex: 'assigneeFullname',
+          key: 'assigneeFullname',
+          align: 'center'
+        },
+        {
+          title: '到达时间',
+          dataIndex: 'startTime',
+          key: 'startTime',
+          align: 'center'
+        },
+        {
+          title: '完成时间',
+          dataIndex: 'endTime',
+          key: 'endTime',
+          align: 'right',
+          align: 'center'
+        },
+        {
+          title: '处理意见',
+          dataIndex: 'num',
+          key: 'num'
+        }
+      ],
+      goodsColumns1: [
+        {
+          title: '序号',
+          dataIndex: '',
+          key: 'rowIndex',
+          width: 80,
+          align: 'center',
+          customRender: function(t, r, index) {
+            return parseInt(index) + 1
+          }
+        },
+        {
+          title: '步骤名称',
+          dataIndex: 'nodeName',
+          key: 'nodeName'
+        },
+        {
+          title: '当前处理',
+          dataIndex: 'assigneeFullname',
+          key: 'assigneeFullname',
+          align: 'center'
+        },
+        {
+          title: '到达时间',
+          dataIndex: 'startTime',
+          key: 'startTime',
+          align: 'center'
+        }
+      ],
+      arr: [],
+      arr1: []
+    }
+  },
+  filters: {
+    IconUrl(val) {
+      console.log(val, '来吧')
+      switch (val) {
+        case '新增':
+          return require(`@/assets/img/login/add.png`)
+          break
+        case '编辑':
+          return require(`@assets/img/login/edit.png`)
+          break
+        case '查看':
+          return require(`@assets/img/login/view.png`)
+          break
+        case '审核':
+          return require(`@assets/img/login/audit.png`)
+          break
+        default:
+          break
+      }
     }
   },
   created() {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
-    this.curtime = new Date()
     this.attachment[0].fileTokens = ''
   },
   computed: {
@@ -398,6 +585,20 @@ export default {
 
     /** 调用完edit()方法之后会自动调用此方法，此处的参数record其实就是this.model */
     editAfter(record) {
+      console.log('stakemodule record主表数据', record)
+      if (record && record.formData) {
+        this.model = Object.assign(
+          {
+            formPath: record.formPath,
+            nodeName: record.nodeName,
+            taskId: record.taskId
+          },
+          record.formData,
+          record.flowData
+        )
+        this.nodeName = record.nodeName
+      }
+      console.log(this.model, 'this.model')
       //异步操作，表单渲染完毕后设置表单对应的值
       this.$nextTick(() => {
         this.form.setFieldsValue(
@@ -420,14 +621,16 @@ export default {
             'inputerPhoneNum', //联系电话
             'inputerDeptName', //录入人部门
             'createTime', //录入时间
-            'notifyMethod' //新任务通知方式
+            'notifyMethod', //新任务通知方式
+            '_taskComment',
+            'subcontractorName'
           )
         )
 
         this.departDetails = []
-        //编辑而非启动时
+        //编辑或审核而非启动时
         if (JSON.stringify(record) !== '{}') {
-          this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname])
+          /* this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname]) */
 
           //将notifyMethod字符串或者undefined转换为数组
           this.model.notifyMethod = JSON.parse(this.model.notifyMethod)
@@ -437,18 +640,22 @@ export default {
             createTime: this.model.createTime ? moment(this.model.createTime) : null
           })
         }
-        //启动而非编辑时
+        //启动时
         else {
           //获取当前用户真实姓名和其他用户信息，设置录入人姓名、联系电话
           this.form.setFieldsValue({ inputerFullname: this.nickname() })
           this.form.setFieldsValue({ inputerPhoneNum: this.userInfo().phone })
           // 时间格式化
           this.form.setFieldsValue({
-            createTime: moment(this.curtime)
+            createTime: moment(new Date())
           })
         }
         console.log(this.model)
       })
+
+      //请求流程图 + 审批意见
+      // 第二个参数为流程图接口地址，第三哥参数为审批意见接口地址
+      this.initChartAndComment(this, record, this.url.chart, this.url.taskComment)
       // 初始化上传文件
       // 编辑而非启动
       if (this.model.attachment !== undefined) {
@@ -543,73 +750,29 @@ export default {
         stakeholderDetailList: allValues.tablesValue[0].values
       }
     },
-    // 新增提交
-    handleOk() {
-      /** 触发表单验证 */
-      this.getAllTable()
-        .then(tables => {
-          /** 一次性验证主表和所有的次表 */
-          return validateFormAndTables(this.form, tables)
-        })
-        .then(allValues => {
-          if (typeof this.classifyIntoFormData !== 'function') {
-            throw this.throwNotFunction('classifyIntoFormData')
-          }
-          let formData = this.classifyIntoFormData(allValues)
-
-          formData.stakeholderType = formData.stakeholderType ? '干系人类型1' : '干系人类型2'
-          formData.companyNature = formData.companyNature ? '性质1' : '性质2'
-          formData.subcontractorName = this.subcontractorName
-          formData.subcontractorFullname = this.subcontractorFullname
-
-          for (let i = 0; i < this.attachment.length; i++) {
-            formData.attachment = this.attachment[i].groupId
-          }
-
-          // important值true或false转换为1或0
-          let len = formData.stakeholderDetailList.length
-          for (let i = 0; i < len; i++) {
-            formData.stakeholderDetailList[i].important = formData.stakeholderDetailList[i].important ? 1 : 0
-          }
-
-          // 发起请求
-          let data = {}
-          let flowDataString = Object.assign(
-            {},
-            {
-              api: '/process/startAndSubmit',
-              processDefinitionKey: 'stakeholder'
-            }
-          )
-          let formDataString = Object.assign({}, formData)
-          let attachmentString = this.attachment
-          // 手机号码和电话号码转换为数字
-          formDataString.inputerPhoneNum = Number(formDataString.inputerPhoneNum) //录入人电话
-          formDataString.phoneNum = Number(formDataString.phoneNum) //电话号码
-          // 提醒方式数组改为字符串
-          /* formDataString.notifyMethod = this.transformNotice(formDataString.notifyMethod) */
-
-          formDataString.stakeholderDetailList.forEach(function(item, index) {
-            item.phoneNum = Number(item.phoneNum)
-            item.telephoneNum = Number(item.telephoneNum)
-            item.id = null
-          })
-
-          data.flowDataString = JSON.stringify(flowDataString)
-          data.formDataString = JSON.stringify(formDataString)
-          data.attachmentString = JSON.stringify(attachmentString)
-          data = qs.stringify(data)
-          return this.request(data)
-        })
-        .catch(e => {
-          if (e.error === VALIDATE_NO_PASSED) {
-            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
-            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
-          } else {
-            console.error(e)
-          }
-        })
+    /* 按钮统一事件 */
+    handle(item, id) {
+      switch (item) {
+        case 'submit':
+          item = '/process/startAndSubmit'
+          break
+        case 'start':
+          item = '/process/start'
+          break
+        case '/task/jump':
+          item = null
+          break
+        case 'jump':
+          item = '/task/jump'
+          break
+      }
+      console.log(item)
+      this.handleAction(item, id)
     },
+    goBack(id) {
+      this.handle('jump', id)
+    },
+    // 新增提交
     request(formData) {
       let url = this.url.edit
       let method = 'post' //put修改
@@ -629,7 +792,7 @@ export default {
           this.confirmLoading = false
         })
     },
-    handleSave() {
+    handleAction(item, id) {
       /** 触发表单验证 */
       this.getAllTable()
         .then(tables => {
@@ -644,8 +807,8 @@ export default {
 
           formData.stakeholderType = formData.stakeholderType ? '干系人类型1' : '干系人类型2'
           formData.companyNature = formData.companyNature ? '性质1' : '性质2'
-          formData.subcontractorName = this.subcontractorName
-          formData.subcontractorFullname = this.subcontractorFullname
+          /* formData.subcontractorName = this.subcontractorName
+          formData.subcontractorFullname = this.subcontractorFullname */
 
           for (let i = 0; i < this.attachment.length; i++) {
             formData.attachment = this.attachment[i].groupId
@@ -659,30 +822,31 @@ export default {
 
           // 发起请求
           let data = {}
-          let flowDataString = Object.assign(
+          let strFlowData = Object.assign(
             {},
             {
-              api: '/process/start',
-              processDefinitionKey: 'stakeholder'
+              api: item,
+              processDefinitionKey: 'stakeholder',
+              targetNodeId: id ? id : null
             }
           )
-          let formDataString = Object.assign({}, formData)
-          let attachmentString = this.attachment
+          let strFormData = Object.assign({}, formData)
+          let strAttachment = this.attachment
           // 手机号码和电话号码转换为数字
-          formDataString.inputerPhoneNum = Number(formDataString.inputerPhoneNum) //录入人电话
-          formDataString.phoneNum = Number(formDataString.phoneNum) //电话号码
+          strFormData.inputerPhoneNum = Number(strFormData.inputerPhoneNum) //录入人电话
+          strFormData.phoneNum = Number(strFormData.phoneNum) //电话号码
           // 提醒方式数组改为字符串
-          formDataString.notifyMethod = this.transformNotice(formDataString.notifyMethod)
+          /* formDataString.notifyMethod = this.transformNotice(formDataString.notifyMethod) */
 
-          formDataString.stakeholderDetailList.forEach(function(item, index) {
+          strFormData.stakeholderDetailList.forEach(function(item, index) {
             item.phoneNum = Number(item.phoneNum)
             item.telephoneNum = Number(item.telephoneNum)
             item.id = null
           })
 
-          data.flowDataString = JSON.stringify(flowDataString)
-          data.formDataString = JSON.stringify(formDataString)
-          data.attachmentString = JSON.stringify(attachmentString)
+          data.strFlowData = JSON.stringify(strFlowData)
+          data.strFormData = JSON.stringify(strFormData)
+          data.strAttachment = JSON.stringify(strAttachment)
           data = qs.stringify(data)
           return this.request(data)
         })
@@ -863,31 +1027,109 @@ export default {
         item.telephoneNum = Number(item.telephoneNum)
       }
       return arr.forEach(trans)
+    },
+    initChartAndComment(that, record, chartUrl, taskCommentUrl) {
+      console.log(record, '初始化流程图和审批意见列表record')
+      if (JSON.stringify(record) !== '{}') {
+        let params = {
+          id: that.model.id
+        }
+        console.log(params, 'params')
+        let httpGetUrlC = chartUrl
+        let httpGetUrlTc = taskCommentUrl
+        // 获取流程图
+        getActionUrl(httpGetUrlC, params)
+          .then(res => {
+            console.log('编辑流程图res', res)
+            that.urlChart =
+              'data:image/png;base64,' +
+              btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+          })
+          .finally(() => {
+            // that.confirmLoading = false;
+            // that.close();
+          })
+        // 获取意见列表
+        getAction(httpGetUrlTc, { id: that.model.id })
+          .then(res => {
+            console.log(res, '意见列表res')
+            that.commentList = res.result.taskListEnd.concat(res.result.taskListIng)
+            that.currentList = res.result.taskListEnd.length - 1
+
+            that.finishedList = Object.assign(res.result.taskListEnd)
+            that.unfinishedList = Object.assign(res.result.taskListIng)
+
+            // 渲染流程图tab中的数据列表
+            that.arr = []
+            that.arr1 = []
+            for (let i in that.finishedList) {
+              that.arr.push(that.finishedList[i])
+            }
+            for (let i in that.unfinishedList) {
+              that.arr1.push(that.unfinishedList[i])
+            }
+            console.log(that.arr)
+            console.log(that.arr1)
+          })
+          .finally(() => {})
+      } else {
+        let params = {
+          processDefinitionKey: 'stakeholder'
+        }
+        let httpGetUrlC = that.url.chart
+        getActionUrl(httpGetUrlC, params)
+          .then(res => {
+            console.log('流程图res', res)
+            this.urlChart =
+              'data:image/png;base64,' +
+              btoa(new Uint8Array(res).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+          })
+          .finally(() => {
+            // that.confirmLoading = false;
+            // that.close();
+          })
+        that.arr = []
+        that.arr1 = []
+      }
+    },
+    // 加载数据方法 必须为 Promise 对象
+    loadGoodsData() {
+      var that = this
+      return new Promise(resolve => {
+        resolve({
+          data: that.arr
+        })
+      }).then(res => {
+        return res
+      })
+    },
+    loadGoodsData1() {
+      var that = this
+      return new Promise(resolve => {
+        resolve({
+          data: that.arr1
+        })
+      }).then(res => {
+        return res
+      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-/* @import '~@/assets/less/modal.less';
- */
-.ant-form {
-  /* padding-right: 48px; */
-}
-.ant-tabs{
+@import '~@/assets/less/modal.less';
+
+.ant-tabs {
   margin-bottom: 20px;
 }
 
 .table-operator {
   button {
     margin-right: 5px;
-    /* background-color: #6455ff; */
-    /* color: #fff; */
-    /* border: 1px solid #6455ff; */
   }
 }
-.ant-col-12,
-.ant-col-8 {
+.ant-col-12 {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
