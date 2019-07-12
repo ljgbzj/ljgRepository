@@ -3,7 +3,8 @@
     <!-- 注册用户 -->
     <div class="register-one" v-show="step1">
       <div class="step1" v-if="device === 'desktop'">
-        <img src="@/assets/img/register/step1.png">
+        <!-- <img src="@/assets/img/register/step1.png"> -->
+        用户注册
       </div>
       <a-form :form="form">
         <!-- 用户名 -->
@@ -38,7 +39,7 @@
           ></a-input>
           <!-- <j-graphic-code class="codePic" :contentWidth="100" :contentHeight="40"/> -->
           <div class="codePic">
-            <img :src="urlimg" @click="getImgCode">
+            <img :src="urlimg" @click="getImgCode" />
           </div>
         </a-form-item>
         <!-- 手机验证码 -->
@@ -64,16 +65,16 @@
         <div class="next-container">
           <span class="login" @click="registered">
             已有账号登录
-            <img src="@/assets/img/register/left.png">
+            <img src="@/assets/img/register/left.png" />
           </span>
-          <a-button type="primary" @click.stop.prevent="steptoTwo" class="one2two">下一步</a-button>
+          <a-button type="primary" @click.stop.prevent="steptoTwo" class="one2two">注册</a-button>
           <span class="help">帮助中心</span>
         </div>
       </a-form>
     </div>
 
     <!-- 创建团队 -->
-    <div class="register-two" v-if="step2">
+    <!-- <div class="register-two" v-if="step2">
       <div class="step step2" v-if="device === 'desktop'">
         <img src="@/assets/img/register/step2.png">
       </div>
@@ -139,15 +140,16 @@
           <span class="help">帮助中心</span>
         </div>
       </a-form>
-    </div>
+    </div>-->
     <!-- 注册完成 -->
     <div class="register-done" v-show="step3">
-      <div class="step" v-if="device === 'desktop'">
-        <img src="@/assets/img/register/step3.png">
+      <div class="step step3" v-if="device === 'desktop'">
+        <!-- <img src="@/assets/img/register/step3.png"> -->
+        注册成功
       </div>
       <div class="result">
-        <img src="@/assets/img/register/registerdone.png">
-        <div>恭喜您完成团队的创建</div>
+        <img src="@/assets/img/register/registerdone.png" />
+        <div>恭喜您完成注册</div>
       </div>
       <div class="jump">
         <div>系统将自动跳转{{time}}s</div>
@@ -365,8 +367,9 @@ export default {
               // 设置 API url
               let url = this.url.adduser,
                 method = 'post'
+
               // 用户注册提示信息
-              const hide = this.$message.loading('用户注册中，请稍后..', 0)
+              const hide = this.$message.loading('用户注册中，请稍后..', 0) 
               // 发送用户注册请求
               httpActionHeader(url, params, method)
                 .then(res => {
@@ -379,8 +382,19 @@ export default {
                     })
                     // 隐藏第一步、第三步，显示第二步：企业注册
                     this.step1 = false
-                    this.step2 = true
-                    this.step3 = false
+                    this.step2 = false
+                    this.step3 = true
+                    
+                    if (this.time > 1) {
+                    this.startInter = setInterval(() => {
+                    if (this.time > 1) {
+                      this.time--
+                    } else {
+                      clearInterval(this.startInter)
+                      this.$router.push('/')
+                    }
+                  }, 1000)
+                }
                   } else {
                     this.$notification['error']({
                       message: '用户注册失败',
@@ -399,7 +413,7 @@ export default {
                     description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
                     duration: 4
                   })
-                })
+                }) 
             }
           }
         )

@@ -174,18 +174,12 @@ export default {
   },
   // render函数
   render () {
-    console.log('九')
-    console.log('this',this)
     const { mode, theme, menu } = this
     const props = {
       mode: mode,
       theme: theme,
       openKeys: this.openKeys
     }
-    console.log('mode',mode)
-    console.log('theme',theme)
-    console.log('menu',menu)
-    console.log('props',props)
     
     const on = {
       select: obj => {
@@ -194,7 +188,6 @@ export default {
       },
       openChange: this.onOpenChange
     }
-    console.log('on',on)
     // 根据后台返回的动态路由数据，生成模板，子路由层层递归
     const menuTree = menu.map(item => {
       // 如果menu的hidden属性存在，则返回空
@@ -204,11 +197,7 @@ export default {
       // 否则该项调用renderItem()方法
       return this.renderItem(item)
     })
-    console.log('menuTree',menuTree)
     // {...{ props, on: on }}
-    console.log(<Menu vModel={this.selectedKeys} {...{ props, on: on }}>
-      {menuTree}
-    </Menu>)
 
     // 最后，渲染成DOM树
     return (
