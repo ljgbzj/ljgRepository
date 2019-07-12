@@ -123,11 +123,11 @@ export default {
           align: 'center',
           dataIndex: 'companyNature'
         },
-        {
+        /* {
           title: '干系人信息来源方式',
           align: 'center',
           dataIndex: 'sourceType'
-        },
+        }, */
         {
           title: '状态',
           align: 'center',
@@ -184,16 +184,16 @@ export default {
           ids = id
         }
       }
-      let flowDataString = {
+      let strFlowData = {
         api: '/process/delete',
         processDefinitionKey: 'stakeholder'
       }
-      let formDataString = {
+      let strFormData = {
         id: ids
       }
       let params = {
-        flowDataString: JSON.stringify(flowDataString),
-        formDataString: JSON.stringify(formDataString)
+        strFlowData: JSON.stringify(strFlowData),
+        strFormData: JSON.stringify(strFormData)
       }
       let method = 'post'
       var that = this
