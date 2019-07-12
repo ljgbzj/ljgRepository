@@ -9,7 +9,7 @@
           ref="secondaryMenu"
           class="su-menu-item"
           :class="{active: isActive == index}"
-          v-if="item.meta.title !== '首页'"
+          v-show="item.meta.title !== '首页'"
         >
           <div class="item-container">
             <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
@@ -23,7 +23,6 @@
               :key="i"
               class="secondItem"
               :class="{checked: secondMenu.id == isChecked}"
-              @click="checked(secondMenu, index)"
             >
               <keep-alive v-if="secondMenu.meta.keepAlive">
                 <router-link :to="secondMenu.path" v-if="!secondMenu.children">
@@ -42,7 +41,6 @@
                   :key="key"
                   class="thirdItem"
                   :class="{chosed:thirdMenu.id == ischosed}"
-                  @click="chosed(thirdMenu,secondMenu,index)"
                 >
                   <keep-alive>
                     <router-link :to="thirdMenu.path">
@@ -77,7 +75,7 @@
             :key="index"
             class="su-menu-item"
             :class="{active: isActive == index}"
-            v-if="item.meta.title !== '首页'"
+            v-show="item.meta.title !== '首页'"
           >
             <div class="item-container">
               <div class="img-container">
@@ -94,7 +92,6 @@
                 :key="i"
                 class="secondItem"
                 :class="{checked: secondMenu.id == isChecked}"
-                @click="checked(secondMenu, index)"
               >
                 <keep-alive v-if="secondMenu.meta.keepAlive">
                   <router-link :to="secondMenu.path" v-if="!secondMenu.children">
@@ -163,6 +160,10 @@ export default {
     menuheight: function(val) {
       this.menuheight = val
       this.$refs.menuList.style.top = 0
+    },
+    // 监控路由，根据路由的变化来改变菜单栏的背景和字体颜色
+    '$route.path': function(newVal, oldVal) {
+      this.viewChange(newVal)
     }
   },
   mounted() {
@@ -173,13 +174,14 @@ export default {
           this.menuheight = this.$refs.menuList.clientHeight
         }
       })()
-    }
+    },
+    this.viewChange(this.$route.path)
   },
   methods: {
-    update() {
+    /* update() {
       console.log(this.menu)
       console.log(this.$refs.menuList.clientHeight)
-    },
+    }, */
     up() {
       this.$refs.menuList.style.top = `${this.menuTop}px`
       let top = this.$refs.menuList.style.top
@@ -206,20 +208,47 @@ export default {
         console.log('到底了')
       }
     },
+    viewChange(val) {
+      let firstMenu = this.menu
+      if (firstMenu && firstMenu.length > 0) {
+        firstMenu.forEach((firstItem, firstIndex) => {
+          if (firstItem.path && firstItem.path === '/dashboard/analysis') {
+            this.clear()
+          }
+          if (firstItem.children && firstItem.children.length > 0) {
+            let secondMenu = firstItem.children
+            secondMenu.forEach((secondItem, secondIndex) => {
+              if (secondItem.path && secondItem.path === val) {
+                this.checked(secondItem, firstIndex)
+              }
+              if (secondItem.children && secondItem.children.length > 0) {
+                let thirdMenu = secondItem.children
+                thirdMenu.forEach((thirdItem, thirdIndex) => {
+                  if (thirdItem.path && thirdItem.path === val) {
+                    this.chosed(thirdItem, secondItem, firstIndex)
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+    },
+    // 二级菜单颜色变化
     checked(item, index) {
+      this.clear()
       this.isChecked = item.id
       this.isActive = index
     },
+    // 三级菜单颜色变化
     chosed(thirdMenu, secondMenu, index) {
       this.ischosed = thirdMenu.id
       this.isChecked = secondMenu.id
       this.isActive = index
     },
-    active(index) {
-      this.isActive = index
+    clear() {
+      this.isChecked = null
       this.ischosed = null
-    },
-    inactive() {
       this.isActive = null
     },
     toggleAll() {
@@ -325,7 +354,7 @@ export default {
             width: 24px;
             height: 24px;
           }
-          span{
+          span {
             font-size: 16px;
           }
         }
@@ -396,6 +425,11 @@ export default {
       .su-menu-item {
         margin-left: 36px;
         margin-bottom: 12px;
+        &.active {
+          .item-container {
+            background-color: #f2f2f2;
+          }
+        }
 
         .item-container {
           display: flex;
