@@ -92,7 +92,6 @@
             username: userNameStr,
             realname: nameStr
           }
-          console.log(userDetails,'拿到只可');
           this.$emit("callback",userDetails);
         }
         return names;
@@ -113,7 +112,6 @@
         }
       },
       selectOK(data) {
-        console.log(data,'第二层街道');
         this.selectList = data;
       }
     }

@@ -18,7 +18,8 @@ const queryall = (params)=>getAction("/sys/role/queryall",params);
 const addUser = (params)=>postAction("/sys/user/add",params);
 const editUser = (params)=>putAction("/sys/user/edit",params);
 const queryUserRole = (params)=>getAction("/sys/user/queryUserRole",params);
-const getUserList = (params)=>getAction("/sys/user/list",params);
+const getUserList = (params)=>getAction("/sys/user/userListWithDepartName",params);
+const getLastlatestTwoList = (params)=>getAction("/sys/user/latestTwoDaysList",params);
 // const deleteUser = (params)=>deleteAction("/sys/user/delete",params);
 // const deleteUserList = (params)=>deleteAction("/sys/user/deleteBatch",params);
 const frozenBatch = (params)=>putAction("/sys/user/frozenBatch",params);
@@ -81,7 +82,7 @@ const getLoginfo = (params)=>getAction("/sys/loginfo",params);
 
 // 根据部门主键查询用户信息
 // const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params);
-const queryUserByDepId = (params)=>getAction("/sysdepart/sysDepart/searchDepartsAndChildrenIdsByid",params);
+const queryUserByDepId = (params)=>getAction("/sysdepart/sysDepart/searchDepartsAndChildrenIdsById",params);
 
 // 查询用户角色表里的所有信息
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);
@@ -98,6 +99,7 @@ export {
   editUser,
   queryUserRole,
   getUserList,
+  getLastlatestTwoList,
   queryall,
   frozenBatch,
   checkUsername,

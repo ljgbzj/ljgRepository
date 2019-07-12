@@ -11,87 +11,110 @@
     <div class="title">
       <div>
         <img src="@/assets/img/login/selectUser.png" />
-        用户列表
+        选择成员
       </div>
       <a-icon type="close" class="closeIcon" @click="handleCancel"/>
     </div>
-    <a-row :gutter="18">
-      <a-col :span="4">
-        <a-directory-tree
-          selectable
-          :selectedKeys="selectedKeys"
-          :checkStrictly="true"
-          @select="this.onSelectDepart"
-          :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
+    <a-row :gutter="13">
+      <a-col :span="13">
+        <a-tree-select
+          style="width: 100%;margin-bottom: 10px;"
+          :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
           :treeData="departTree"
-          defaultExpandAll
+          placeholder='请选择部门'
+          @select="this.onSelectDepart"
+          treeDefaultExpandAll
+          v-model="value"
+          allowClear
+        >
+          <span style="color: #08c" slot="title" slot-scope="{key, value}" v-if="key='0-0-1'">
+            Child Node1 {{value}}
+          </span>
+        </a-tree-select>
+        <a-input-search
+          placeholder="输入账号或姓名搜索"
+          style="width: 100%;margin-bottom:10px;"
+          @search="searchQuery"
+          v-model="queryParam.name"
         />
+        <!-- <a-card :bordered="true"> -->
+          <!-- table区域-begin -->
+            <a-tabs type="card">
+              <a-tab-pane tab="人员列表" key="1">
+                <div style="border:1px solid #e8e8e8;height:360px;">
+                  <a-table
+                    size="middle"
+                    rowKey="id"
+                    :columns="columns1"
+                    :dataSource="dataSource1"
+                    :pagination="ipagination"
+                    :loading="loading"
+                    :scroll="{ y: 250 }"
+                    style="border-top:unset;"
+                    :rowSelection="{selectedRowKeys: selectedRowKeys,onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
+                    @change="handleTableChange">
+                  </a-table>
+                </div>
+              </a-tab-pane>
+              <a-tab-pane tab="最近添加" key="2">
+                <div style="border:1px solid #e8e8e8;height:360px;">
+                  <a-table
+                    size="middle"
+                    rowKey="id"
+                    :columns="columns1"
+                    :dataSource="dataSource3"
+                    :pagination="ipagination"
+                    :loading="loading"
+                    :scroll="{ y: 250 }"
+                    style="border-top:unset;"
+                    :rowSelection="{selectedRowKeys: selectedRowKeys,onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
+                    @change="handleTableChange">
+                  </a-table>
+                </div>
+              </a-tab-pane>
+            </a-tabs>
+          <!-- table区域-end -->
+        <!-- </a-card> -->
+      </a-col> 
+      <a-col :span="1">
+        <a-icon type="right" class="selectUserIcon" style="margin-top:200px;margin-left:-5px;width:30px;height:30px;line-height:30px;text-algin:center;border-radius:50%;background: rgba(109,98,255,0.1)"/>
       </a-col>
-      <a-col :span="12">
-        <a-card title="选择人员" :bordered="true">
-          <!-- 查询区域 -->
-          <div class="table-page-search-wrapper">
-            <a-form layout="inline">
-              <a-row :gutter="24">
-
-                <a-col :span="10">
-                  <a-form-item label="姓名">
-                    <a-input placeholder="请输入姓名" v-model="queryParam.realname"></a-input>
-                  </a-form-item>
-                </a-col>
-                <a-col :span="8" >
-                  <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                    <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                    <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                  </span>
-                </a-col>
-
-              </a-row>
-            </a-form>
-          </div>
+      <a-col :span="10">
+        <!-- <a-card title="用户选择" :bordered="true"> -->
           <!-- table区域-begin -->
           <div>
-            <a-table
-              size="small"
-              bordered
-              rowKey="id"
-              :columns="columns1"
-              :dataSource="dataSource1"
-              :pagination="ipagination"
-              :loading="loading"
-              :scroll="{ y: 240 }"
-              :rowSelection="{selectedRowKeys: selectedRowKeys,onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
-              @change="handleTableChange">
-            </a-table>
+            <div style="margin-bottom:10px;height:30px;">
+              <span>已选人员</span>
+              <a-button style="float:right;right:0;top:0;" @click="clearSelected">清除</a-button>
+            </div>
+            <div style="border:1px solid #e8e8e8;height:440px;">
+              <a-table
+                size="middle"
+                rowKey="id"
+                :columns="columns2"
+                :dataSource="dataSource2"
+                :loading="loading"
+                :scroll="{ y: 400 }"
+                class="selectedTable"
+              >
+                <span slot="action" slot-scope="text, record">
+                  <a @click="handleDelete(record)">删除</a>
+                  <!-- <a-button type="primary" size="small" @click="handleDelete(record)" icon="delete">删除</a-button> -->
+                </span>
+              </a-table>
+            </div>
           </div>
           <!-- table区域-end -->
-        </a-card>
-      </a-col>
-      <a-col :span="8">
-        <a-card title="用户选择" :bordered="true">
-          <!-- table区域-begin -->
-          <div>
-            <a-table
-              size="small"
-              bordered
-              rowKey="id"
-              :columns="columns2"
-              :dataSource="dataSource2"
-              :loading="loading"
-              :scroll="{ y: 240 }"
-            >
-              <span slot="action" slot-scope="text, record">
-                <a @click="handleDelete(record)">删除</a>
-                <!-- <a-button type="primary" size="small" @click="handleDelete(record)" icon="delete">删除</a-button> -->
-              </span>
-            </a-table>
-          </div>
-          <!-- table区域-end -->
-        </a-card>
+        <!-- </a-card> -->
       </a-col>
     </a-row>
-    <a-row :gutter="18">
+    <a-row :gutter="24">
         <div class="btnClass">
+          <div>
+            <span>共选择</span>
+            <span>&nbsp;{{ selectLng }}&nbsp;</span>
+            <span>人</span>
+          </div>
           <a-button @click="handleOk" icon="check" type="primary" style="margin-right:10px" class="confirm">确定</a-button>
           <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">关闭</a-button>
         </div>
@@ -102,7 +125,7 @@
 <script>
   import { filterObj } from '@/utils/util'
   import { getAction } from '@/api/manage'
-  import { queryDepartTreeList, getUserList, queryUserByDepId } from '@/api/api'
+  import { queryDepartTreeList, getUserList, queryUserByDepId, getLastlatestTwoList } from '@/api/api'
 
   export default {
     name: 'JSelectUserNewModal',
@@ -120,42 +143,55 @@
         // 表头
         columns1: [
           {
-            title: '用户名',
+            title: '账号',
             align:"center",
-            width:113,
+            width:80,
             dataIndex: 'username'
           },
           {
             title: '姓名',
             align:"center",
-            width:100,
+            width:80,
             dataIndex: 'realname'
+          },
+          {
+            title: '所属部门',
+            align:"center",
+            width:100,
+            dataIndex: 'departNames'
           }
         ],
         columns2: [
           {
-            title: '用户名',
-            align:"center",
-            width:80,
+            title: '账号',
+            align: "center",
+            width: 80,
             dataIndex: 'username'
           },
           {
             title: '姓名',
             align:"center",
-            width:80,
+            width: 80,
             dataIndex: 'realname'
+          },
+          {
+            title: '所属部门',
+            align:"center",
+            width: 80,
+            dataIndex: 'departNames'
           },
           {
             title: '操作',
             dataIndex: 'action',
+            width: 100,
             align:"center",
-            width:60,
             scopedSlots: { customRender: 'action' },
           }
         ],
         //数据集
         dataSource1:[],
         dataSource2:[],
+        dataSource3:[],
         // 分页参数
         ipagination:{
           current: 1,
@@ -179,7 +215,7 @@
           list: "/test/cmpDemo/list",
           UserList: "/sys/user/batchQueryByUsernames"
         },
-
+        value: undefined
       }
     },
     props: {
@@ -192,6 +228,8 @@
       this.loadData();
       // 加载吧部门树
       this.queryDepartTree();
+      // 请求最近添加列表
+      this.latestTwoSelected();
     },
     methods: {
       searchQuery(){
@@ -230,6 +268,22 @@
         getUserList(params).then((res) => {
           if (res.success) {
             this.dataSource1 = res.result.records;
+            for (let i=0;i<this.dataSource1.length;i++) {
+              if (this.dataSource1[i].departNames.indexOf(",") != -1) {
+                let arr = this.dataSource1.departNames.split(",");
+                this.dataSource1.departNames = arr[0];
+              }
+            }
+            // this.assignRoleName(this.dataSource);
+            this.ipagination.total = res.result.total;
+          }
+        })
+      },
+      latestTwoSelected() {
+        let params = {};
+        getLastlatestTwoList(params).then((res) => {
+          if (res.success) {
+            this.dataSource3 = res.result.records;
             // this.assignRoleName(this.dataSource);
             this.ipagination.total = res.result.total;
           }
@@ -246,15 +300,38 @@
         //TODO 字段权限控制
       },
       onSelectAll (selected, selectedRows, changeRows) {
-        if(selected===true){
-          for(var a = 0;a<changeRows.length;a++){
-            this.dataSource2.push(changeRows[a]);
+        console.log(selected,'selected');
+        console.log(selectedRows,'selectedRows');
+        console.log(changeRows,'changeRows');
+        if (selected===true) {
+          for (let a = 0;a<changeRows.length;a++) {
+            var c = true;
+            console.log(this.dataSource2,'列表明显能大脑');
+            for (let b = 0;b<this.dataSource2.length;b++) {
+              if (changeRows[a].username == this.dataSource2[b].username) {
+                  c = false;
+              }else{    
+              }
+            }
+            if(c){
+              this.dataSource2.push(changeRows[a]);
+            }        
           }
-        }else{
+        } else {
           for(var b = 0;b<changeRows.length;b++){
             this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]),1);
           }
         }
+
+        // if(selected===true){
+        //   for(var a = 0;a<changeRows.length;a++){
+        //     this.dataSource2.push(changeRows[a]);
+        //   }
+        // }else{
+        //   for(var b = 0;b<changeRows.length;b++){
+        //     this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]),1);
+        //   }
+        // }
       },
       onSelect (record,selected) {
         if(selected===true){
@@ -315,8 +392,14 @@
       // 根据选择的id来查询用户信息
       queryUserByDepId(selectedKeys) {
         queryUserByDepId({ departId: selectedKeys.toString() }).then((res) => {
+          console.log(res,'打印一下');
           if (res.success) {
             this.dataSource1 = res.result;
+            for (let i=0;this.dataSource1.length;i++) {
+              if (this.dataSource1[i].departName != null) {
+                this.dataSource1[i].departNames = this.dataSource1[i].departName;
+              }             
+            }
             this.ipagination.total = res.result.length;
             // this.assignRoleName(this.dataSource);
           }
@@ -332,6 +415,10 @@
         this.dataSource2 = this.selectListUser;
         // this.dataSource2.push.apply(this.dataSource2,this.selectListUser);
         this.$emit("selectFinished",this.dataSource2);
+      },
+      clearSelected() {
+        this.dataSource2 = [];
+        this.$emit("selectFinished",this.dataSource2);
       }
     },
     watch: {
@@ -344,6 +431,11 @@
       //     this.$emit("selectFinished",this.dataSource2);
       //   }
       // }
+    },
+    computed: {
+      selectLng() {
+        return this.dataSource2.length;
+      }
     }
   }
 </script>
@@ -402,8 +494,16 @@
     }
   }
   .btnClass {
-    padding: 32px 32px 0px 32px;
+    // padding: 32px 32px 0px 32px;
+    margin-top: 20px;
     text-align: right;
+    div {
+      display: inline-block;
+      margin-right: 20px;
+      :nth-child(2) {
+        font-weight: bold;
+      }
+    }
     button {
       margin: 0;
       padding: 0;
@@ -427,4 +527,52 @@
       padding: 5px;
     }
   }
+  // 这是tabs样式
+    .ant-tabs {
+      :global(.ant-tabs-bar) {
+        border-bottom: unset;
+        margin-bottom: unset;
+        :global(.ant-tabs-nav-container) {
+          :global(.ant-tabs-nav-wrap) {
+            :global(.ant-tabs-nav) {
+              :global(.ant-tabs-tab){
+                width:100px!important;
+                text-align: center!important;
+                padding: unset!important;
+                background: #fff!important;
+                margin-right: unset!important;
+                border:1px solid #EFF1F2!important;
+              }
+              :global(.ant-tabs-tab:first-child){
+                border-top-right-radius:unset!important;
+              }
+              :global(.ant-tabs-tab:nth-child(2)){
+                border-top-left-radius:unset!important;
+              }
+              :global(.ant-tabs-tab-active) {
+                background: #EFF1F2!important;
+                // border-bottom: unset!important;
+              }
+
+            }
+          }
+        }
+      }
+      // 表格头部颜色样式 
+      :global(.ant-tabs-content) {
+        :global(.ant-table) {
+          :global(.ant-table-thead > tr > th) {
+            background: #EFF1F2!important;
+          }
+        }
+      }
+    }
+    // 已选择人员table头部颜色
+    .selectedTable {
+      :global(.ant-table-content){
+        :global(.ant-table-thead > tr > th) {
+          background: #EFF1F2!important;
+        }
+      }
+    }
 </style>
