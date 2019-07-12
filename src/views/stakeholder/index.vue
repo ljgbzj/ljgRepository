@@ -6,12 +6,10 @@
         <a-row :gutter="24">
           <a-col :md="11" :sm="8">
             <a-form-item label="干系人类型">
-              <a-select placeholder="选择" v-model="queryParam.stakeholderType">
+              <a-select placeholder="请选择干系人类型" v-model="queryParam.stakeholderType">
                 <a-select-option value="0">干系人类型1</a-select-option>
                 <a-select-option value="1">干系人类型2</a-select-option>
                 <a-select-option value="2">干系人类型3</a-select-option>
-                <a-select-option value="3">干系人类型4</a-select-option>
-                <a-select-option value="4">干系人类型5</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -28,10 +26,8 @@
           <a-col :md="11" :sm="8">
             <a-form-item label="信息来源方式">
               <a-select placeholder="请选择信息来源方式" v-model="queryParam.companyName">
-                <a-select-option value="0">项目新增/企业选入</a-select-option>
-                <a-select-option value="1">信息来源方式2</a-select-option>
-                <a-select-option value="2">信息来源方式3</a-select-option>
-                <a-select-option value="3">信息来源方式4</a-select-option>
+                <a-select-option value="0">项目新增</a-select-option>
+                <a-select-option value="1">企业选入</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -53,20 +49,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
-      <!-- <a-button @click="handleRevise" type="primary" icon="edit">编辑</a-button> -->
       <a-button @click="batchAbandone" type="primary" icon="delete">废弃</a-button>
-      <!-- <a-button @click="handleScan" type="primary" icon="eye">浏览</a-button> -->
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-        <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -76,14 +64,13 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type: 'radio'}"
         @change="handleTableChange"
       >
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
           <a-divider type="vertical" />
-          <a @click="batchAbandone($event,record.id,record.processInstanceId)">废弃</a>
+          <a @click="batchAbandone($event, record.id, record.processInstanceId)">废弃</a>
         </span>
       </a-table>
     </div>
@@ -99,11 +86,10 @@ import stakemodule from './modules/stakemodule'
 import { CmpListMixin } from '@/mixins/CmpListMixin'
 import { httpAction } from '@/api/manage'
 import qs from 'qs'
-
+import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 export default {
   name: 'stakeholder',
   mixins: [CmpListMixin],
-
   components: {
     stakemodule
   },
@@ -143,6 +129,15 @@ export default {
           dataIndex: 'sourceType'
         },
         {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'status',
+          customRender: (text, record, index) => {
+            //字典值替换通用方法
+            return filterDictText(this.statusDictOptions, text)
+          }
+        },
+        {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
@@ -150,9 +145,9 @@ export default {
         }
       ],
       url: {
-        list: '/stakeholder/stakeholder/list',
+        list: '/stakeholder/stakeholder/list',  //获取列表数据接口
         delete: '/stakeholder/stakeholder/delete',
-        deleteBatch: "/flowable/action",
+        deleteBatch: '/flowable/action',  //废弃接口
         exportXlsUrl: 'stakeholder/stakeholder/exportXls',
         importExcelUrl: 'stakeholder/stakeholder/importExcel'
       }
@@ -164,7 +159,8 @@ export default {
     }
   },
   methods: {
-    batchAbandone: function(event, id) {
+    // 废弃选中的流程
+    batchAbandone(event, id) {
       if (!this.url.deleteBatch) {
         this.$message.error('请设置url.deleteBatch属性!')
         return
@@ -173,7 +169,8 @@ export default {
       var processInsId = ''
       // 支持多项废弃的操作，通用方法
       if (this.selectedRowKeys.length > 1) {
-        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+        let len = this.selectedRowKeys.length
+        for (var a = 0; a < len ; a++) {
           ids += this.selectedRowKeys[a] + ','
         }
       } else if ((this.selectedRowKeys.length = 1 && this.selectedRowKeys[0] !== undefined)) {
@@ -215,23 +212,17 @@ export default {
           })
         }
       })
-    },
-    handleChose() {
-      console.log('这是选入方法！')
-    },
-    handleRevise() {
-      console.log('这是修改方法！')
-    },
-    handleDelete() {
-      console.log('这是删除方法！')
-    },
-    handleScan() {
-      console.log('这是浏览方法！')
-    },
-    handleReset() {
-      console.log('这是刷新方法！')
     }
-  }
+  },
+  beforeCreate(){
+      // 自行定义方法，引用字典
+      // 初始化字典
+      initDictOptions('bpm_status').then((res) => {
+        if (res.success) {
+          this.statusDictOptions = res.result;
+        }
+      })
+    }
 }
 </script>
 

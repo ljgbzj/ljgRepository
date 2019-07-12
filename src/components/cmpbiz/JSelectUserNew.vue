@@ -15,7 +15,7 @@
     </span> -->
 
     <!-- 选择多个用户支持排序 -->
-    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK" :selectListUser="selectedDetails"></j-select-user-new-model>
+    <j-select-user-new-model ref="selectModal" @selectFinished="selectOK" :selectListUser="selectedDetails.value"></j-select-user-new-model>
   </div>
 </template>
 
@@ -40,7 +40,7 @@
         default: false
       },
       selectedDetails: {
-        type: Array,
+        type: Object,
         required:false
       }
     },
@@ -62,21 +62,14 @@
           if(usernames.length>0){
             userNameStr = usernames.join(",")
           }
-          let userDetails = {
+          let userDetails = {colum:'',target:[],value:{}}
+          userDetails.colum=this.selectedDetails.colum;
+          userDetails.target=this.selectedDetails.target;
+          userDetails.value = {
             username: userNameStr,
             realname: nameStr
           }
-          this.$emit("userDetails",userDetails)
-          // if(this.triggerChange){
-          //   this.$emit("change",nameStr)
-          // }else{
-          //   this.$emit("input",nameStr)
-          // }
-          // if(this.triggerChange){
-          //   this.$emit("userName",userNameStr)
-          // }else{
-          //   this.$emit("userName",userNameStr)
-          // }
+          this.$emit("callback",userDetails)
         } else {
           var names = [];
           var usernames = [];
@@ -92,21 +85,15 @@
           if(usernames.length>0){
             userNameStr = usernames.join(",")
           }
-          // if(this.triggerChange){
-          //   this.$emit("change",nameStr)
-          // }else{
-          //   this.$emit("input",nameStr)
-          // }
-          // if(this.triggerChange){
-          //   this.$emit("userName",userNameStr)
-          // }else{
-          //   this.$emit("userName",userNameStr)
-          // }
-          let userDetails = {
+          let userDetails = {colum:'',target:[],value:{}}
+          userDetails.colum=this.selectedDetails.colum;
+          userDetails.target=this.selectedDetails.target;
+          userDetails.value = {
             username: userNameStr,
             realname: nameStr
           }
-          this.$emit("userDetails",userDetails)
+          console.log(userDetails,'拿到只可');
+          this.$emit("callback",userDetails);
         }
         return names;
       }
@@ -125,7 +112,8 @@
           }
         }
       },
-      selectOK: function (data) {
+      selectOK(data) {
+        console.log(data,'第二层街道');
         this.selectList = data;
       }
     }

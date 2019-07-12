@@ -76,8 +76,8 @@ export const JEditableTableMixin = {
       // 表单填充数据
       this.model = Object.assign({}, record)
       if (typeof this.editAfter === 'function') {
-        console.log('如果editAfter方法存在，则调用','并将干系人信息record传入方法')
-        this.editAfter(this.model)
+        console.log('如果editAfter方法存在，则调用, 并将干系人信息record 传入方法')
+        this.editAfter(record)
       }
     },
     /** 关闭弹窗，并将所有JEditableTable实例回归到初始状态 */
