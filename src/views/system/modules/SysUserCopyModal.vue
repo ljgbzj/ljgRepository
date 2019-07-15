@@ -15,7 +15,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="登录账号">
-          <a-input placeholder="请输入登录账号" v-decorator="['username', {}]" />
+          <a-input placeholder="请输入登录账号" v-decorator = "[ 'username', validatorRules.username]"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -35,12 +35,24 @@
           label="md5密码盐">
           <a-input placeholder="请输入md5密码盐" v-decorator="['salt', {}]" />
         </a-form-item>-->
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="头像">
-          <a-input placeholder="请输入头像" v-decorator="['avatar', {}]" />
-        </a-form-item>-->
+        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-upload
+            listType="picture-card"
+            class="avatar-uploader"
+            :showUploadList="false"
+            :action="uploadAction"
+            :data="{'isup':1}"
+            :headers="headers"
+            :beforeUpload="beforeUpload"
+            @change="handleChange"
+          >
+            <img v-if="picUrl" :src="getAvatarView()" alt="头像" style="height:104px;max-width:300px"/>
+            <div v-else>
+              <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+              <div class="ant-upload-text">上传</div>
+            </div>
+          </a-upload>
+        </a-form-item>
        <!-- <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -122,7 +134,10 @@
 <script>
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
+  import Vue from 'vue'
   import moment from "moment"
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
+  import {checkUsername} from "../../../api/api";
 
   export default {
     name: "SysUserCopyModal",
@@ -130,7 +145,9 @@
       return {
         title:"操作",
         visible: false,
-        model: {},
+        model: {
+
+        },
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -139,22 +156,36 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        uploadLoading:false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
           phone:{rules: [{validator: this.validatePhone}]},
           email:{rules: [{type: 'email', message: '请输入正确格式的电子邮箱!',}]},
+          username:{rules: [{required:true,message: '请输入用户账号'}, {validator: this.validateUsername}]}
           //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
         },
+        headers:{},
+        picUrl: '',
         url: {
-         // add: "/test/sysUserCopy/add",
+          // add: "/test/sysUserCopy/add",
           // edit: "/test/sysUserCopy/edit",
+          add: "/sys/user/add",
           edit: "/sys/user/edit",
+          userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
+          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
+          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token":token}
+    },
+    computed:{
+      uploadAction:function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
       add () {
@@ -165,15 +196,18 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'username','realname','password', 'avatar','sex','email','phone','orgCode','status','delFlag','activitiSync','corpCode','prjCode','officePhone','address'))
+          this.form.setFieldsValue(pick(this.model,'username','realname', 'email','phone','officePhone','address'));
 		  //时间格式化
           this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
         });
-
+        if (record.avatar) {
+          this.picUrl = true;
+        }
       },
       close () {
         this.$emit('close');
         this.visible = false;
+        this.picUrl = '';
       },
       handleOk () {
         const that = this;
@@ -217,6 +251,61 @@
       },
 
 
+      validatePhone(rule, value, callback){
+        if(!value || new RegExp(/^1[3|4|5|6|7|8][0-9]\d{8}$/).test(value)){
+          callback();
+        }else{
+          callback("请输入正确格式的手机号码!");
+        }
+      },
+      validateUsername(rule, value, callback){
+        var params = {
+          id:this.model.id,
+          username:value
+        };
+        checkUsername(params).then((res)=>{
+          if(res.success){
+            callback();
+          }else{
+            callback("用户账号已存在！");
+          }
+        });
+      },
+      /*图片上传之前的操作*/
+      beforeUpload: function(file){
+        var fileType = file.type;
+        if(fileType.indexOf('image')<0){
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange (info) {
+        this.picUrl = "";
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if(response.success){
+            this.model.avatar = response.message;
+            this.picUrl = "Has no pic url yet";
+          }else{
+            this.$message.warning(response.message);
+          }
+        }
+      },
+      getAvatarView(record){
+        if (record == undefined) {
+          return this.url.imgerver +"/"+ this.model.avatar;
+        } else {
+          return this.url.imgerver +"/"+ record.avatar;
+        }
+
+      },
     }
   }
 </script>

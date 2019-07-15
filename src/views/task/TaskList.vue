@@ -202,6 +202,7 @@
     },
     computed: {
       comName: function () {
+        console.log(this.componentsUrl)
         return () => import(`@/views/${this.componentsUrl}.vue`)
       }
     }

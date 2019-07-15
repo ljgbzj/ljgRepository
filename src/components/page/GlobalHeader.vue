@@ -60,7 +60,7 @@
 
 <script>
 import UserMenu from '../tools/UserMenu'
-import SMenu from '../menu/'
+/* import SMenu from '../menu/' */
 import Logo from '../tools/Logo'
 import SuMenu from '../menu/menu'
 import { mixin } from '@/utils/mixin.js'
@@ -69,7 +69,7 @@ export default {
   name: 'GlobalHeader',
   components: {
     UserMenu,
-    SMenu,
+    /* SMenu, */
     SuMenu,
     Logo
   },

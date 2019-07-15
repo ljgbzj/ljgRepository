@@ -479,7 +479,6 @@ export const CmpListMixin = {
           var flag=1;
           var selectValue=[];
           var selectColum=[];
-          console.log(that[that.selectUser[i]],'看看有没有');
           for(var j=0;j<that[that.selectUser[i]].target.length;j++){
             if(that.model[that[that.selectUser[i]].target[j].to]==''){
               flag=0;

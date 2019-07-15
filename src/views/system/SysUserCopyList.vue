@@ -6,18 +6,30 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :md="6" :sm="8">
+          <a-col :md="8" :sm="8">
             <a-form-item label="登录账号">
               <a-input placeholder="请输入登录账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="8" :sm="8">
             <a-form-item label="真实姓名">
               <a-input placeholder="请输入真实姓名" v-model="queryParam.realname" ></a-input>
             </a-form-item>
           </a-col>
         <template v-if="toggleSearchStatus">
-        <!--<a-col :md="6" :sm="8">
+          <a-col :md="8" :sm="8">
+            <a-form-item label="办公电话">
+              <a-input placeholder="请输入电话" v-model="queryParam.phone"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="8" :sm="8">
+            <a-form-item label="办公号码">
+              <a-input placeholder="请输入办公号码" v-model="queryParam.officePhone"></a-input>
+            </a-form-item>
+          </a-col>
+
+
+          <!--<a-col :md="6" :sm="8">
             <a-form-item label="密码">
               <a-input placeholder="请输入密码" v-model="queryParam.password"></a-input>
             </a-form-item>
@@ -37,10 +49,10 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">
+              <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>-->
+              </a>
             </span>
           </a-col>
 
@@ -48,27 +60,28 @@
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <!--<div class="table-operator" style="float: right">
-      &lt;!&ndash;<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>&ndash;&gt;
-      <a-button type="primary" icon="download" @click="handleExportXls('test')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>-->
+
 
     <!-- table区域-begin -->
     <div>
+      <div class="table-operator" style="">
+        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button type="primary" icon="download" @click="handleExportXls('test')">导出</a-button>
+        <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+          <a-button type="primary" icon="import">导入</a-button>
+        </a-upload>
+        <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          </a-menu>
+          <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+        </a-dropdown>-->
+      </div>
       <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>-->
+      <!-- 操作按钮区域 -->
 
       <a-table
         ref="table"
@@ -79,12 +92,18 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-
         @change="handleTableChange">
 
-        <!--<span slot="action" slot-scope="text, record">
+
+        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
+          </div>
+        </template>
+
+        <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-         &lt;!&ndash; <a-divider type="vertical" />
+          <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -94,8 +113,8 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>&ndash;&gt;
-        </span>-->
+          </a-dropdown>
+        </span>
 
       </a-table>
     </div>
@@ -108,7 +127,7 @@
 
 <script>
   import SysUserCopyModal from './modules/SysUserCopyModal'
-  import { CmpListMixin } from '@/mixins/CmpListMixin'
+  import {CmpListMixin} from '@/mixins/CmpListMixin'
 
   export default {
     name: "SysUserCopyList",
@@ -145,7 +164,9 @@
 		   {
             title: '头像',
             align:"center",
+            width:120,
             dataIndex: 'avatar',
+            //slots: {filterIcon: 'avatar'},
             scopedSlots: {customRender: "avatarslot"}
            },
 		   {
@@ -168,20 +189,22 @@
             align:"center",
             dataIndex: 'address'
            },
-          /*{
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
             scopedSlots: { customRender: 'action' },
-          }*/
+          }
         ],
 		url: {
           list: "/sys/user/list/",
-          /*list: "/sys/user/queryLikeRealName",*/
-         /* delete: "/test/sysUserCopy/delete",
-          deleteBatch: "/test/sysUserCopy/deleteBatch",
-          exportXlsUrl: "test/sysUserCopy/exportXls",
-          importExcelUrl: "test/sysUserCopy/importExcel",*/
+          delete: "/sys/user/delete",
+          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
+          /*delete: "/test/sysUserCopy/delete",*/
+
+          //exportXlsUrl: "test/sysUserCopy/exportXls",
+          exportXlsUrl: "/sys/user/exportXls",
+          importExcelUrl: "/sys/user/importExcel",
        },
     }
   },
@@ -191,8 +214,9 @@
     }
   },
     methods: {
-
-     
+      getAvatarView: function (avatar) {
+        return this.url.imgerver + "/" + avatar;
+      },
     },
 
     watch: {
@@ -203,5 +227,34 @@
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
+  @import '~@assets/less/common.less';
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+  .anty-form-btn{
+    line-height: 40px;
+  }
+  .table-page-search-wrapper {
+    .ant-form-inline {
+    .ant-form-item > :global(.ant-form-item-label) {
+      line-height: 40px;
+    }
+    }
+  }
+  .ant-input {
+    height: 40px;
+  }
+
+  .ant-btn-primary {
+    height: 40px;
+  }
+  .ant-dropdown-trigger {
+    height: 40px;
+  }
+  .ant-card-body .table-operator {
+    display: flex;
+    margin-bottom: 20px;
+    vertical-align: top;
+    height: 40px;
+  }
 </style>

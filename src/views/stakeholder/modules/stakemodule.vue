@@ -125,7 +125,7 @@
                 </a-upload>
               </a-form-item>
               <a-tabs v-model="activeKey" @change="handleChangeTabs">
-                <a-tab-pane :key="refKeys[0]" :forceRender="true">
+                <a-tab-pane :key="refKeys[0]" :forceRender="true" class="stakeholder-list">
                   <span slot="tab">
                     <a-icon type="file-text" />干系人明细1
                   </span>
@@ -140,7 +140,7 @@
                     :actionButton="true"
                   />
                 </a-tab-pane>
-                <a-tab-pane :key="refKeys[1]" :forceRender="true">
+                <a-tab-pane :key="refKeys[1]" :forceRender="true" class="stakeholder-list">
                   <span slot="tab">
                     <a-icon type="file-text" />干系人明细2
                   </span>
@@ -197,13 +197,13 @@
                 </a-checkbox-group>
               </a-form-item>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="审批人">
-                <a-input placeholder v-decorator="['subcontractorName', {}]" />
+                <!-- <a-input placeholder v-decorator="['subcontractorName', {}]" /> -->
                 <!-- <a-select placeholder="选择" v-decorator="['subcontractor', {}]">
               <a-select-option value="0">审批人</a-select-option>
                 </a-select>-->
                 <!-- <a-input placeholder v-decorator="['subcontractor', {}]" /> -->
                 <!-- <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new> -->
-                <!-- <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" /> -->
+                <j-select-user-new :selectedDetails="auditUsers" @callback="setAuditUser" />
               </a-form-item>
               <a-form-item
                 :labelCol="labelCol1"
@@ -466,10 +466,18 @@ export default {
       uploadParams: {},
       curtime: null,
       departDetails: [], //选人组件选中对象
-      subcontractorName: [],
-      subcontractorFullname: [],
+      subcontractorName: '',
+      subcontractorFullname: '',
 
       nodeName: '',
+
+      // 选人组件
+      selectUser: ['auditUsers'],
+      auditUsers: {
+        colum: 'auditUsers',
+        value: [],
+        target: [{ to: 'subcontractorName', from: 'username' }, { to: 'subcontractorFullname', from: 'realname' }]
+      },
 
       //审批意见列表
       commentList: {},
@@ -622,15 +630,18 @@ export default {
             'inputerDeptName', //录入人部门
             'createTime', //录入时间
             'notifyMethod', //新任务通知方式
-            '_taskComment',
-            'subcontractorName'
+            '_taskComment'
+            /* 'subcontractorName' */
           )
         )
 
         this.departDetails = []
         //编辑或审核而非启动时
         if (JSON.stringify(record) !== '{}') {
-          /* this.departDetails = this.initSelect([this.model.subcontractorName, this.model.subcontractorFullname]) */
+          // 初始化选人组件字段
+          this.auditUsers.value = []
+          // 初始化选人控件
+          this.initSelectMan(this, record)
 
           //将notifyMethod字符串或者undefined转换为数组
           this.model.notifyMethod = JSON.parse(this.model.notifyMethod)
@@ -719,26 +730,41 @@ export default {
       }
     },
     // 转换选人组件姓名账号对应的格式
-    initSelect(val) {
-      var arr2 = []
-      if (val[0].indexOf(',') !== -1) {
-        let arr = val[0].split(',')
-        let arr1 = val[1].split(',')
-        for (let i = 0; i < arr.length; i++) {
-          arr2.push({
-            realname: arr[i],
-            username: arr1[i]
-          })
-        }
-      } else {
-        arr2 = [
-          {
-            realname: val[0],
-            username: val[1]
+    initSelectMan(that, record) {
+      if (JSON.stringify(record) !== '{}') {
+        for (var i = 0; i < that.selectUser.length; i++) {
+          var flag = 1
+          var selectValue = []
+          var selectColum = []
+          console.log(that[that.selectUser[i]], '看看有没有')
+          for (var j = 0; j < that[that.selectUser[i]].target.length; j++) {
+            if (that.model[that[that.selectUser[i]].target[j].to] == '') {
+              flag = 0
+              break
+            } else {
+              selectValue.push(that.model[that[that.selectUser[i]].target[j].to])
+              selectColum.push(that[that.selectUser[i]].target[j].from)
+            }
           }
-        ]
+          if (flag) {
+            that[that.selectUser[i]].value = that.initSelect(selectColum, selectValue)
+          }
+        }
       }
-      return arr2
+    },
+    // 初始化选人组件
+    initSelect(col, val) {
+      if (val[0] != null) {
+        var arr2 = []
+        for (var i = 0; i < val[0].split(',').length; i++) {
+          var item = {}
+          for (var j = 0; j < col.length; j++) {
+            this.$set(item, col[j], val[j].split(',')[i])
+          }
+          arr2.push(item)
+        }
+        return arr2
+      }
     },
 
     /** 整理成formData */
@@ -804,11 +830,11 @@ export default {
             throw this.throwNotFunction('classifyIntoFormData')
           }
           let formData = this.classifyIntoFormData(allValues)
-
+          console.log(formData, 'formData')
           formData.stakeholderType = formData.stakeholderType ? '干系人类型1' : '干系人类型2'
           formData.companyNature = formData.companyNature ? '性质1' : '性质2'
-          /* formData.subcontractorName = this.subcontractorName
-          formData.subcontractorFullname = this.subcontractorFullname */
+
+          this.uploadMan(formData, this)
 
           for (let i = 0; i < this.attachment.length; i++) {
             formData.attachment = this.attachment[i].groupId
@@ -827,7 +853,8 @@ export default {
             {
               api: item,
               processDefinitionKey: 'stakeholder',
-              targetNodeId: id ? id : null
+              targetNodeId: id ? id : null,
+              taskId: formData.taskId
             }
           )
           let strFormData = Object.assign({}, formData)
@@ -847,6 +874,7 @@ export default {
           data.strFlowData = JSON.stringify(strFlowData)
           data.strFormData = JSON.stringify(strFormData)
           data.strAttachment = JSON.stringify(strAttachment)
+          console.log(data, 'handleActionData')
           data = qs.stringify(data)
           return this.request(data)
         })
@@ -1060,8 +1088,9 @@ export default {
             that.unfinishedList = Object.assign(res.result.taskListIng)
 
             // 渲染流程图tab中的数据列表
-            that.arr = []
-            that.arr1 = []
+            that.arr.length = 0
+            that.arr1.length = 0
+
             for (let i in that.finishedList) {
               that.arr.push(that.finishedList[i])
             }
@@ -1073,9 +1102,14 @@ export default {
           })
           .finally(() => {})
       } else {
+        console.log(record, '初始化流程图和审批意见列表record')
         let params = {
           processDefinitionKey: 'stakeholder'
         }
+        that.arr.length = 0
+        that.arr1.length = 0
+        console.log(that.arr, 'arr')
+        console.log(that.arr1, 'arr1')
         let httpGetUrlC = that.url.chart
         getActionUrl(httpGetUrlC, params)
           .then(res => {
@@ -1088,8 +1122,6 @@ export default {
             // that.confirmLoading = false;
             // that.close();
           })
-        that.arr = []
-        that.arr1 = []
       }
     },
     // 加载数据方法 必须为 Promise 对象
@@ -1100,6 +1132,7 @@ export default {
           data: that.arr
         })
       }).then(res => {
+        console.log('resloadData', res)
         return res
       })
     },
@@ -1110,8 +1143,35 @@ export default {
           data: that.arr1
         })
       }).then(res => {
+        console.log('resloadData', res)
         return res
       })
+    },
+    // 选人组件回传值
+    setAuditUser(val) {
+      //val:{ colum:'' , target   ,value }
+      for (var i = 0; i < this[val.colum].target.length; i++) {
+        this[this[val.colum].target[i].to] = val.value[this[val.colum].target[i].from]
+      }
+    },
+    uploadMan(strFormData, that) {
+      console.log(strFormData, 'strFormData')
+      for (var i = 0; i < that.selectUser.length; i++) {
+        var flag = 1
+        for (var j = 0; j < that[that.selectUser[i]].target.length; j++) {
+          if (that[that[that.selectUser[i]].target[j].to] == '') {
+            console.log(that[that.selectUser[i]].target[j].to)
+            console.log(111)
+            flag = 0
+            break
+          } else {
+            console.log(222)
+            strFormData[[that[that.selectUser[i]].target[j].to]] = that[that[that.selectUser[i]].target[j].to]
+          }
+        }
+      }
+      console.log(strFormData, 'strFormDataAfter')
+      return strFormData
     }
   }
 }
@@ -1122,6 +1182,13 @@ export default {
 
 .ant-tabs {
   margin-bottom: 20px;
+  :global(.ant-tabs-content.ant-tabs-content-animated.ant-tabs-top-content) {
+    .stakeholder-list {
+      :global(.ant-select-selection) {
+        border: none;
+      }
+    }
+  }
 }
 
 .table-operator {
@@ -1142,6 +1209,7 @@ export default {
     }
   }
 }
+
 .btnClass {
   text-align: center;
 }

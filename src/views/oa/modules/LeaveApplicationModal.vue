@@ -23,8 +23,8 @@
       </div>
       <a-icon type="close" class="closeIcon" @click="handleCancel" />
     </div>
-    <div class="card-container">
-      <a-tabs defaultActiveKey="1" type="card">
+    <!-- <div class="card-container"> -->
+      <a-tabs defaultActiveKey="1">
         <a-tab-pane key="1" >
           <span slot="tab">
             <!-- <a-icon type="project" /> -->
@@ -295,7 +295,7 @@
           </div>
         </a-tab-pane>
       </a-tabs>
-    </div>
+    <!-- </div> -->
   </a-modal>
 </template>
 
@@ -633,7 +633,7 @@ export default {
             let params2 = {
               strFlowData: JSON.stringify(strFlowData),
               strFormData: JSON.stringify(strFormData),
-              attachmentString: JSON.stringify(this.attachment)
+              strAttachment: JSON.stringify(this.attachment)
             }
             httpAction(httpurl, qs.stringify(params2), method)
               .then(res => {
