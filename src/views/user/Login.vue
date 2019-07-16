@@ -246,7 +246,10 @@ export default {
       currentUsername: '',
       validate_status: '',
 
-      url: '/sys/verifyMessageLogin' // 短信登录接口
+      url: '/sys/verifyMessageLogin', // 短信登录接口
+      urlRsa: '/sys/getciphertext', // 请求rsa公钥接口
+      backPubKey: '', //服务器公钥字段
+      genKey: '' //前端aesKey
     }
   },
   created() {
@@ -272,51 +275,94 @@ export default {
     // 登录：账号或者手机登录
     handleSubmit() {
       let that = this //将this指向的vue实例赋值给that
+
+      // 1、登录前获取后端公钥
       let loginParams = {
         remember_me: that.formLogin.rememberMe
       }
-      // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
-      if (that.customActiveKey === 'tab1') {
-        //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
-        that.form.validateFields(['username', 'password'], { force: true }, (err, values) => {
-          if (!err) {
-            // err为空，则执行，将账号密码防盗loginParams对象中
-            loginParams.username = values.username
-            //loginParams.password = md5(values.password)
-            loginParams.password = values.password
-            // 执行登录操作
-            that
-              .Login(loginParams)
-              .then(res => {
-                // 根据归属部门，选择处理，0提示，2选择，1则直接登录
-                this.departConfirm(res)
-              })
-              .catch(err => {
-                that.requestFailed(err)
-              })
+      getAction(that.urlRsa)
+        .then(res => {
+          if (res.result != null) {
+            that.backPubKey = res.result.data;
           }
-        })
-        // 使用手机号登陆
-      } else {
-        that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
-          if (!err) {
-            loginParams = qs.stringify(Object.assign({}, values))
-            that.loginBtn = true
-            that
-              .LoginByPhone(loginParams)
-              .then(res => {
-                if (that.requiredTwoStepCaptcha) {
-                  that.stepCaptchaVisible = true
-                } else {
-                  this.departConfirm(res)
+          
+          // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
+          if (that.customActiveKey === 'tab1') {
+            //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
+            that.form.validateFields(['username', 'password'], { force: true }, (err, values) => {
+              if (!err) {
+                // err为空，则执行，将账号密码防盗loginParams对象中
+                loginParams.username = values.username
+                //loginParams.password = md5(values.password)
+                loginParams.password = values.password
+                // 执行登录操作
+
+                // 生成客户端aes秘钥
+                that.genKey = aesUtil.genKey()
+                //key加密 登录信息
+                let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
+
+                //  生成客户端公钥
+                //let keyPair = rsaUtil.genKeyPair()
+                //console.log(keyPair.getPublicKey, '本地产')
+                //  公钥加密aes秘钥
+                that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
+                // 组合登录信息及两个秘钥
+                let loginParams1 = {
+                  backPub: that.backPubKey,
+                  aesKey: that.genKeyRsa,
+                  data: loginParamsAes
                 }
-              })
-              .catch(err => {
-                that.requestFailed(err)
-              })
+                if (res.result != null) {
+                  that
+                  .Login(qs.stringify(loginParams1))
+                  .then(res => {
+                    console.log(res,'这里也能获取');
+                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                    // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
+                    this.departConfirm(res)
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+                } else {
+                  that
+                  .Login(qs.stringify(loginParams1))
+                  .then(res => {
+                    console.log(res,'这里也能获取');
+                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                    
+                    // this.departConfirm(res)
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+                }
+              }
+            })
+            // 使用手机号登陆
+          } else {
+            that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
+              if (!err) {
+                loginParams = qs.stringify(Object.assign({}, values))
+                that.loginBtn = true
+                that
+                  .LoginByPhone(loginParams)
+                  .then(res => {
+                    if (that.requiredTwoStepCaptcha) {
+                      that.stepCaptchaVisible = true
+                    } else {
+                      this.departConfirm(res)
+                    }
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+              }
+            })
           }
         })
-      }
+        .catch(err => {})
     },
     //获取手机验证码
     getCaptcha(e) {

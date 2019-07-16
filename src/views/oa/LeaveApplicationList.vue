@@ -254,7 +254,7 @@
                 that.loadData();
                 that.onClearSelected();
               } else {
-                that.$message.warning(res.message);
+                that.$message.warning('操作失败！');
               }
             });
           }
