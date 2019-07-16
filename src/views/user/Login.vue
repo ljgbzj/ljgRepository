@@ -189,9 +189,11 @@ import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha' //两步验证（
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util' // 根据当前时间，判断问候语
 import Vue from 'vue'
+import { rsaUtil } from '@/utils/rsa'
+import { aesUtil } from '@/utils/aes'
 import { ACCESS_TOKEN } from '@/store/mutation-types' // token
 import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
-import { putAction, postAction } from '@/api/manage' // axios方法
+import { putAction, postAction, getAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
 import qs from 'qs'
 import { mixinDevice } from '@/utils/mixin.js'
@@ -282,6 +284,7 @@ export default {
       }
       getAction(that.urlRsa)
         .then(res => {
+          console.log(res,'kanbhujian ');
           if (res.result != null) {
             that.backPubKey = res.result.data;
           }
@@ -297,16 +300,22 @@ export default {
                 loginParams.password = values.password
                 // 执行登录操作
 
+                console.log('我万劫不复');
                 // 生成客户端aes秘钥
                 that.genKey = aesUtil.genKey()
+                
+                console.log(that.genKey,'微风无法');
                 //key加密 登录信息
                 let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
+                
 
                 //  生成客户端公钥
                 //let keyPair = rsaUtil.genKeyPair()
                 //console.log(keyPair.getPublicKey, '本地产')
                 //  公钥加密aes秘钥
                 that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
+  
+                console.log(that.genKeyRsa,'的非微软v');
                 // 组合登录信息及两个秘钥
                 let loginParams1 = {
                   backPub: that.backPubKey,

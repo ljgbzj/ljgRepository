@@ -19,6 +19,13 @@ export function login(parameter) {
     data: parameter
   })
 }
+export function loginEncry(parameter) {
+  return axios({
+    url: '/sys/loginEncry',
+    method: 'post',
+    data: parameter
+  })
+}
 export function loginByPhone(parameter) {
   return axios({
     url: '/sys/verifyMessageLogin',
