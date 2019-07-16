@@ -192,7 +192,6 @@ export default {
 
     handlePasswordCheck(rule, value, callback) {
       let password = this.form.getFieldValue('password')
-      console.log('value', value)
       if (value === undefined) {
         callback(new Error('请输入密码'))
       }
@@ -203,10 +202,6 @@ export default {
     },
 
     handlePhoneCheck(rule, value, callback) {
-      console.log('handlePhoneCheck, rule:', rule)
-      console.log('handlePhoneCheck, value', value)
-      console.log('handlePhoneCheck, callback', callback)
-
       callback()
     },
 
@@ -274,7 +269,6 @@ export default {
   },
   watch: {
     'state.passwordLevel'(val) {
-      console.log(val)
     }
   }
 }

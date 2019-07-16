@@ -426,7 +426,6 @@ export default {
         }
       })
       calcWidth += ')'
-      /* console.log('calcWidth: ', calcWidth) */
       return calcWidth
     }
   },
@@ -441,9 +440,7 @@ export default {
       let jdateValues = {}
       // 禁用行的id
       let disabledRowIds = this.disabledRowIds || []
-      console.log('子表数据', newValue)
       newValue.forEach(data => {
-        console.log('子表内的一行数据', data)
         let value = { id: this.caseId + data.id }
         let row = { id: value.id }
         let disabled = false
@@ -453,8 +450,6 @@ export default {
           let sourceValue = data[column.key] == null ? '' : data[column.key]
           if (column.type === FormTypes.checkbox) {
             // 判断是否设定了customValue（自定义值）
-            console.log('此时该处的格子内为checkbox')
-            console.log('该列表格的信息', column)
             if (column.customValue instanceof Array) {
               let customValue = (column.customValue[0] || '').toString()
               checkboxValues[inputId] = sourceValue === customValue

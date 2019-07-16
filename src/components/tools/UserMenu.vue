@@ -3,6 +3,7 @@
     <span class="action">
       <a class="setting" href="javascript:;" @click.stop.prevent="showdrawer">
         <a-icon type="setting"></a-icon>
+        <!-- <img src="@/assets/img/setting/theme.png"> -->
       </a>
     </span>
     <setting-drawer :visible="visible" @closeDrawer="closedrawer" @opendrawer="showdrawer"></setting-drawer>
@@ -17,7 +18,7 @@
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
         <a-avatar shape="square" class="avatar" :src="getAvatar()"/>
-        <span v-if="isDesktop()" style="margin-left: 10px">部门名称——{{ nickname() }}</span>
+        <span v-if="isDesktop()" style="margin-left: 10px" class="nickname">{{ nickname() }}(部门名称)</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
@@ -87,7 +88,6 @@ export default {
     ...mapActions(['Logout']),
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
     getAvatar() {
-      console.log('url = ' + window._CONFIG['imgDomainURL'] + '/' + this.avatar())
       return window._CONFIG['imgDomainURL'] + '/' + this.avatar()
     },
     handleLogout() {
@@ -119,11 +119,9 @@ export default {
     },
     showdrawer() {
       this.visible = true
-      console.log(this.visible)
     },
     closedrawer(){
       this.visible = false
-      console.log(this.visible)
     }
   }
 }

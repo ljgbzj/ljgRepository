@@ -14,7 +14,7 @@
         beginClientX:0,           /*距离屏幕左端距离*/
         mouseMoveStata:false,     /*触发拖动状态  判断*/
         maxwidth:'',               /*拖动最大宽度，依据滑块宽度算出来的*/
-        confirmWords:'拖动滑块验证',   /*滑块文字*/
+        confirmWords:'请按住滑块，拖动到最右边',   /*滑块文字*/
         confirmSuccess:false           /*验证成功判断*/
       }
     },

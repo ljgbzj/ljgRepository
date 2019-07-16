@@ -79,8 +79,6 @@
         this.$refs.innerDepartSelectModal.show()
       },
       handleOK(rows,idstr){
-        console.log("当前选中部门",rows)
-        console.log("当前选中部门ID",idstr)
         if(!rows){
           this.departNames = ''
           this.departIds=''

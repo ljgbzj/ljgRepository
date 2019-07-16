@@ -45,7 +45,6 @@ export default {
   },
   watch: {
     collapsed (val) {
-      console.log('二')
       if (val) {
         this.cachedOpenKeys = this.openKeys.concat()
         this.openKeys = []
@@ -54,14 +53,12 @@ export default {
       }
     },
     $route: function () {
-      console.log('三')
       this.updateMenu()
     }
   },
   methods: {
     // select menu item
     onOpenChange (openKeys) {
-      console.log('四')
       // 在水平模式下时执行，并且不再执行后续
       if (this.mode === 'horizontal') {
         this.openKeys = openKeys
@@ -76,28 +73,22 @@ export default {
       }
     },
     updateMenu () {
-      console.log()
-      console.log('一')
       const routes = this.$route.matched.concat()
       const { hidden } = this.$route.meta
       if (routes.length >= 3 && hidden) {
-        console.log('1.1')
         routes.pop()
         this.selectedKeys = [routes[routes.length - 1].path]
       } else {
-        console.log('1.2')
         this.selectedKeys = [routes.pop().path]
       }
       const openKeys = []
       if (this.mode === 'inline') {
-        console.log('2.1')
         routes.forEach(item => {
           openKeys.push(item.path)
         })
       }
       //update-begin-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
       if(!this.selectedKeys || this.selectedKeys[0].indexOf(":")<0){
-        console.log('3.1')
         this.collapsed ? (this.cachedOpenKeys = openKeys) : (this.openKeys = openKeys)
       }
       //update-end-author:taoyan date:20190510 for:online表单菜单点击展开的一级目录不对
