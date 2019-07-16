@@ -555,5 +555,8 @@ export default {
 .ant-select-dropdown.ant-select-dropdown--single.ant-select-dropdown-placement-bottomLeft{
   width: 320px!important;
   padding: 0  20px;
+  .ant-select-dropdown-menu-item{
+    line-height: 44px;
+  }
 }
 </style>
