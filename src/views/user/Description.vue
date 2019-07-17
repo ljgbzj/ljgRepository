@@ -8,48 +8,38 @@
     <button @click="register" class="register">注册</button>
 
     <!-- 三步注册组件 -->
-      <div>
-        <a-modal
-          v-model="visibleRegister"
-          width="1000px"
-          :footer="null"
-          :class="['registerPage', device]"
-          @cancel="reset"
-        >
-          <user-register ref="register" @closereg="closeregister"></user-register>
-        </a-modal>
-      </div>
+    <!-- 加v-if可以在关闭注册表单时清除表单数据 -->
+    <user-register
+      :visibleRegister="visible"
+      @close="closeregister"
+      v-if="visible"
+    ></user-register>
   </div>
 </template>
 
 <script>
-
 import UserRegister from './UserRegister'
 import { mixinDevice } from '@/utils/mixin.js'
 
 export default {
   mixins: [mixinDevice],
   name: 'description',
-  data(){
-    return{
-      visibleRegister: false
+  data() {
+    return {
+      visible: false  // 控制注册组件显隐
     }
   },
   components: {
     UserRegister
   },
   methods: {
+    // 打开注册对话框
     register() {
-      this.visibleRegister = true
+      this.visible = true
     },
-    reset() {
-      this.$refs.register.step1 = true
-      this.$refs.register.step2 = false
-      this.$refs.register.step3 = false
-      this.visibleRegister = false
-    },
+    // 关闭注册对话框
     closeregister() {
-      this.visibleRegister = false
+      this.visible = false
     }
   }
 }

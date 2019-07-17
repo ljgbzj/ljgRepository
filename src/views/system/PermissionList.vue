@@ -162,7 +162,6 @@
         this.dataSource = []
         getPermissionList().then((res) => {
           if (res.success) {
-            console.log(res.result)
             this.dataSource = res.result
           }
         })

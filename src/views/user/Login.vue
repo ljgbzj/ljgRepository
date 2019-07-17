@@ -35,7 +35,7 @@
           <a-tab-pane key="tab2" tab="手机登录">
             <a-form-item>
               <a-input
-                v-decorator="['phone',validatorRules.phone]"
+                v-decorator="['phone',validatorRules.phone, {validator: this.validateMobile}]"
                 size="large"
                 type="text"
                 placeholder="手机号"
@@ -46,13 +46,14 @@
               <a-col class="gutter-row" :span="16">
                 <a-form-item>
                   <a-input
-                    v-decorator="['identifyCode',validatorRules.indetifyCode]"
+                    v-decorator="['identifyCode',validatorRules.identifyCode]"
                     size="large"
                     type="text"
                     placeholder="请输入验证码"
                   ></a-input>
                 </a-form-item>
               </a-col>
+
               <a-col class="gutter-row" :span="8">
                 <a-button
                   class="getCaptcha"
@@ -90,7 +91,7 @@
           <div class="user-login-other">
             <div class="register" @click="register">
               <div>
-                <img src="@/assets/img/login/arrow.png">
+                <img src="@/assets/img/login/arrow.png" />
                 注册
               </div>
             </div>
@@ -98,19 +99,13 @@
         </a-form-item>
       </a-form>
 
-      <!-- 三步注册组件 -->
-      <div>
-        <a-modal
-          v-model="visibleRegister"
-          width="1000px"
-          :footer="null"
-          :class="['registerPage', device]"
-          @cancel="reset"
-          
-        >
-          <user-register ref="register" @closereg="closeregister"></user-register>
-        </a-modal>
-      </div>
+      <!-- 用户注册组件 -->
+      <user-register
+        ref="register"
+        :visibleRegister="visibleRegister"
+        @close="closeregister"
+        v-if="visible"
+      ></user-register>
 
       <!-- 短信两步验证 -->
       <two-step-captcha
@@ -121,10 +116,19 @@
       ></two-step-captcha>
 
       <!-- 部门选择 -->
-      <a-modal title="登录部门选择" :width="450" :visible="departVisible" :maskClosable="false">
-        <template slot="footer">
+      <a-modal
+        :title="null"
+        :width="400"
+        :visible="departVisible"
+        :maskClosable="false"
+        :closable="false"
+        :footer="null"
+        class="departChosen"
+        :destroyOnClose="true"
+      >
+        <!-- <template slot="footer">
           <a-button type="primary" @click="departOk">确认</a-button>
-        </template>
+        </template> -->
 
         <a-form>
           <a-form-item
@@ -133,19 +137,23 @@
             style="margin-bottom:10px"
             :validate-status="validate_status"
           >
-            <a-tooltip placement="topLeft">
+            <!-- <a-tooltip placement="topLeft">
               <template slot="title">
                 <span>您隶属于多部门，请选择登录部门</span>
               </template>
-              <a-avatar style="backgroundColor:#87d068" icon="gold"/>
-            </a-tooltip>
+              <a-avatar style="backgroundColor:#87d068" icon="gold" />
+            </a-tooltip>-->
+            <div class="title">
+              <img src="@/assets/img/login/depart.png" />
+              <span>登录部门选择</span>
+            </div>
             <a-select
               @change="departChange"
               :class="{'valid-error':validate_status=='error'}"
               placeholder="请选择登录部门"
               style="margin-left:10px;width: 80%"
             >
-              <a-icon slot="suffixIcon" type="gold"/>
+              <a-icon slot="suffixIcon" type="caret-down" />
               <a-select-option
                 v-for="d in departList"
                 :key="d.id"
@@ -157,6 +165,16 @@
                 >{{d.prjName}}{{ d.corpName }}</span>
               </a-select-option>
             </a-select>
+
+            <div class="departButton">
+              <a-button  @click="departCancel">
+                <a-icon type="close"></a-icon>
+                取消
+                </a-button>
+              <a-button type="primary" @click="departOk">
+                <a-icon type="check"></a-icon>
+                确认</a-button>
+            </div>
           </a-form-item>
         </a-form>
       </a-modal>
@@ -171,9 +189,11 @@ import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha' //两步验证（
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util' // 根据当前时间，判断问候语
 import Vue from 'vue'
+import { rsaUtil } from '@/utils/rsa'
+import { aesUtil } from '@/utils/aes'
 import { ACCESS_TOKEN } from '@/store/mutation-types' // token
 import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
-import { putAction, postAction } from '@/api/manage' // axios方法
+import { putAction, postAction, getAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
 import qs from 'qs'
 import { mixinDevice } from '@/utils/mixin.js'
@@ -185,11 +205,16 @@ export default {
     JGraphicCode,
     UserRegister
   },
+  computed: {
+    visibleRegister() {
+      return this.visible
+    }
+  },
   data() {
     return {
       customActiveKey: 'tab1', // 激活的tab的key至，此处默认设置为tab1
       loginBtn: false, //控制手机登录时“获取验证码”按钮的载入和可操作状态
-      visibleRegister: false, // 控制注册组件表单的显隐
+      visible: false, // 控制注册组件表单的显隐
 
       // login type: 0 email, 1 username, 2 telephone
       loginType: 0,
@@ -210,9 +235,8 @@ export default {
       validatorRules: {
         username: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
-        phone: { rules: [{ validator: this.validateMobile }] },
-        identifyCode: { rule: [{ required: true, message: '请输入验证码!' }] },
-        inputCode: { rules: [{ required: true, message: '请输入验证码!' }, { validator: this.validateInputCode }] }
+        phone: { rules: [{ required: true, message: '请输入手机号码!', validator: 'click' }] },
+        identifyCode: { rules: [{ required: true, message: '请输入验证码!', validator: 'click' }] }
       },
       verifiedCode: '',
       inputCodeContent: '',
@@ -224,25 +248,18 @@ export default {
       currentUsername: '',
       validate_status: '',
 
-      url: '/sys/verifyMessageLogin' // 短信登录接口
+      url: '/sys/verifyMessageLogin', // 短信登录接口
+      urlRsa: '/sys/getciphertext', // 请求rsa公钥接口
+      backPubKey: '', //服务器公钥字段
+      genKey: '' //前端aesKey
     }
   },
   created() {
     Vue.ls.remove(ACCESS_TOKEN) //移除浏览器storage中的token
-
-    // update-begin- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
-    //      this.$http.get('/auth/2step-code')
-    //        .then(res => {
-    //          this.requiredTwoStepCaptcha = res.result.stepCode
-    //        }).catch(err => {
-    //          console.log('2step-code:', err)
-    //        })
-    // update-end- --- author:scott ------ date:20190225 ---- for:暂时注释，未实现登录验证码功能
-    // this.requiredTwoStepCaptcha = true
   },
   methods: {
-    ...mapActions(['Login', 'LoginByPhone', 'Logout']), // 引入vuex store中的Login和loginout方法，放在当前的methods中
-    // handler
+    ...mapActions(['Login', 'LoginByPhone', 'Logout']), // 引入vuex store中的Login和logout方法，放在当前的methods中
+
     // 判断登录方式是邮件还是username,邮件 0，username 1
     handleUsernameOrEmail(rule, value, callback) {
       const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
@@ -256,80 +273,115 @@ export default {
     // 切换登录方式tab时，获取当前tab的key值，保存到customActiveKey中
     handleTabClick(key) {
       this.customActiveKey = key
-      // this.form.resetFields()
     },
     // 登录：账号或者手机登录
     handleSubmit() {
       let that = this //将this指向的vue实例赋值给that
+
+      // 1、登录前获取后端公钥
       let loginParams = {
         remember_me: that.formLogin.rememberMe
       }
-      console.log('login1')
-      // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
-      if (that.customActiveKey === 'tab1') {
-        //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
-        that.form.validateFields(['username', 'password'], { force: true }, (err, values) => {
-          if (!err) {
-            // err为空，则执行，将账号密码防盗loginParams对象中
-            loginParams.username = values.username
-            //loginParams.password = md5(values.password)
-            loginParams.password = values.password
-            // 执行登录操作
-            that
-              .Login(loginParams)
-              .then(res => {
-                // 根据归属部门，选择处理，0提示，2选择，1则直接登录
-                console.log(res)
-                this.departConfirm(res)
-              })
-              .catch(err => {
-                that.requestFailed(err)
-              })
+      getAction(that.urlRsa)
+        .then(res => {
+          console.log(res,'kanbhujian ');
+          if (res.result != null) {
+            that.backPubKey = res.result.data;
           }
-        })
-        // 使用手机号登陆
-      } else {
-        console.log('login2')
-        that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
-          console.log('login3')
-          if (!err) {
-            console.log(values)
-            console.log('phoneTest')
+          
+          // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
+          if (that.customActiveKey === 'tab1') {
+            //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
+            that.form.validateFields(['username', 'password'], { force: true }, (err, values) => {
+              if (!err) {
+                // err为空，则执行，将账号密码防盗loginParams对象中
+                loginParams.username = values.username
+                //loginParams.password = md5(values.password)
+                loginParams.password = values.password
+                // 执行登录操作
 
-            loginParams = qs.stringify(Object.assign({}, values))
-            console.log(loginParams)
-            that.loginBtn = true
-            console.log(11111)
-            console.log(that.LoginByPhone())
-            that
-              .LoginByPhone(loginParams)
-              .then(res => {
-                console.log('loginbyphone')
-                if (that.requiredTwoStepCaptcha) {
-                  that.stepCaptchaVisible = true
-                } else {
-                  console.log(res)
-                  this.departConfirm(res)
+                console.log('我万劫不复');
+                // 生成客户端aes秘钥
+                that.genKey = aesUtil.genKey()
+                
+                console.log(that.genKey,'微风无法');
+                //key加密 登录信息
+                let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
+                
+
+                //  生成客户端公钥
+                //let keyPair = rsaUtil.genKeyPair()
+                //console.log(keyPair.getPublicKey, '本地产')
+                //  公钥加密aes秘钥
+                that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
+  
+                console.log(that.genKeyRsa,'的非微软v');
+                // 组合登录信息及两个秘钥
+                let loginParams1 = {
+                  backPub: that.backPubKey,
+                  aesKey: that.genKeyRsa,
+                  data: loginParamsAes
                 }
-              })
-              .catch(err => {
-                that.requestFailed(err)
-              })
+                if (res.result != null) {
+                  that
+                  .Login(qs.stringify(loginParams1))
+                  .then(res => {
+                    console.log(res,'这里也能获取');
+                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                    // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
+                    this.departConfirm(res)
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+                } else {
+                  that
+                  .Login(qs.stringify(loginParams1))
+                  .then(res => {
+                    console.log(res,'这里也能获取');
+                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                    
+                    // this.departConfirm(res)
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+                }
+              }
+            })
+            // 使用手机号登陆
+          } else {
+            that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
+              if (!err) {
+                loginParams = qs.stringify(Object.assign({}, values))
+                that.loginBtn = true
+                that
+                  .LoginByPhone(loginParams)
+                  .then(res => {
+                    if (that.requiredTwoStepCaptcha) {
+                      that.stepCaptchaVisible = true
+                    } else {
+                      this.departConfirm(res)
+                    }
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+              }
+            })
           }
         })
-      }
+        .catch(err => {})
     },
+    //获取手机验证码
     getCaptcha(e) {
       e.preventDefault()
       let that = this
 
       this.form.validateFields(['phone'], { force: true }, (err, val) => {
         if (!err) {
-
           this.state.smsSendBtn = true
           that.formLogin.phone = val.phone
-          console.log(that.formLogin.phone)
-
           let interval = window.setInterval(() => {
             if (that.state.time-- <= 0) {
               that.state.time = 60
@@ -380,12 +432,10 @@ export default {
     loginSuccess() {
       this.loginBtn = false
       this.$router.push({ name: 'dashboard' })
-      console.log('开始登陆')
       this.$notification.success({
         message: '欢迎',
         description: `${timeFix()}，欢迎回来`
       })
-      console.log('开始登陆')
     },
     requestFailed(err) {
       this.$notification['error']({
@@ -422,7 +472,6 @@ export default {
       }
     },
     departConfirm(res) {
-      console.log(res)
       if (res.success) {
         let multi_depart = res.result.multi_depart
         //0:无部门 1:一个部门 2:多个部门
@@ -449,7 +498,6 @@ export default {
       }
     },
     departOk() {
-      console.log(this.departSelected)
       if (!this.departSelected) {
         this.validate_status = 'error'
         return false
@@ -459,16 +507,13 @@ export default {
         prjName: this.departSelected.split('.')[3],
         departName: this.departSelected.split('.')[4]
       }
-      console.log(name)
       let obj = {
         prjCode: this.departSelected.split('.')[0],
         orgCode: this.departSelected.split('.')[1],
         username: this.form.getFieldValue('username')
       }
-      console.log('部门选择参数', obj)
       postAction('/sys/selectDepart', obj).then(res => {
         if (res.success) {
-          console.log('选择部门',res)
           this.departClear()
           this.loginSuccess()
         } else {
@@ -478,6 +523,10 @@ export default {
           })
         }
       })
+    },
+    departCancel() {
+      this.departVisible = false
+      this.departClear()
     },
     departClear() {
       this.departList = []
@@ -493,16 +542,10 @@ export default {
 
     /* 注册*/
     register() {
-      this.visibleRegister = true
-    },
-    reset() {
-      this.$refs.register.step1 = true
-      this.$refs.register.step2 = false
-      this.$refs.register.step3 = false
-      this.visibleRegister = false
+      this.visible = true
     },
     closeregister() {
-      this.visibleRegister = false
+      this.visible = false
     }
   }
 }
@@ -510,4 +553,65 @@ export default {
 
 <style lang="less" scoped>
 @import '~@/assets/less/login.less';
+</style>
+<style lang="less">
+.departChosen {
+  .ant-modal-content {
+    .ant-modal-body {
+      padding: 40px;
+      height: 320px;
+      .ant-col-20.ant-form-item-control-wrapper{
+        width: 100%;
+      }
+      .title {
+        height: 18px;
+        line-height: 18px;
+        margin-bottom: 27px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #191919;
+        display: flex;
+        align-items: center;
+        img {
+          height: 16px;
+          margin-right: 6px;
+        }
+      }
+      .ant-select.ant-select-enabled {
+        margin-left: 0 !important;
+        .ant-select-selection.ant-select-selection--single {
+          width: 320px;
+          height: 40px;
+          .ant-select-selection__rendered{
+            margin: 0 13px;
+          }
+          div {
+            height: 40px;
+            line-height: 40px;
+          }
+        }
+        .ant-select-selection__placeholder{
+          margin-top: -20px;
+        }
+      }
+      .departButton{
+        display: flex;
+        justify-content: center;
+        margin-top: 110px;
+        .ant-btn{
+          height: 40px;
+          width: 96px;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+.ant-select-dropdown.ant-select-dropdown--single.ant-select-dropdown-placement-bottomLeft{
+  width: 320px!important;
+  padding: 0  20px;
+  .ant-select-dropdown-menu-item{
+    line-height: 44px;
+  }
+}
 </style>

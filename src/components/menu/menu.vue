@@ -178,10 +178,6 @@ export default {
     this.viewChange(this.$route.path)
   },
   methods: {
-    /* update() {
-      console.log(this.menu)
-      console.log(this.$refs.menuList.clientHeight)
-    }, */
     up() {
       this.$refs.menuList.style.top = `${this.menuTop}px`
       let top = this.$refs.menuList.style.top
@@ -191,8 +187,6 @@ export default {
         top += 64
         this.$refs.menuList.style.top = top + 'px'
         this.menuTop = top
-      } else {
-        console.log('到顶了')
       }
     },
     down() {
@@ -204,8 +198,6 @@ export default {
         top += -64
         this.$refs.menuList.style.top = top + 'px'
         this.menuTop = top
-      } else {
-        console.log('到底了')
       }
     },
     viewChange(val) {
@@ -287,7 +279,7 @@ export default {
       .su-menu-item {
         width: 120px;
         color: #fff;
-        padding: 10px;
+        padding: 10px 0;
         height: 64px;
         width: 120px;
         box-sizing: border-box;

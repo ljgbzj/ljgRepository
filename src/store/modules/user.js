@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { login, loginByPhone, logout } from "@/api/login"
+import { login, loginEncry, loginByPhone, logout } from "@/api/login"
 import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
@@ -39,28 +39,53 @@ const user = {
     // 账号登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        // 调用login api
-        login(userInfo).then(response => {
-          if(response.code =='200'){
-            // 获取数据成功
-            const result = response.result
-            const userInfo = result.userInfo
-            // 存入信息到 storage,有效时间 7 天
-            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
-            // 存入信息到vuex store中
-            commit('SET_TOKEN', result.token)
-            commit('SET_INFO', userInfo)
-            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
-            commit('SET_AVATAR', userInfo.avatar)
-            resolve(response)
-          }else{
-            reject(response)
-          }
-        }).catch(error => {
-          reject(error)
-        })
+        if (userInfo.indexOf("backPub") != -1) {
+          // 调用login api
+          loginEncry(userInfo).then(response => {
+            if(response.code =='200'){
+              // 获取数据成功
+              const result = response.result
+              const userInfo = result.userInfo
+              // 存入信息到 storage,有效时间 7 天
+              Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+              // 存入信息到vuex store中
+              commit('SET_TOKEN', result.token)
+              commit('SET_INFO', userInfo)
+              commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+              commit('SET_AVATAR', userInfo.avatar)
+              resolve(response)
+            }else{
+              reject(response)
+            }
+          }).catch(error => {
+            reject(error)
+          })
+        } else {
+          // 调用login api
+          login(userInfo).then(response => {
+            if(response.code =='200'){
+              // 获取数据成功
+              const result = response.result
+              const userInfo = result.userInfo
+              // 存入信息到 storage,有效时间 7 天
+              Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+              // 存入信息到vuex store中
+              commit('SET_TOKEN', result.token)
+              commit('SET_INFO', userInfo)
+              commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+              commit('SET_AVATAR', userInfo.avatar)
+              resolve(response)
+            }else{
+              reject(response)
+            }
+          }).catch(error => {
+            reject(error)
+          })
+        }
       })
     },
     // 短信登录

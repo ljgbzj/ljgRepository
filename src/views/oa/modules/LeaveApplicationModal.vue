@@ -163,7 +163,7 @@
                 <a-col :md="24" :sm="8">
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
                     <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
-                      <a-checkbox value="email" disabled>邮件</a-checkbox>
+                      <a-checkbox value="email" disabled>邮件(默认选择)</a-checkbox>
                       <a-checkbox value="message">手机短信</a-checkbox>
                       <a-checkbox value="euc">EUC消息</a-checkbox>
                     </a-checkbox-group>
@@ -641,7 +641,7 @@ export default {
                   that.$message.success(res.message)
                   that.$emit('ok')
                 } else {
-                  that.$message.warning(res.message)
+                  that.$message.warning('操作失败！')
                 }
               })
               .finally(() => {
@@ -697,7 +697,7 @@ export default {
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{
-                that.$message.warning(res.message);
+                that.$message.warning('操作失败！');
               }
             }).finally(() => {
               that.confirmLoading = false;
@@ -752,7 +752,7 @@ export default {
               that.$message.success(res.message)
               that.$emit('ok')
             } else {
-              that.$message.warning(res.message)
+              that.$message.warning('操作失败！')
             }
           })
           .finally(() => {

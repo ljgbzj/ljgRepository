@@ -571,7 +571,7 @@ body {
       display: inline-block;
       margin: 0 auto;
       padding: 0 24px;
-      border-bottom: 1px solid #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
       border-radius: 0;
       img {
         vertical-align: middle;

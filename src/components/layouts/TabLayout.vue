@@ -252,7 +252,7 @@
     background-color: #EFF1F2;
     padding-top: 13px;
     height: 50px !important;
-    margin-left: 24px;
+    padding-left: 24px;
 
     .ant-tabs-bar {
       /* margin: 4px 0 0; */

@@ -2207,6 +2207,9 @@ i.trigger:hover {
 .topmenu .light .action  i {
   color: rgba(255, 255, 255, 0.85);
 }
+.topmenu .light span.nickname {
+  color: rgba(255, 255, 255, 0.85);
+}
 .dark .header-index-wide{
   background-color: #001529;
   .logo{
@@ -5110,7 +5113,8 @@ form .ant-upload {
   border-bottom-left-radius: 0;
 }
 .ant-layout {
-  background: #f0f2f5;
+  /* background: #f0f2f5; */
+  background: #fff;
 }
 .ant-layout-header {
   background: @primary-color;
@@ -5121,6 +5125,12 @@ form .ant-upload {
 }
 .ant-layout-sider {
   background: #001529;
+}
+.ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open.ant-menu-submenu-selected,
+.ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open{
+  & > .ant-menu-submenu-title{
+    background-color: rgba(0,0,0,0.1);
+  }
 }
 .ant-layout-sider-trigger {
   color: #fff;
@@ -7820,8 +7830,4 @@ font.medium {
 }
 font.weak {
   color: #f5222d;
-}
-
-.selectUserIcon {
-  color: @primary-color;
 }
