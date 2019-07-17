@@ -151,13 +151,14 @@
               @change="departChange"
               :class="{'valid-error':validate_status=='error'}"
               placeholder="请选择登录部门"
-              style="margin-left:10px;width: 80%"
+              style="margin-left:10px"
             >
               <a-icon slot="suffixIcon" type="caret-down" />
               <a-select-option
                 v-for="d in departList"
                 :key="d.id"
                 :value="`${d.prjCode}.${d.orgCode}.${d.corpName}.${d.prjName}.${d.departName}`"
+                class="departList"
               >
                 <span style="float: left">{{ d.departName }}</span>
                 <span
@@ -608,10 +609,16 @@ export default {
   }
 }
 .ant-select-dropdown.ant-select-dropdown--single.ant-select-dropdown-placement-bottomLeft{
-  width: 320px!important;
-  padding: 0  20px;
-  .ant-select-dropdown-menu-item{
+  .ant-select-dropdown-menu-item.departList{
     line-height: 44px;
+    padding: 0 12px;
+    margin: 0 20px;
+    &:first-child{
+      margin-top: 19px;
+    }
+    &:last-child{
+      margin-bottom: 19px;
+    }
   }
 }
 </style>
