@@ -285,7 +285,6 @@ export default {
       }
       getAction(that.urlRsa)
         .then(res => {
-          console.log(res,'kanbhujian ');
           if (res.result != null) {
             that.backPubKey = res.result.data;
           }
@@ -301,22 +300,14 @@ export default {
                 loginParams.password = values.password
                 // 执行登录操作
 
-                console.log('我万劫不复');
                 // 生成客户端aes秘钥
                 that.genKey = aesUtil.genKey()
-                
-                console.log(that.genKey,'微风无法');
                 //key加密 登录信息
                 let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
                 
-
-                //  生成客户端公钥
-                //let keyPair = rsaUtil.genKeyPair()
-                //console.log(keyPair.getPublicKey, '本地产')
                 //  公钥加密aes秘钥
                 that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
-  
-                console.log(that.genKeyRsa,'的非微软v');
+
                 // 组合登录信息及两个秘钥
                 let loginParams1 = {
                   backPub: that.backPubKey,
@@ -327,7 +318,6 @@ export default {
                   that
                   .Login(qs.stringify(loginParams1))
                   .then(res => {
-                    console.log(res,'这里也能获取');
                     // 根据归属部门，选择处理，0提示，2选择，1则直接登录
                     // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
                     this.departConfirm(res)
@@ -337,12 +327,11 @@ export default {
                   })
                 } else {
                   that
-                  .Login(qs.stringify(loginParams1))
+                  .Login(loginParams)
                   .then(res => {
-                    console.log(res,'这里也能获取');
                     // 根据归属部门，选择处理，0提示，2选择，1则直接登录
                     
-                    // this.departConfirm(res)
+                    this.departConfirm(res)
                   })
                   .catch(err => {
                     that.requestFailed(err)

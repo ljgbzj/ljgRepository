@@ -39,7 +39,7 @@ const user = {
     // 账号登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        if (userInfo.indexOf("backPub") != -1) {
+        if (typeof(userInfo) == 'string') {
           // 调用login api
           loginEncry(userInfo).then(response => {
             if(response.code =='200'){
@@ -93,7 +93,6 @@ const user = {
       return new Promise((resolve, reject) => {
         loginByPhone(userInfo).then(response => {
           if(response.code =='200'){
-            console.log(response)
             const result = response.result
             const userInfo = result.userInfo
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
@@ -144,7 +143,6 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
-        //console.log('logoutToken: '+ logoutToken)
         logout(logoutToken).then(() => {
           resolve()
         }).catch(() => {
