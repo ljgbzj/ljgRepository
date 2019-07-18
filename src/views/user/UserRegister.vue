@@ -11,7 +11,10 @@
       <div class="register">
         <!-- 注册用户 -->
         <div class="register-one" v-show="step1">
-          <div class="step1" v-if="device === 'desktop'">用户注册</div>
+          <div class="step1" v-if="device === 'desktop'">
+            <img src="~@/assets/img/register/userRegister.png" />
+            <span>用户注册</span>
+          </div>
           <a-form :form="form">
             <!-- 用户名 -->
             <a-form-item label="用户名" class="item">
@@ -32,7 +35,8 @@
             <a-form-item label="确认密码" class="item">
               <a-input
                 class="passwordConfirm"
-                v-decorator="['confirm',{ rules:[{required: true, message: '请确认密码'}]}]"
+                v-decorator="['confirm',{ rules:[{required: true, message: '请确认密码'}, {
+                  validator: compareToFirstPassword}]}]"
                 type="password"
                 placeholder="请确认密码"
               ></a-input>
@@ -41,7 +45,7 @@
             <a-form-item label="手机号码" class="item">
               <a-input
                 class="phoneNumber"
-                v-decorator="['phone',{ rules:[{required: true, message: '请输入手机号码'}]}]"
+                v-decorator="['phone',{ rules:[{required: true, message: '手机号码不能为空'}]}]"
                 placeholder="请输入手机号码"
               ></a-input>
             </a-form-item>
@@ -98,11 +102,11 @@
 </template>
 
 <script>
-import { postAction, getActionUrl, httpActionHeader} from '@/api/manage.js'
+import { postAction, getActionUrl, httpActionHeader } from '@/api/manage.js'
 import qs from 'qs'
 import { setInterval, clearInterval } from 'timers'
 import { mixinDevice } from '@/utils/mixin.js'
-import JSlider from '@/components/cmp/JSlider'  
+import JSlider from '@/components/cmp/JSlider'
 
 export default {
   mixins: [mixinDevice],
@@ -111,7 +115,8 @@ export default {
     JSlider //滑块验证码
   },
   props: {
-    visibleRegister: {  //控制组件显隐
+    visibleRegister: {
+      //控制组件显隐
       type: Boolean,
       default: false,
       required: true
@@ -121,27 +126,36 @@ export default {
     return {
       form: this.$form.createForm(this),
       checked: '',
-      time: 5,  //注册成功后倒计时5秒跳转
+      time: 5, //注册成功后倒计时5秒跳转
       url: {
         registercode: '/sys/sendMessage/register', //获取手机验证码
-        register: '/sys/user/register', //用户注册
+        register: '/sys/user/register' //用户注册
       },
       jsvalue: false, //滑块验证码的值
-      step1: true,  //注册页显隐
+      step1: true, //注册页显隐
       step2: false, //注册完成页显隐
-      state: {  //控制获取短信验证码按钮状态
+      state: {
+        //控制获取短信验证码按钮状态
         time: 60,
         smsSendBtn: false
       }
     }
   },
-  created() {
-  },
+  created() {},
   computed: {},
   methods: {
     //获取是否同意服务条款的值
     getChecked(e) {
       this.checked = e.target.checked
+    },
+    //比较密码和确认密码的值
+    compareToFirstPassword  (rule, value, callback) {
+      const form = this.form;
+      if (value && value !== form.getFieldValue('password')) {
+        callback('两次输入的密码不一致！');
+      } else {
+        callback();
+      }
     },
     //获取滑块的值
     handleJSliderSuccess(val) {
@@ -166,7 +180,7 @@ export default {
 
             //获取填写手机号
             let params = Object.assign({}, val),
-            url = that.url.registercode //获取短信验证码API
+              url = that.url.registercode //获取短信验证码API
             // 将参数形式转换为 JSON字符串
             params = qs.stringify(params)
             // 提示信息

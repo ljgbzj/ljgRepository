@@ -139,7 +139,7 @@ export default {
             float: left;
             margin-right: 48px;
             height: 14px;
-            font-size: 13px;
+            font-size: 16px;
             font-family: MicrosoftYaHei;
             font-weight: 400;
             color: #fff;

@@ -18,7 +18,7 @@
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
         <a-avatar shape="square" class="avatar" :src="getAvatar()"/>
-        <span v-if="isDesktop()" style="margin-left: 10px" class="nickname">{{ nickname() }}(部门名称)</span>
+        <span v-if="isDesktop()" style="margin-left: 10px" class="nickname">{{ nickname() }}({{userInfo().departName}})</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
@@ -63,6 +63,8 @@ import UserPassword from './UserPassword'
 import SettingDrawer from '../setting/SettingDrawer'
 import { mapActions, mapGetters } from 'vuex'
 import { mixinDevice } from '@/utils/mixin.js'
+import { USER_INFO } from '@/store/mutation-types'
+import Vue from 'vue'
 
 export default {
   name: 'UserMenu',
