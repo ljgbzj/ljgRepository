@@ -73,11 +73,11 @@
             @mouseover="mymouseOver(item, items.status,index, index1)"
             :class="{ mousedown:items.status == 2}"
           >
-            <!--被预约-->
+            <!--被预约,自己预定的-->
             <div
               class="content-box"
               v-bind:class="{ active: true }"
-              v-if="items.username != null && items.length != 0 && items.subject != null"
+              v-if="items.username != null && items.length != 0 && items.subject != null && items.userId == loginUserId"
               :style="{width: getWidth(items.length)}"
               @mouseenter="enter(item, items.status,index)"
               @mouseleave="leave"
@@ -85,6 +85,19 @@
                 <div class="info-icon-order">
                   {{items.username}}
                 </div>
+            </div>
+            <!--被预约,别人预定的-->
+            <div
+              class="content-box"
+              v-bind:class="{ activeOthers: true }"
+              v-if="items.username != null && items.length != 0 && items.subject != null && items.userId != loginUserId"
+              :style="{width: getWidth(items.length)}"
+              @mouseenter="enter(item, items.status,index)"
+              @mouseleave="leave"
+            >
+              <div class="info-icon-order">
+                {{items.username}}
+              </div>
             </div>
             <!--隐藏单元格-->
             <div
@@ -97,13 +110,19 @@
             <!--如果没有预约-->
             <div
               class="content-box"
-              v-else-if="items.usernameusername == null"
+              v-else-if="items.usernameusername == null && items.status == 0"
               @mouseenter="enter(item, items.status,index)"
               @mouseleave="leave"
             >
-              <div class="info-icon">
-                空闲
-              </div>
+              <img src="@/assets/img/meeting/free.png" draggable="false"></img>
+            </div>
+            <div
+              class="content-box"
+              v-else-if="items.usernameusername == null && items.status == 2"
+              @mouseenter="enter(item, items.status,index)"
+              @mouseleave="leave"
+            >
+              <img src="@/assets/img/meeting/reserved.png" draggable="false"></img>
             </div>
           </div>
         </div>
@@ -541,8 +560,23 @@
                   })
                   //  新增记录
                   that.axios.post('/meetingRoom/add',formData)
-                    .then(function (response){
+                    .then(function (response) {
+                      that.confirmLoading2 = true
+                      console.log(response);
+                      if (response.code === 200){
+                        findRoomList({meetingDate:that.meetingDate})
+                          .then((res) => {
+                            that.roomList = res.result;
+                            that.roomListCopy = JSON.parse(JSON.stringify(that.roomList)); //将当前页面数据源深度克隆
+                            if (res.code === 0){
+                              that.confirmLoading2 = false
+                            }
+                          })
+                      }
                     })
+                    .catch(function (error) {
+                      console.log(error);
+                    });
                 } else if (response.code === 10002){
                   that.$notification.warning({
                     message: '抱歉',
@@ -563,6 +597,7 @@
             })
             that.confirmLoading = false
             that.visible = false
+            that.confirmLoading2 = true
           }
         })
       },
@@ -643,13 +678,21 @@
   .active {
     width: auto;
     height: auto;
-    background: bisque;
+    background: #8ddd87;
+  }
+  .activeOthers {
+    width: auto;
+    height: auto;
+    background: #5dd1be;
   }
   .mousedown {
     width: auto;
     height: auto;
-    background: #76ffdb;
+    background: #d6def5;
     font-weight: bold;
+    /*background-image: url("../../assets/img/meeting/reserved.png") ;*/
+    /*background-repeat:no-repeat;*/
+    /*background-origin: content-box;*/
   }
   .father-box {
     width: 100%;
@@ -658,11 +701,12 @@
     width: 80%;
     float: left;
   }
-  .info-icon {
-    color: #bebebe;
-  }
+  /*.info-icon {*/
+    /*color: #bebebe;*/
+    /**/
+  /*}*/
   .info-icon-order{
-    color: #ff4b44;
+    color: white;
   }
 
   .title-box {
@@ -679,12 +723,11 @@
   .content-box {
     width: auto;
     height: 100%;
-    /*margin-left: 1px;*/
     text-align: center;
     font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'STHeitiSC-Light', 'Microsoft YaHei', '微软雅黑', Arial,
     sans-serif;
-    border-style:solid;
-    border-width:1px;
+    border-style:none solid solid none;
+    border-width: 1q;
     border-color: #d5d5d5;
   }
 
@@ -699,6 +742,9 @@
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;
+    border-style:none none none solid;
+    border-width: 1q;
+    border-color: #d5d5d5;
   }
   .title-contain-number{
     width: 5%;
