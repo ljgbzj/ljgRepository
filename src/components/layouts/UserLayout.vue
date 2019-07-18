@@ -16,11 +16,11 @@
             <li v-for="(page,index) in pagelists" :key="index" class="title">{{page.title}}</li>
           </router-link>
         </ul>
-
+        <!--
         <router-link class="login" to="/user/login" v-if="device === 'desktop'">
           <span>请登录</span>
           <img src="@/assets/img/login/login.png">
-        </router-link>
+        </router-link> -->
       </div>
 
       <!-- body -->
@@ -49,37 +49,37 @@ export default {
     return {
       pagelists: [
         {
-          title: '统计报表'
+          title: '管理看板'
         },
         {
-          title: '系统管理'
+          title: '综合办公'
         },
         {
-          title: '系统监控'
+          title: '人力资源'
         },
         {
-          title: '消息中心'
+          title: '设计管理'
         },
         {
-          title: '常见案例'
+          title: '采购管理'
         },
         {
-          title: '结果页'
+          title: '合同管理'
         },
         {
-          title: '详情页'
+          title: '财务管理'
         },
         {
-          title: '异常页'
+          title: '图档管理'
         },
         {
-          title: '个人页'
+          title: '工程建设管理'
         },
         {
-          title: '列表页'
+          title: '移动办公'
         },
         {
-          title: '表单页'
+          title: '大屏展示'
         }
       ]
     }
@@ -139,7 +139,7 @@ export default {
             float: left;
             margin-right: 48px;
             height: 14px;
-            font-size: 16px;
+            font-size: 18px;
             font-family: MicrosoftYaHei;
             font-weight: 400;
             color: #fff;
