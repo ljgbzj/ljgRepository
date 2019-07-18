@@ -10,16 +10,21 @@
 .ant-modal.registerPage.desktop {
   .register {
     display: flex;
-    height: 539px;
+    height: 659px;
     margin: 13px 36px 0 36px;
 
     .step1, .step2 {
       margin-bottom: 45px;
       width: 680px;
-      font-size: 32px;
-      font-weight: bolder;
-      text-align: center;
-      color: #6455ff;
+      font-size:16px;
+      font-weight:bold;
+      color:rgba(25,25,25,1);
+      display: flex;
+      align-items: center;
+      img{
+        margin-right: 4px;
+      }
+      
     }
 
     .item {
@@ -39,6 +44,7 @@
 
         :global(.ant-form-explain) {
           display: inline-block;
+          font-size: 12px;
         }
 
         input {
@@ -102,6 +108,7 @@
 
         :global(.ant-select-selection.ant-select-selection--single) {
           height: 40px;
+          width: 300px;
           background-color: #f5f5f5;
           border-color: #f5f5f5;
           
@@ -188,9 +195,10 @@
 
     .register-done {
       text-align: center;
+      width: 100%;
 
       .result {
-        margin: 0 auto;
+        margin: 60px auto;
         width: 248px;
         height: 189px;
         text-align: center;
@@ -214,7 +222,7 @@
       .jump {
         margin-top: 44px;
 
-        div {
+        .time2jump {
           height: 14px;
           font-size: 14px;
           font-family: MicrosoftYaHei;
@@ -224,7 +232,7 @@
           margin-bottom: 20px;
         }
 
-        a {
+        .jump2login{
           height: 19px;
           font-size: 18px;
           font-family: MicrosoftYaHei-Bold;
@@ -238,7 +246,7 @@
         font-size: 14px;
         font-family: MicrosoftYaHei;
         font-weight: 400;
-        color: #f5f5f5;
+        color: #968d8d;
         line-height: 32px;
         margin-top: 60px;
       }
@@ -378,7 +386,7 @@
     .jump {
       margin-top: 44px;
 
-      div {
+      .time2jump {
         height: 14px;
         font-size: 14px;
         font-family: MicrosoftYaHei;
@@ -388,7 +396,7 @@
         margin-bottom: 20px;
       }
 
-      a {
+      .jump2login {
         height: 19px;
         font-size: 18px;
         font-family: MicrosoftYaHei-Bold;

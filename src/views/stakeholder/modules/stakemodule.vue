@@ -11,6 +11,7 @@
       @ok="handleOk"
       @cancel="handleCancel"
       cancelText="关闭"
+      :destroyOnClose="true"
     >
       <div class="title">
         <div>
@@ -89,7 +90,7 @@
                 </a-col>
               </a-row>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="地址">
-                <a-textarea placeholder v-decorator="['address', {}]" />
+                <a-textarea placeholder v-decorator="['address', {}]" :autosize="{minRows: 3, maxRows: 6}" />
               </a-form-item>
               <a-row :gutter="24">
                 <a-col :span="12">
@@ -104,7 +105,7 @@
                 </a-col>
               </a-row>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注/服务范围">
-                <a-textarea placeholder v-decorator="['remarks', {}]" />
+                <a-textarea placeholder v-decorator="['remarks', {}]" :autosize="{minRows: 3, maxRows: 6}" />
               </a-form-item>
               <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="上传附件">
                 <!-- <a-input placeholder v-decorator="['attachment', {}]" /> -->
