@@ -418,7 +418,7 @@ body {
         height: 64px;
         display: flex;
         align-items: center;
-        margin-left: 80px;
+        margin-left: 40px;
         /* padding-right: 275px; */
 
         .logo.top-nav-header {

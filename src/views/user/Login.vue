@@ -192,7 +192,7 @@ import { timeFix } from '@/utils/util' // 根据当前时间，判断问候语
 import Vue from 'vue'
 import { rsaUtil } from '@/utils/rsa'
 import { aesUtil } from '@/utils/aes'
-import { ACCESS_TOKEN } from '@/store/mutation-types' // token
+import { ACCESS_TOKEN, USER_INFO } from '@/store/mutation-types' // token, userInfo
 import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
 import { putAction, postAction, getAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
@@ -504,6 +504,8 @@ export default {
       }
       postAction('/sys/selectDepart', obj).then(res => {
         if (res.success) {
+          const userInfo = res.result
+          Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
           this.departClear()
           this.loginSuccess()
         } else {

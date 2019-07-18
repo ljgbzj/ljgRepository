@@ -19,6 +19,7 @@ import VueApexCharts from 'vue-apexcharts'
 
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
+import '@/assets/less/iconfront.less'
 import '@/utils/directives'
 
 import {
