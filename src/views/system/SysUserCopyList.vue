@@ -7,19 +7,19 @@
         <a-row :gutter="24">
 
           <a-col :md="8" :sm="8">
-            <a-form-item label="登录账号">
-              <a-input placeholder="请输入登录账号" v-model="queryParam.username"></a-input>
+            <a-form-item label="电话">
+              <a-input placeholder="请输电话" v-model="queryParam.phone"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
-            <a-form-item label="真实姓名">
-              <a-input placeholder="请输入真实姓名" v-model="queryParam.realname" ></a-input>
+            <a-form-item label="姓名">
+              <a-input placeholder="请输入姓名" v-model="queryParam.realname" ></a-input>
             </a-form-item>
           </a-col>
         <template v-if="toggleSearchStatus">
           <a-col :md="8" :sm="8">
-            <a-form-item label="办公电话">
-              <a-input placeholder="请输入电话" v-model="queryParam.phone"></a-input>
+            <a-form-item label="电子邮箱">
+              <a-input placeholder="请输入电子邮箱" v-model="queryParam.email"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
@@ -151,34 +151,37 @@
               return parseInt(index)+1;
             }
            },
-		   {
+		   /*{
             title: '登录账号',
             align:"center",
             dataIndex: 'username'
-           },
+           },*/
 		   {
-            title: '真实姓名',
+            title: '姓名',
             align:"center",
             dataIndex: 'realname'
            },
-		   {
-            title: '头像',
+          {
+            title: '电话',
             align:"center",
-            width:120,
-            dataIndex: 'avatar',
-            //slots: {filterIcon: 'avatar'},
-            scopedSlots: {customRender: "avatarslot"}
-           },
+            dataIndex: 'phone'
+          },
 		   {
             title: '电子邮件',
             align:"center",
             dataIndex: 'email'
            },
-		   {
-            title: '电话',
+
+       {
+            title: '小组名',
             align:"center",
-            dataIndex: 'phone'
-           },
+            dataIndex: 'groupName'
+          },
+          {
+            title: '所属部门',
+            align:"center",
+            dataIndex: 'departName'
+          },
 		   {
             title: '办公号码',
             align:"center",
@@ -190,6 +193,14 @@
             dataIndex: 'address'
            },
           {
+            title: '头像',
+            align:"center",
+            width:120,
+            dataIndex: 'avatar',
+            //slots: {filterIcon: 'avatar'},
+            scopedSlots: {customRender: "avatarslot"}
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -197,7 +208,8 @@
           }
         ],
 		url: {
-          list: "/sys/user/list/",
+          //list: "/sys/user/list/",
+          list: "/sys/user/userListWithDepartName/",
           delete: "/sys/user/delete",
           imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
           /*delete: "/test/sysUserCopy/delete",*/
