@@ -6,7 +6,7 @@
     v-model="collapsed"
     :trigger="null"
   >
-    <logo/>
+    <logo />
     <s-menu
       :collapsed="collapsed"
       :menu="menus"
@@ -76,23 +76,32 @@ export default {
 /* update_begin author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
 .sider {
   $scrollBarSize: 10px;
-
+  :global(.ant-layout-sider-children){
+    :global(.ant-menu) {
+        :global(li.ant-menu-submenu.ant-menu-submenu-inline){
+          :global(.ant-menu-submenu-title){
+            font-size: 16px;
+          }
+        }
+      
+    }
+  }
   :global(.ant-menu.ant-menu-inline.ant-menu-sub) {
+    font-size: 16px;
 
-    :global(li.ant-menu-item){
+    :global(li.ant-menu-item) {
       padding: 0 !important;
     }
 
-    :global(li.ant-menu-item.ant-menu-item-selected > a){
-        border-radius: 4px!important;
-        /* text-align: center; */
+    :global(li.ant-menu-item.ant-menu-item-selected > a) {
+      border-radius: 4px !important;
+      /* text-align: center; */
     }
-    :global(li.ant-menu-item > a){
-        /* text-align: center; */
-        padding-left: 43px;
-        margin: 0 auto;
+    :global(li.ant-menu-item > a) {
+      /* text-align: center; */
+      padding-left: 43px;
+      margin: 0 auto;
     }
-    
     // 二级菜单
     /* :global(.ant-menu-item > a ) {
       text-align: center;
@@ -100,7 +109,7 @@ export default {
       margin: 0 auto;
       border-radius: 4px;
     } */
-    // 二级菜单标题 
+    // 二级菜单标题
     /* :global(li>div){
       text-align: center;
       width: 174px;
@@ -109,7 +118,7 @@ export default {
     /* :global(.ant-menu-item, .ant-menu-item.ant-menu-item-selected) {
       padding: 0 !important;
     } */
-  } 
+  }
 
   ul.ant-menu {
     /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
@@ -170,7 +179,7 @@ export default {
     }
   }
 }
-:global( .ant-menu-item > a){
+:global(.ant-menu-item > a) {
   border-radius: 4px !important;
   text-align: center !important;
 }

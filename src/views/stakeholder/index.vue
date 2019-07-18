@@ -58,7 +58,7 @@
       <a-table
         ref="table"
         size="middle"
-        bordered
+        :bordered="false"
         rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
@@ -284,4 +284,5 @@ export default {
     height: 40px;
   }
 }
+
 </style>
