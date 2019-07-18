@@ -13,7 +13,7 @@
         >
           <div class="item-container">
             <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
-            <span>{{item.meta.title}}</span>
+            <span :title="item.meta.title">{{item.meta.title}}</span>
           </div>
 
           <!-- 二级菜单 -->
@@ -30,7 +30,7 @@
                 </router-link>
                 <div class="secondMenuTitle" v-else>
                   {{secondMenu.meta.title}}
-                  <span></span>
+                  <span>></span>
                 </div>
               </keep-alive>
 
@@ -170,14 +170,14 @@ export default {
   },
   mounted() {
     const that = this
-    window.onresize = () => {
+    ;(window.onresize = () => {
       return (() => {
         if (this.$refs.menuList) {
           this.menuheight = this.$refs.menuList.clientHeight
         }
       })()
-    },
-    this.viewChange(this.$route.path)
+    }),
+      this.viewChange(this.$route.path)
   },
   methods: {
     up() {
@@ -281,79 +281,117 @@ export default {
       flex-wrap: wrap;
 
       .su-menu-item {
-        width: 120px;
         color: #fff;
         padding: 10px 0;
         height: 64px;
-        width: 120px;
+        width: 140px;
         box-sizing: border-box;
         line-height: 44px;
+        .item-container {
+          span {
+            width: 92px;
+            height: 44px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            white-space: nowrap;
+          }
+        }
 
         .secondMenu {
           display: none;
         }
         &:hover {
+          //& {
           .secondMenu {
             position: relative;
             display: block;
             background-color: #fff;
             width: 200px;
             max-height: 800px;
-            overflow: scroll;
+
             border-radius: 4px;
             box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
             padding: 17px 16px;
             z-index: 999;
 
-            @scrollBarSize: 6px;
-            &::-webkit-scrollbar {
-              width: @scrollBarSize;
-              height: @scrollBarSize;
-              background-color: transparent;
-            }
-            &::-webkit-scrollbar-track {
-              background-color: #f0f0f0;
-            }
-            &::-webkit-scrollbar-thumb {
-              background-color: #eee;
-              box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-
-              &:hover {
-                background-color: #bbb;
-              }
-
-              &:active {
-                background-color: #888;
-              }
-            }
-            
             li.secondItem {
+              position: relative;
               padding: 0 14px;
-              & > a > div{
+              & > a > div {
                 height: 44px;
                 width: 100%;
                 overflow: hidden;
-                text-overflow: ellipsis;      //超出部分以省略号显示
- 	              white-space: nowrap;
+                text-overflow: ellipsis; //超出部分以省略号显示
+                white-space: nowrap;
+              }
+              .thirdMenu {
+                display: none;
+              }
+              &:hover .thirdMenu {
+              //& .thirdMenu {
+                display: block;
+                position: absolute;
+                top: 0;
+                background-color: #fff;
+                width: 200px;
+                max-height: 600px;
+                overflow-y: scroll;
+                right: -200px;
+                box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
+                border-radius: 4px;
+                padding: 16px;
+
+                @scrollBarSize: 1px;
+                &::-webkit-scrollbar {
+                  width: @scrollBarSize;
+                  height: @scrollBarSize;
+                  background-color: transparent;
+                }
+                &::-webkit-scrollbar-track {
+                  background-color: #f0f0f0;
+                }
+                &::-webkit-scrollbar-thumb {
+                  background-color: #eee;
+                  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+                  &:hover {
+                    background-color: #bbb;
+                  }
+
+                  &:active {
+                    background-color: #888;
+                  }
+                }
+
+                .thirdItem {
+                  height: 44px;
+                  a {
+                    display: inline-block;
+                    width: 100%;
+                    padding: 0 14px;
+                    div {
+                      width: 100%;
+                      height: 44px;
+                      overflow: hidden;
+                      text-overflow: ellipsis; //超出部分以省略号显示
+                      white-space: nowrap;
+                    }
+                  }
+                }
+                .thirdItem:hover,
+                .thirdItem.chosed {
+                  border-radius: 4px;
+                  a {
+                    background: rgba(109, 98, 255, 0.1);
+                  }
+                }
               }
 
               div.secondMenuTitle {
                 color: #333333;
-
-                & + .thirdMenu {
-                  /* background-color: #fff; */
-                  .thirdItem {
-                    padding-left: 14px;
-                  }
-
-                  .thirdItem:hover,
-                  .thirdItem.chosed {
-                    border-radius: 4px;
-                    background-color: #6d62ff;
-                    a {
-                      color: #fff;
-                    }
-                  }
+                span {
+                  float: right;
                 }
               }
 
