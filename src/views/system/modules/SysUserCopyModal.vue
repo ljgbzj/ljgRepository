@@ -9,19 +9,19 @@
     cancelText="关闭">
     
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" class="row">
       
-        <a-form-item
+        <!--<a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="登录账号">
           <a-input placeholder="请输入登录账号" v-decorator = "[ 'username', validatorRules.username]"  />
-        </a-form-item>
+        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="真实姓名">
-          <a-input placeholder="请输入真实姓名" v-decorator="['realname', {}]" />
+          label="姓名">
+          <a-input placeholder="请输入姓名" v-decorator="['realname', {}]" />
         </a-form-item>
         <!--<a-form-item
           :labelCol="labelCol"
@@ -35,7 +35,7 @@
           label="md5密码盐">
           <a-input placeholder="请输入md5密码盐" v-decorator="['salt', {}]" />
         </a-form-item>-->
-        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="头像" :labelCol="labelCol1" :wrapperCol="wrapperCol1" >
           <a-upload
             listType="picture-card"
             class="avatar-uploader"
@@ -116,6 +116,18 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="小组名称">
+          <a-input placeholder="请输入小组名称" v-decorator="['groupName', {}]" />
+        </a-form-item>
+       <!-- <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="所属部门">
+          <a-input placeholder="请输入所属部门" v-decorator="['departName', {}]" />
+        </a-form-item>-->
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="办公号码">
           <a-input placeholder="请输入办公号码" v-decorator="['officePhone', {}]" />
         </a-form-item>
@@ -150,11 +162,19 @@
         },
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 3 },
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 16 },
+          sm: { span: 12 },
+        },
+        labelCol1: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        wrapperCol1: {
+          xs: { span: 24 },
+          sm: { span: 4 },
         },
         uploadLoading:false,
         confirmLoading: false,
@@ -162,7 +182,7 @@
         validatorRules:{
           phone:{rules: [{validator: this.validatePhone}]},
           email:{rules: [{type: 'email', message: '请输入正确格式的电子邮箱!',}]},
-          username:{rules: [{required:true,message: '请输入用户账号'}, {validator: this.validateUsername}]}
+          /*username:{rules: [{required:true,message: '请输入用户账号'}, {validator: this.validateUsername}]}*/
           //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
         },
         headers:{},
@@ -196,7 +216,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'username','realname', 'email','phone','officePhone','address'));
+          this.form.setFieldsValue(pick(this.model,'username','realname', 'email','phone', 'groupName', 'officePhone','address'));
 		  //时间格式化
           this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
         });
@@ -240,9 +260,6 @@
               that.confirmLoading = false;
               that.close();
             })
-
-
-
           }
         })
       },
@@ -258,7 +275,7 @@
           callback("请输入正确格式的手机号码!");
         }
       },
-      validateUsername(rule, value, callback){
+      /*validateUsername(rule, value, callback){
         var params = {
           id:this.model.id,
           username:value
@@ -270,7 +287,7 @@
             callback("用户账号已存在！");
           }
         });
-      },
+      },*/
       /*图片上传之前的操作*/
       beforeUpload: function(file){
         var fileType = file.type;
