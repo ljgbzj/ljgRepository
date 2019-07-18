@@ -26,7 +26,7 @@
             >
               <keep-alive v-if="secondMenu.meta.keepAlive">
                 <router-link :to="secondMenu.path" v-if="!secondMenu.children">
-                  <div>{{secondMenu.meta.title}}</div>
+                  <div :title="secondMenu.meta.title">{{secondMenu.meta.title}}</div>
                 </router-link>
                 <div class="secondMenuTitle" v-else>
                   {{secondMenu.meta.title}}
@@ -78,11 +78,13 @@
             v-show="item.meta.title !== '首页'"
           >
             <div class="item-container">
+              <!-- <i class="iconfont icon-icon-1"></i> -->
               <div class="img-container">
                 <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
               </div>
 
               <span>{{item.meta.title}}</span>
+              <!-- <span class="arrow">></span> -->
             </div>
 
             <!-- 二级菜单 -->
@@ -250,10 +252,12 @@ export default {
       } else {
         this.$refs.out.style.visibility = 'hidden'
       }
+      /* this.$refs.out.style.visibility = 'visible' */
     },
     hiddenAll() {
       this.visible = false
       this.$refs.out.style.visibility = 'hidden'
+      /* this.$refs.out.style.visibility = 'visible' */
     }
   }
 }
@@ -294,13 +298,44 @@ export default {
             display: block;
             background-color: #fff;
             width: 200px;
+            max-height: 800px;
+            overflow: scroll;
             border-radius: 4px;
             box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
             padding: 17px 16px;
             z-index: 999;
 
+            @scrollBarSize: 6px;
+            &::-webkit-scrollbar {
+              width: @scrollBarSize;
+              height: @scrollBarSize;
+              background-color: transparent;
+            }
+            &::-webkit-scrollbar-track {
+              background-color: #f0f0f0;
+            }
+            &::-webkit-scrollbar-thumb {
+              background-color: #eee;
+              box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+              &:hover {
+                background-color: #bbb;
+              }
+
+              &:active {
+                background-color: #888;
+              }
+            }
+            
             li.secondItem {
               padding: 0 14px;
+              & > a > div{
+                height: 44px;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;      //超出部分以省略号显示
+ 	              white-space: nowrap;
+              }
 
               div.secondMenuTitle {
                 color: #333333;
@@ -338,13 +373,14 @@ export default {
           }
         }
 
-        .item-container {
+        & > .item-container {
           display: flex;
           align-items: center;
-          justify-content: space-around;
+          justify-content: flex-start;
           img {
             width: 24px;
             height: 24px;
+            margin: 0 12px;
           }
           span {
             font-size: 16px;
@@ -359,6 +395,7 @@ export default {
       }
     }
   }
+  // 控制按钮
   .su-menu-control {
     width: 104px;
     display: flex;
@@ -395,6 +432,7 @@ export default {
       }
     }
   }
+  // 弹出导航
   .out {
     width: 708px;
     height: unset;
@@ -463,17 +501,14 @@ export default {
             overflow-y: scroll;
 
             @scrollBarSize: 6px;
-            /* 定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
             &::-webkit-scrollbar {
               width: @scrollBarSize;
               height: @scrollBarSize;
               background-color: transparent;
             }
-            /* 定义滚动条轨道 */
             &::-webkit-scrollbar-track {
               background-color: #f0f0f0;
             }
-            /* 定义滑块 */
             &::-webkit-scrollbar-thumb {
               background-color: #eee;
               box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -492,7 +527,6 @@ export default {
 
               div.secondMenuTitle {
                 & + .thirdMenu {
-                  /* background-color: #fff; */
                   .thirdItem {
                     padding-left: 14px;
                   }
@@ -526,5 +560,31 @@ export default {
       }
     }
   }
+
+  /* .out{
+    ul{
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      right: 100px;
+      background-color: skyblue;
+      & > li{
+        width: 208px;
+        padding: 0 24px;
+        font-size: 16px;
+        .iconfont{
+          font-size: 33px;
+          color: #d81e06;
+        }
+        .item-container{
+          display: flex;
+        }
+        ul.secondMenu{
+          display: none;
+        }
+      }
+    }
+  } */
 }
 </style>

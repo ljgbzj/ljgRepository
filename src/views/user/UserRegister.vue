@@ -11,7 +11,10 @@
       <div class="register">
         <!-- 注册用户 -->
         <div class="register-one" v-show="step1">
-          <div class="step1" v-if="device === 'desktop'">用户注册</div>
+          <div class="step1" v-if="device === 'desktop'">
+            <img src="~@/assets/img/register/userRegister.png" />
+            <span>用户注册（建管部智能小镇专用版）</span>
+          </div>
           <a-form :form="form">
             <!-- 用户名 -->
             <a-form-item label="用户名" class="item">
@@ -19,6 +22,13 @@
                 class="userName"
                 placeholder="请输入用户名"
                 v-decorator="['userName',{ rules:[{required: true, message: '请输入用户名'}]}]"
+              ></a-input>
+            </a-form-item>
+            <a-form-item label="真实姓名" class="item">
+              <a-input
+                class="userName"
+                placeholder="请输入真实姓名"
+                v-decorator="['realName',{ rules:[{required: true, message: '请输入真实姓名'}]}]"
               ></a-input>
             </a-form-item>
             <a-form-item label="密码" class="item">
@@ -32,7 +42,8 @@
             <a-form-item label="确认密码" class="item">
               <a-input
                 class="passwordConfirm"
-                v-decorator="['confirm',{ rules:[{required: true, message: '请确认密码'}]}]"
+                v-decorator="['confirm',{ rules:[{required: true, message: '请确认密码'}, {
+                  validator: compareToFirstPassword}]}]"
                 type="password"
                 placeholder="请确认密码"
               ></a-input>
@@ -41,13 +52,18 @@
             <a-form-item label="手机号码" class="item">
               <a-input
                 class="phoneNumber"
-                v-decorator="['phone',{ rules:[{required: true, message: '请输入手机号码'}]}]"
+                v-decorator="['phone',{ rules:[{required: true, message: '手机号码不能为空'}]}]"
                 placeholder="请输入手机号码"
               ></a-input>
             </a-form-item>
             <!-- 滑块验证码 -->
             <a-form-item label="验证" class="item">
-              <j-slider class="verify" style="width: 300px" @onSuccess="handleJSliderSuccess" />
+              <j-slider
+                class="verify"
+                style="width: 300px"
+                @onSuccess="handleJSliderSuccess"
+                v-decorator="['verify',{ rules:[{required: true, message: '请滑动滑块验证码'}]}]"
+              />
             </a-form-item>
             <!-- 手机验证码 -->
             <a-form-item label="手机验证码" class="item">
@@ -62,6 +78,28 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"
                 @click="getCode"
               >获取验证码</a-button>
+            </a-form-item>
+            <a-form-item label="所属小组" class="item">
+              <a-select
+                v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
+                placeholder="请选择所属小组"
+              >
+                <a-select-option value="集团级平台">集团级平台</a-select-option>
+                <a-select-option value="电网、水电">电网、水电</a-select-option>
+                <a-select-option value="轨道交通">轨道交通</a-select-option>
+                <a-select-option value="工程云研发">工程云研发</a-select-option>
+                <a-select-option value="建筑">建筑</a-select-option>
+                <a-select-option value="京津冀、华北区域">京津冀、华北区域</a-select-option>
+                <a-select-option value="深圳、珠三角区域">深圳、珠三角区域</a-select-option>
+                <a-select-option value="企业级平台">企业级平台</a-select-option>
+                <a-select-option value="海外">海外</a-select-option>
+                <a-select-option value="移民">移民</a-select-option>
+                <a-select-option value="GIS研发">GIS研发</a-select-option>
+                <a-select-option value="经营">经营</a-select-option>
+                <a-select-option value="UI设计">UI设计</a-select-option>
+                <a-select-option value="测试工作">测试工作</a-select-option>
+                <a-select-option value="其他">其他</a-select-option>
+              </a-select>
             </a-form-item>
             <!-- 单选框，服务条款 -->
             <a-checkbox @change="getChecked">
@@ -81,14 +119,14 @@
         </div>
         <!-- 注册完成 -->
         <div class="register-done" v-show="step2">
-          <div class="step step2" v-if="device === 'desktop'">注册成功</div>
+          <!-- <div class="step step2" v-if="device === 'desktop'">注册成功</div> -->
           <div class="result">
             <img src="@/assets/img/register/registerdone.png" />
             <div>恭喜您完成注册</div>
           </div>
           <div class="jump">
-            <div>系统将自动跳转{{time}}s</div>
-            <router-link to="/user/login">跳转</router-link>
+            <div class="time2jump">{{time}}s后，系统将自动跳转</div>
+            <div @click="registered" class="jump2login">登录</div>
           </div>
           <div class="desc">如果系统没有自动跳转，请点击跳转进入</div>
         </div>
@@ -98,11 +136,11 @@
 </template>
 
 <script>
-import { postAction, getActionUrl, httpActionHeader} from '@/api/manage.js'
+import { postAction, getActionUrl, httpActionHeader } from '@/api/manage.js'
 import qs from 'qs'
 import { setInterval, clearInterval } from 'timers'
 import { mixinDevice } from '@/utils/mixin.js'
-import JSlider from '@/components/cmp/JSlider'  
+import JSlider from '@/components/cmp/JSlider'
 
 export default {
   mixins: [mixinDevice],
@@ -111,7 +149,8 @@ export default {
     JSlider //滑块验证码
   },
   props: {
-    visibleRegister: {  //控制组件显隐
+    visibleRegister: {
+      //控制组件显隐
       type: Boolean,
       default: false,
       required: true
@@ -121,27 +160,36 @@ export default {
     return {
       form: this.$form.createForm(this),
       checked: '',
-      time: 5,  //注册成功后倒计时5秒跳转
+      time: 5, //注册成功后倒计时5秒跳转
       url: {
         registercode: '/sys/sendMessage/register', //获取手机验证码
-        register: '/sys/user/register', //用户注册
+        register: '/sys/user/register' //用户注册
       },
       jsvalue: false, //滑块验证码的值
-      step1: true,  //注册页显隐
+      step1: true, //注册页显隐
       step2: false, //注册完成页显隐
-      state: {  //控制获取短信验证码按钮状态
+      state: {
+        //控制获取短信验证码按钮状态
         time: 60,
         smsSendBtn: false
       }
     }
   },
-  created() {
-  },
+  created() {},
   computed: {},
   methods: {
     //获取是否同意服务条款的值
     getChecked(e) {
       this.checked = e.target.checked
+    },
+    //比较密码和确认密码的值
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form
+      if (value && value !== form.getFieldValue('password')) {
+        callback('两次输入的密码不一致！')
+      } else {
+        callback()
+      }
     },
     //获取滑块的值
     handleJSliderSuccess(val) {
@@ -166,7 +214,7 @@ export default {
 
             //获取填写手机号
             let params = Object.assign({}, val),
-            url = that.url.registercode //获取短信验证码API
+              url = that.url.registercode //获取短信验证码API
             // 将参数形式转换为 JSON字符串
             params = qs.stringify(params)
             // 提示信息
@@ -213,6 +261,7 @@ export default {
     },
     // 注册
     register() {
+      
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',
@@ -221,7 +270,7 @@ export default {
         })
       } else {
         this.form.validateFields(
-          ['userName', 'password', 'phone', 'identifyCode', 'imageIdentifyCode'],
+          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode','groupName'],
           { force: true },
           (err, values) => {
             if (!err) {

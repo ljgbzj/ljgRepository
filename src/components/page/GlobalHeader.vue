@@ -19,7 +19,7 @@
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
           @click.native="toggle"
         />
-        <span v-if="device === 'desktop'">当前用户公司/项目名称</span>
+        <span v-if="device === 'desktop'">{{userInfo().corporationName}}</span>
         <span v-else>ECIDI-CMP</span>
       </div>
 
@@ -64,6 +64,7 @@ import UserMenu from '../tools/UserMenu'
 import Logo from '../tools/Logo'
 import SuMenu from '../menu/menu'
 import { mixin } from '@/utils/mixin.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'GlobalHeader',
@@ -136,6 +137,7 @@ export default {
     //update-end--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
   },
   methods: {
+    ...mapGetters(['userInfo']),
     handleScroll() {
       if (this.autoHideHeader) {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
