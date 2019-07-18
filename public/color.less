@@ -6966,6 +6966,23 @@ tr.ant-table-expanded-row:hover {
   /* color: rgba(0, 0, 0, 0.85); */
   color: @primary-color;
 }
+.topmenu{
+  .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab .ant-tabs-close-x {
+    /* color: rgba(0, 0, 0, 0.45); */
+    color: rgba(255,255,255,0.5);
+  }
+  .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab .ant-tabs-close-x:hover {
+    /* color: rgba(0, 0, 0, 0.85); */
+    color: #fff;
+  }
+  .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active .ant-tabs-close-x {
+    /* color: rgba(0, 0, 0, 0.85); */
+    color: @primary-color;
+    & :hover{
+      color: @primary-color;
+    }
+  }
+}
 .ant-tabs-extra-content .ant-tabs-new-tab {
   border-radius: 2px;
   border: 1px solid #e8e8e8;

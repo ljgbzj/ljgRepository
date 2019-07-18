@@ -119,7 +119,7 @@ export default {
 
   /* 设备为pc时样式 */
   &.desktop {
-    min-width: 1500px;
+    min-width: 1650px;
     .container {
       width: 100%;
       padding: 58px 80px 0 80px;

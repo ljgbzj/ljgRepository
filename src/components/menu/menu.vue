@@ -26,7 +26,7 @@
             >
               <keep-alive v-if="secondMenu.meta.keepAlive">
                 <router-link :to="secondMenu.path" v-if="!secondMenu.children">
-                  <div>{{secondMenu.meta.title}}</div>
+                  <div :title="secondMenu.meta.title">{{secondMenu.meta.title}}</div>
                 </router-link>
                 <div class="secondMenuTitle" v-else>
                   {{secondMenu.meta.title}}
@@ -84,7 +84,7 @@
               </div>
 
               <span>{{item.meta.title}}</span>
-              <span class="arrow">></span>
+              <!-- <span class="arrow">></span> -->
             </div>
 
             <!-- 二级菜单 -->
@@ -298,13 +298,44 @@ export default {
             display: block;
             background-color: #fff;
             width: 200px;
+            max-height: 800px;
+            overflow: scroll;
             border-radius: 4px;
             box-shadow: 0px 12px 16px 0px rgba(170, 170, 170, 0.4);
             padding: 17px 16px;
             z-index: 999;
 
+            @scrollBarSize: 6px;
+            &::-webkit-scrollbar {
+              width: @scrollBarSize;
+              height: @scrollBarSize;
+              background-color: transparent;
+            }
+            &::-webkit-scrollbar-track {
+              background-color: #f0f0f0;
+            }
+            &::-webkit-scrollbar-thumb {
+              background-color: #eee;
+              box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+              &:hover {
+                background-color: #bbb;
+              }
+
+              &:active {
+                background-color: #888;
+              }
+            }
+            
             li.secondItem {
               padding: 0 14px;
+              & > a > div{
+                height: 44px;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;      //超出部分以省略号显示
+ 	              white-space: nowrap;
+              }
 
               div.secondMenuTitle {
                 color: #333333;
@@ -342,13 +373,14 @@ export default {
           }
         }
 
-        .item-container {
+        & > .item-container {
           display: flex;
           align-items: center;
-          justify-content: space-around;
+          justify-content: flex-start;
           img {
             width: 24px;
             height: 24px;
+            margin: 0 12px;
           }
           span {
             font-size: 16px;

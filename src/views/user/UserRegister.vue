@@ -13,7 +13,7 @@
         <div class="register-one" v-show="step1">
           <div class="step1" v-if="device === 'desktop'">
             <img src="~@/assets/img/register/userRegister.png" />
-            <span>用户注册</span>
+            <span>用户注册（建管部智能小镇专用版）</span>
           </div>
           <a-form :form="form">
             <!-- 用户名 -->
@@ -22,6 +22,13 @@
                 class="userName"
                 placeholder="请输入用户名"
                 v-decorator="['userName',{ rules:[{required: true, message: '请输入用户名'}]}]"
+              ></a-input>
+            </a-form-item>
+            <a-form-item label="真实姓名" class="item">
+              <a-input
+                class="userName"
+                placeholder="请输入真实姓名"
+                v-decorator="['realName',{ rules:[{required: true, message: '请输入真实姓名'}]}]"
               ></a-input>
             </a-form-item>
             <a-form-item label="密码" class="item">
@@ -51,7 +58,12 @@
             </a-form-item>
             <!-- 滑块验证码 -->
             <a-form-item label="验证" class="item">
-              <j-slider class="verify" style="width: 300px" @onSuccess="handleJSliderSuccess" />
+              <j-slider
+                class="verify"
+                style="width: 300px"
+                @onSuccess="handleJSliderSuccess"
+                v-decorator="['verify',{ rules:[{required: true, message: '请滑动滑块验证码'}]}]"
+              />
             </a-form-item>
             <!-- 手机验证码 -->
             <a-form-item label="手机验证码" class="item">
@@ -66,6 +78,28 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"
                 @click="getCode"
               >获取验证码</a-button>
+            </a-form-item>
+            <a-form-item label="所属小组" class="item">
+              <a-select
+                v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
+                placeholder="请选择所属小组"
+              >
+                <a-select-option value="集团级平台">集团级平台</a-select-option>
+                <a-select-option value="电网、水电">电网、水电</a-select-option>
+                <a-select-option value="轨道交通">轨道交通</a-select-option>
+                <a-select-option value="工程云研发">工程云研发</a-select-option>
+                <a-select-option value="建筑">建筑</a-select-option>
+                <a-select-option value="京津冀、华北区域">京津冀、华北区域</a-select-option>
+                <a-select-option value="深圳、珠三角区域">深圳、珠三角区域</a-select-option>
+                <a-select-option value="企业级平台">企业级平台</a-select-option>
+                <a-select-option value="海外">海外</a-select-option>
+                <a-select-option value="移民">移民</a-select-option>
+                <a-select-option value="GIS研发">GIS研发</a-select-option>
+                <a-select-option value="经营">经营</a-select-option>
+                <a-select-option value="UI设计">UI设计</a-select-option>
+                <a-select-option value="测试工作">测试工作</a-select-option>
+                <a-select-option value="其他">其他</a-select-option>
+              </a-select>
             </a-form-item>
             <!-- 单选框，服务条款 -->
             <a-checkbox @change="getChecked">
@@ -85,14 +119,14 @@
         </div>
         <!-- 注册完成 -->
         <div class="register-done" v-show="step2">
-          <div class="step step2" v-if="device === 'desktop'">注册成功</div>
+          <!-- <div class="step step2" v-if="device === 'desktop'">注册成功</div> -->
           <div class="result">
             <img src="@/assets/img/register/registerdone.png" />
             <div>恭喜您完成注册</div>
           </div>
           <div class="jump">
-            <div>系统将自动跳转{{time}}s</div>
-            <router-link to="/user/login">跳转</router-link>
+            <div class="time2jump">{{time}}s后，系统将自动跳转</div>
+            <div @click="registered" class="jump2login">登录</div>
           </div>
           <div class="desc">如果系统没有自动跳转，请点击跳转进入</div>
         </div>
@@ -149,12 +183,12 @@ export default {
       this.checked = e.target.checked
     },
     //比较密码和确认密码的值
-    compareToFirstPassword  (rule, value, callback) {
-      const form = this.form;
+    compareToFirstPassword(rule, value, callback) {
+      const form = this.form
       if (value && value !== form.getFieldValue('password')) {
-        callback('两次输入的密码不一致！');
+        callback('两次输入的密码不一致！')
       } else {
-        callback();
+        callback()
       }
     },
     //获取滑块的值
@@ -227,6 +261,7 @@ export default {
     },
     // 注册
     register() {
+      
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',
@@ -235,7 +270,7 @@ export default {
         })
       } else {
         this.form.validateFields(
-          ['userName', 'password', 'phone', 'identifyCode', 'imageIdentifyCode'],
+          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode','groupName'],
           { force: true },
           (err, values) => {
             if (!err) {
