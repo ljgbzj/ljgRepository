@@ -89,6 +89,9 @@ const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params
 // 重复校验
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 
+//会议室
+const findRoomList = (params) =>getAction("/meetingRoom/meetingRoomTimeStatus/list",params);
+
 export {
   // imgView,
   // doMian,
@@ -134,6 +137,7 @@ export {
   queryUserRoleMap,
   duplicateCheck,
   queryTreeListForRole,
+  findRoomList,
 }
 
 
