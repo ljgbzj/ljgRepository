@@ -60,7 +60,6 @@
             <a-form-item label="验证" class="item">
               <j-slider
                 class="verify"
-                style="width: 300px"
                 @onSuccess="handleJSliderSuccess"
                 v-decorator="['verify',{ rules:[{required: true, message: '请滑动滑块验证码'}]}]"
               />
@@ -163,7 +162,8 @@ export default {
       time: 5, //注册成功后倒计时5秒跳转
       url: {
         registercode: '/sys/sendMessage/register', //获取手机验证码
-        register: '/sys/user/register' //用户注册
+        register: '/sys/user/register', //用户注册
+        verifyUserName: '/sys/user/verifyUniqueUsername'  //用户名校检
       },
       jsvalue: false, //滑块验证码的值
       step1: true, //注册页显隐

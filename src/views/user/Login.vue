@@ -68,7 +68,7 @@
         </a-tabs>
 
         <a-form-item class="form-out">
-          <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
+          <a-checkbox v-model="formLogin.rememberMe" class="autologin">自动登陆</a-checkbox>
           <router-link
             :to="{ name: 'login', params: { user: 'aaa'} }"
             class="forge-password"
@@ -152,12 +152,13 @@
               :class="{'valid-error':validate_status=='error'}"
               placeholder="请选择登录部门"
               style="margin-left:10px"
+              defaultValue="null.A01"
             >
               <a-icon slot="suffixIcon" type="caret-down" />
               <a-select-option
                 v-for="d in departList"
                 :key="d.id"
-                :value="`${d.prjCode}.${d.orgCode}.${d.corpName}.${d.prjName}.${d.departName}`"
+                :value="`${d.prjCode}.${d.orgCode}`"
                 class="departList"
               >
                 <span style="float: left">{{ d.departName }}</span>
@@ -245,7 +246,7 @@ export default {
 
       departList: [],
       departVisible: false, // 部门选择组件显隐
-      departSelected: '',
+      departSelected: 'null.A01',
       currentUsername: '',
       validate_status: '',
 
@@ -421,7 +422,8 @@ export default {
     },
     loginSuccess() {
       this.loginBtn = false
-      this.$router.push({ name: 'dashboard' })
+      //this.$router.push({ name: 'dashboard' })
+      this.$router.push('/roomList/roomListOrder')
       this.$notification.success({
         message: '欢迎',
         description: `${timeFix()}，欢迎回来`
@@ -492,11 +494,11 @@ export default {
         this.validate_status = 'error'
         return false
       }
-      let name = {
+      /* let name = {
         corpName: this.departSelected.split('.')[2],
         prjName: this.departSelected.split('.')[3],
         departName: this.departSelected.split('.')[4]
-      }
+      } */
       let obj = {
         prjCode: this.departSelected.split('.')[0],
         orgCode: this.departSelected.split('.')[1],
@@ -530,6 +532,7 @@ export default {
     departChange(value) {
       this.validate_status = 'success'
       this.departSelected = value
+      console.log(value,'部门value')
     },
 
     /* 注册*/

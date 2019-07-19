@@ -77,8 +77,8 @@ export default {
 .sider {
   $scrollBarSize: 10px;
   :global(.ant-layout-sider-children){
-    :global(.ant-menu) {
-        :global(li.ant-menu-submenu.ant-menu-submenu-inline){
+    >:global(.ant-menu) {
+        >:global(li.ant-menu-submenu.ant-menu-submenu-inline){
           :global(.ant-menu-submenu-title){
             font-size: 16px;
           }
@@ -99,7 +99,7 @@ export default {
     }
     :global(li.ant-menu-item > a) {
       /* text-align: center; */
-      padding-left: 43px;
+      padding-left: 23px;
       margin: 0 auto;
     }
     // 二级菜单

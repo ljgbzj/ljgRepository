@@ -2,7 +2,7 @@
   <div class="drag" ref="dragDiv">
     <div class="drag_bg"></div>
     <div class="drag_text">{{confirmWords}}</div>
-    <div ref="moveDiv" @mousedown="mousedownFn($event)" :class="{'handler_ok_bg':confirmSuccess}" class="handler handler_bg" style="border: 0.5px solid #fff;height: 34px;position: absolute;top: 0px;left: 0px;"></div>
+    <div ref="moveDiv" @mousedown="mousedownFn($event)" @touchstart="mousedownFn($event)" :class="{'handler_ok_bg':confirmSuccess}" class="handler handler_bg" style="border: 0.5px solid #fff;height: 34px;position: absolute;top: 0px;left: 0px;"></div>
   </div>
 </template>
 
@@ -23,12 +23,18 @@
         return this.confirmSuccess
       },
       mousedownFn:function (e) {
+        console.log('e-start',e)
         if(!this.confirmSuccess){
           e.preventDefault && e.preventDefault();   //阻止文字选中等 浏览器默认事件
           this.mouseMoveStata = true;
           this.beginClientX = e.clientX;
+          if(e.type === "touchstart"){
+            this.beginClientX = e.changedTouches[0].clientX
+            console.log('beginX',this.beginClientX)
+          }
         }
-      },        //mousedoen 事件
+        console.log(this.mouseMoveStata)
+      },        //mousedown 事件
       successFunction(){
         this.confirmSuccess = true
         this.confirmWords = '验证通过';
@@ -45,8 +51,13 @@
         this.$emit("onSuccess",true)
       },                //验证成功函数
       mouseMoveFn(e){
+        console.log('e-move',e)
         if(this.mouseMoveStata){
           let width = e.clientX - this.beginClientX;
+          if(e.type === "touchmove"){
+            width = e.changedTouches[0].clientX - this.beginClientX
+          }
+          console.log(width,'moveWidth')
           if(width>0 && width<=this.maxwidth){
             document.getElementsByClassName('handler')[0].style.left = width + 'px';
             document.getElementsByClassName('drag_bg')[0].style.width = width + 'px';
@@ -56,8 +67,12 @@
         }
       },                   //mousemove事件
       moseUpFn(e){
+        console.log('e-end',e)
         this.mouseMoveStata = false;
         var width = e.clientX - this.beginClientX;
+        if(e.type === "touchend"){
+            width = e.changedTouches[0].clientX - this.beginClientX
+          }
         if(width<this.maxwidth){
           document.getElementsByClassName('handler')[0].style.left = 0 + 'px';
           document.getElementsByClassName('drag_bg')[0].style.width = 0 + 'px';
@@ -67,7 +82,9 @@
     mounted(){
       this.maxwidth = this.$refs.dragDiv.clientWidth - this.$refs.moveDiv.clientWidth;
       document.getElementsByTagName('html')[0].addEventListener('mousemove',this.mouseMoveFn);
+      document.getElementsByTagName('html')[0].addEventListener('touchmove',this.mouseMoveFn);
       document.getElementsByTagName('html')[0].addEventListener('mouseup',this.moseUpFn)
+      document.getElementsByTagName('html')[0].addEventListener('touchend',this.moseUpFn)
     }
   }
 </script>
