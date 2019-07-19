@@ -1,27 +1,38 @@
 <template>
   <a-modal
-    :title="title"
+    :footer="null"
+    :title="null"
+    :closable="false"
     :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭">
+    :okButtonProps="model.btns ? { style: 'display:none' } : {}"
+    :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
+    v-dialogDrag
+    cancelText="关闭"
+    :maskClosable="false"
+    style="top:5%;"
+  >
     
+
+      <div class="title">
+        <div>
+          <img src="@assets/img/login/edit.png" />
+          {{title}}
+        </div>
+        <a-icon type="close" class="closeIcon" @click="handleCancel" />
+      </div>
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" class="row">
-      
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="登录账号">
-          <a-input placeholder="请输入登录账号" v-decorator = "[ 'username', validatorRules.username]"  />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+
           label="姓名">
-          <a-input placeholder="请输入姓名" v-decorator="['realname', {}]" />
+          <a-input  disabled placeholder="请输入姓名" v-decorator="['realname', {}]" />
         </a-form-item>
         <!--<a-form-item
           :labelCol="labelCol"
@@ -137,8 +148,27 @@
           label="办公地址">
           <a-input placeholder="请输入办公地址" v-decorator="['address', {}]" />
         </a-form-item>
-		
+
       </a-form>
+      <a-row :gutter="24"  style=" margin-left: 510px">
+        <a-col :md="24" :sm="8" >
+          <a-form-item class="btnClass">
+            <a-button
+              @click="handleOk"
+              icon="check"
+              type="primary"
+              style="margin-right:10px"
+              class="confirm"
+            >保存</a-button>
+            <a-button
+              @click="handleCancel"
+              icon="close"
+              style="margin-right:10px"
+              class="cancel"
+            >关闭</a-button>
+          </a-form-item>
+        </a-col>
+      </a-row>
     </a-spin>
   </a-modal>
 </template>
@@ -162,15 +192,15 @@
         },
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 3 },
+          sm: { span: 4 },
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 12 },
+          sm: { span: 20 },
         },
         labelCol1: {
           xs: { span: 24 },
-          sm: { span: 3 },
+          sm: { span: 4 },
         },
         wrapperCol1: {
           xs: { span: 24 },
@@ -216,7 +246,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'username','realname', 'email','phone', 'groupName', 'officePhone','address'));
+          this.form.setFieldsValue(pick(this.model, 'realname', 'email','phone', 'groupName', 'officePhone','address'));
 		  //时间格式化
           this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
         });
@@ -328,5 +358,6 @@
 </script>
 
 <style lang="less" scoped>
+  @import '~@assets/less/modal.less';
 
 </style>
