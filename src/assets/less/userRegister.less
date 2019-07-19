@@ -26,7 +26,10 @@
       }
       
     }
-
+    //拖动验证码
+    .drag.verify{
+      width: 300px;
+    }
     .item {
       height: 40px;
       margin-top: 20px;
@@ -48,8 +51,9 @@
         }
 
         input {
-          background-color: #f5f5f5;
-          border-color: #f5f5f5;
+          /* background-color: #f5f5f5;
+          border-color: #f5f5f5; */
+          border-color:#DDDDDD;
           padding-left: 16px;
           margin-right: 19px;
           &:focus{
@@ -109,8 +113,11 @@
         :global(.ant-select-selection.ant-select-selection--single) {
           height: 40px;
           width: 300px;
-          background-color: #f5f5f5;
-          border-color: #f5f5f5;
+          border-color: #ddd;
+          box-shadow: none;
+          &:hover, &:focus{
+            border-color: #6455ff;
+          }
           
           :global(.ant-select-selection__rendered) {
             line-height: 40px;
@@ -133,8 +140,7 @@
       height: 14px;
 
       :global(.ant-checkbox-inner) {
-        border-color: #f5f5f5;
-        background-color: #f5f5f5;
+        border-color: #ddd;
       }
 
       :global(.ant-checkbox-checked .ant-checkbox-inner) {
@@ -285,6 +291,7 @@
       background-color: #6455ff;
 
     }
+    
 
   }
 

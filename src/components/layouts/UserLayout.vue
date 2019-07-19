@@ -77,10 +77,11 @@ export default {
         },
         {
           title: '移动办公'
-        },
-        {
-          title: '大屏展示'
         }
+        /*
+        ,{
+          title: '大屏展示'
+        }*/
       ]
     }
   },

@@ -7,19 +7,19 @@
         <a-row :gutter="24">
 
           <a-col :md="8" :sm="8">
-            <a-form-item label="登录账号">
-              <a-input placeholder="请输入登录账号" v-model="queryParam.username"></a-input>
+            <a-form-item label="电话">
+              <a-input placeholder="请输电话" v-model="queryParam.phone"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
-            <a-form-item label="真实姓名">
-              <a-input placeholder="请输入真实姓名" v-model="queryParam.realname" ></a-input>
+            <a-form-item label="姓名">
+              <a-input placeholder="请输入姓名" v-model="queryParam.realname" ></a-input>
             </a-form-item>
           </a-col>
         <template v-if="toggleSearchStatus">
           <a-col :md="8" :sm="8">
-            <a-form-item label="办公电话">
-              <a-input placeholder="请输入电话" v-model="queryParam.phone"></a-input>
+            <a-form-item label="电子邮箱">
+              <a-input placeholder="请输入电子邮箱" v-model="queryParam.email"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
@@ -49,13 +49,13 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+               <a-button type="primary" style="margin-left: 8px" icon="download" @click="handleExportXls('test')">导出</a-button>
               <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>
             </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
@@ -64,19 +64,19 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="table-operator" style="">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <a-button type="primary" icon="download" @click="handleExportXls('test')">导出</a-button>
-        <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+      <!--<div class="table-operator" style="">
+        &lt;!&ndash;<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>&ndash;&gt;
+
+        &lt;!&ndash;<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
           <a-button type="primary" icon="import">导入</a-button>
-        </a-upload>
-        <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+        </a-upload>&ndash;&gt;
+        &lt;!&ndash;<a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-        </a-dropdown>-->
-      </div>
+        </a-dropdown>&ndash;&gt;
+      </div>-->
       <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -86,7 +86,6 @@
       <a-table
         ref="table"
         size="middle"
-        bordered
         rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
@@ -103,7 +102,7 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical" />
+          <!--<a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -113,7 +112,7 @@
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
 
       </a-table>
@@ -151,34 +150,37 @@
               return parseInt(index)+1;
             }
            },
-		   {
+		   /*{
             title: '登录账号',
             align:"center",
             dataIndex: 'username'
-           },
+           },*/
 		   {
-            title: '真实姓名',
+            title: '姓名',
             align:"center",
             dataIndex: 'realname'
            },
-		   {
-            title: '头像',
+          {
+            title: '电话',
             align:"center",
-            width:120,
-            dataIndex: 'avatar',
-            //slots: {filterIcon: 'avatar'},
-            scopedSlots: {customRender: "avatarslot"}
-           },
+            dataIndex: 'phone'
+          },
 		   {
             title: '电子邮件',
             align:"center",
             dataIndex: 'email'
            },
-		   {
-            title: '电话',
+
+       {
+            title: '小组名',
             align:"center",
-            dataIndex: 'phone'
-           },
+            dataIndex: 'groupName'
+          },
+          {
+            title: '所属部门',
+            align:"center",
+            dataIndex: 'departName'
+          },
 		   {
             title: '办公号码',
             align:"center",
@@ -190,6 +192,14 @@
             dataIndex: 'address'
            },
           {
+            title: '头像',
+            align:"center",
+            width:120,
+            dataIndex: 'avatar',
+            //slots: {filterIcon: 'avatar'},
+            scopedSlots: {customRender: "avatarslot"}
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -197,7 +207,8 @@
           }
         ],
 		url: {
-          list: "/sys/user/list/",
+          //list: "/sys/user/list/",
+          list: "/sys/user/userListWithDepartName/",
           delete: "/sys/user/delete",
           imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
           /*delete: "/test/sysUserCopy/delete",*/
