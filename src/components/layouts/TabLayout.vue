@@ -32,7 +32,7 @@
   import Contextmenu from '@/components/menu/Contextmenu'
   import { mixin, mixinDevice } from '@/utils/mixin.js'
 
-  const indexKey = '/dashboard/analysis'
+  const indexKey = '/roomList/roomListOrder'
 
   export default {
     name: 'TabLayout',
@@ -116,8 +116,11 @@
         this[action](key)
       },
       remove(key) {
+        console.log(key,'key')
+        console.log(indexKey, 'indexKey')
         if (key == indexKey) {
-          this.$message.warning('首页不能关闭!')
+          
+          this.$message.warning('会议室预定不能关闭!')
           return
         }
         if (this.pageList.length === 1) {
