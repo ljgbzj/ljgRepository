@@ -20,7 +20,7 @@
             <a-form-item label="用户名" class="item">
               <a-input
                 class="userName"
-                placeholder="请输入用户名"
+                placeholder="4-16位，可包含字母、数字和下划线"
                 v-decorator="['userName',{ rules:[{required: true, message: ' '},{
                   validator: usernameOnChange }]}]"
               ></a-input>
@@ -35,9 +35,9 @@
             <a-form-item label="密码" class="item">
               <a-input
                 class="password"
-                v-decorator="['password',{ rules:[{required: true, message: '请输入密码'}]}]"
+                v-decorator="['password',{ rules:[{required: true, message: '请输入密码'},{ validator: handlePasswordLevel }]}]"
                 type="password"
-                placeholder="请输入密码"
+                placeholder="6-12位，可包含字母、数字和下划线"
               ></a-input>
             </a-form-item>
             <a-form-item label="确认密码" class="item">
@@ -53,7 +53,8 @@
             <a-form-item label="手机号码" class="item">
               <a-input
                 class="phoneNumber"
-                v-decorator="['phone',{ rules:[{required: true, message: '手机号码不能为空'}]}]"
+                v-decorator="['phone',{ rules:[{required: true, message: ' '},{
+                  validator: phoneVerify }]}]"
                 placeholder="请输入手机号码"
               ></a-input>
             </a-form-item>
@@ -82,7 +83,8 @@
             <a-form-item label="所属小组" class="item">
               <a-select
                 v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
-                placeholder="请选择所属小组">
+                placeholder="请选择所属小组"
+              >
                 <a-select-option value="集团级平台">集团级平台</a-select-option>
                 <a-select-option value="电网、水电">电网、水电</a-select-option>
                 <a-select-option value="轨道交通">轨道交通</a-select-option>
@@ -178,16 +180,47 @@ export default {
   created() {},
   computed: {},
   methods: {
+    // username重复校检
     usernameOnChange(rule, val, callback) {
-      let value = this.form.getFieldValue('userName') ? this.form.getFieldValue('userName') : '',
-          params = { username: value }
-      getAction(this.url.verifyUserName, params).then(res => {
-        if (!res.success) {
-          callback(res.message)
-        } else {
-          callback()
-        }
-      })
+      let value = val ? val : '',
+        params = { username: value },
+        reg = /^[-_a-zA-Z0-9]{4,16}$/
+      if (reg.test(value)) {
+        getAction(this.url.verifyUserName, params).then(res => {
+          if (!res.success) {
+            callback(res.message)
+          } else {
+            callback()
+          }
+        })
+      } else if (value.length == 0) {
+        callback('请输入用户名！')
+      } else {
+        callback('用户名格式不正确！')
+      }
+    },
+    // 密码校检
+    handlePasswordLevel(rule, val, callback) {
+      console.log(val)
+      if (/^[\w]{6,12}$/.test(val)) {
+        callback()
+      } else if (val.length == 0) {
+        callback()
+      } else {
+        callback('密码格式不正确')
+      }
+    },
+    //手机号码校检
+    phoneVerify(rule, val, callback) {
+      let value = val ? val : ''
+      let reg = /^1[3456789]\d{9}$/
+      if (reg.test(value)) {
+        callback()
+      } else if (value.length == 0) {
+        callback('请输入手机号码')
+      } else {
+        callback('请输入正确的手机号码！')
+      }
     },
     //获取是否同意服务条款的值
     getChecked(e) {
