@@ -65,8 +65,8 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">启动</a-button>
-      <a-button @click="batchAbandone" type="primary" icon="delete">废弃</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">发起</a-button>
+      <a-button @click="batchAbandone" type="primary" icon="delete">删除</a-button>
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
     </div>
 
@@ -88,7 +88,7 @@
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
-          <a @click="batchAbandone($event,record.id,record.processInstanceId)">废弃</a>
+          <a @click="batchAbandone($event,record.id,record.processInstanceId)">删除</a>
           <!-- <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
@@ -170,19 +170,14 @@
             dataIndex: 'reason'
           },
           {
-            title: '部门领导',
+            title: '项目经理/组长',
             align:"center",
-            dataIndex: 'departmentLeaderRealname'
+            dataIndex: 'auditFullname1'
           },
           {
-            title: '人事部门领导',
+            title: '部门主任',
             align:"center",
-            dataIndex: 'hrLeaderRealname'
-          },
-          {
-            title: '总经理',
-            align:"center",
-            dataIndex: 'generalManagerRealname'
+            dataIndex: 'auditFullname2'
           },
           {
             title: '状态',
@@ -202,7 +197,7 @@
         ],
         url: {
           list: "/oa/leaveApplication/list",
-          deleteBatch: "/flowable/action",
+          deleteBatch: "/flowable/delete",
         },
       }
     },
@@ -231,22 +226,22 @@
             ids = id;
           }
         }
-        let flowDataString = {
-          api: '/process/delete',
+        let params = {
+          id: ids,
           processDefinitionKey: 'leave'
         }
-        let formDataString = {
-          id: ids
-        }
-        let params = {
-          flowDataString: JSON.stringify(flowDataString),
-          formDataString: JSON.stringify(formDataString),
-        };
+        // let formDataString = {
+        //   id: ids
+        // }
+        // let params = {
+        //   flowDataString: JSON.stringify(flowDataString),
+        //   formDataString: JSON.stringify(formDataString),
+        // };
         let method = 'post';
         var that = this;
         this.$confirm({
-          title: "确认废弃",
-          content: "是否废弃选中数据?",
+          title: "确认删除",
+          content: "是否删除选中数据?",
           onOk: function () {
             httpAction(that.url.deleteBatch, qs.stringify(params), method).then((res) => {
               if (res.success) {
