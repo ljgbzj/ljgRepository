@@ -83,6 +83,25 @@
           </a-upload>
         </a-form-item>
 
+        <a-form-item label="签名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-upload
+            listType="picture-card"
+            class="avatar-uploader"
+            :showUploadList="false"
+            :action="uploadAction"
+            :data="{'isup':1}"
+            :headers="headers"
+            :beforeUpload="beforeUpload"
+            @change="handleChange1"
+          >
+            <img v-if="picUrl1" :src="getAvatarView1()" alt="头像" style="height:104px;max-width:300px"/>
+            <div v-else>
+              <a-icon :type="uploadLoading1 ? 'loading' : 'plus'" />
+              <div class="ant-upload-text">上传</div>
+            </div>
+          </a-upload>
+        </a-form-item>
+
         <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-date-picker
             style="width: 100%"
@@ -217,10 +236,12 @@
           sm: { span: 16 },
         },
         uploadLoading:false,
+        uploadLoading1:false,
         confirmLoading: false,
         headers:{},
         form:this.$form.createForm(this),
         picUrl: "",
+        picUrl1:"",
         url: {
           addUDepartIds:"/sys/user/addUDepartIds", // 引入为用户添加部门信息需要的url
           editUDepartIds:"/sys/user/editUDepartIds", // 引入为用户更新部门信息需要的url
@@ -283,6 +304,7 @@
       },
       add () {
         this.picUrl = "";
+        this.picUrl1 ="";
         this.refresh()
         this.edit({activitiSync:'1'});
       },
@@ -295,6 +317,7 @@
         if(record.hasOwnProperty("id")){
           that.loadUserRoles(record.id);
           this.picUrl = "Has no pic url yet";
+          this.picUrl1 = "Has no pic url yet";
         }
         that.userId = record.id;
         that.visible = true;
@@ -600,8 +623,29 @@
           }
         }
       },
+      handleChange1 (info) {
+        this.picUrl1 = "";
+        if (info.file.status === 'uploading') {
+          this.uploadLoading1 = true
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading1 = false;
+          console.log(response);
+          if(response.success){
+            this.model.attachmentAutograph = response.message;
+            this.picUrl1 = "Has no pic url yet";
+          }else{
+            this.$message.warning(response.message);
+          }
+        }
+      },
       getAvatarView(){
         return this.url.imgerver +"/"+ this.model.avatar;
+      },
+      getAvatarView1(){
+        return this.url.imgerver +"/"+ this.model.attachmentAutograph;
       },
       // 搜索用户对应的部门API
       onSearch(){
