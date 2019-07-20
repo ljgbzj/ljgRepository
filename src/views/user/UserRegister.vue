@@ -11,7 +11,7 @@
       <div class="register">
         <!-- 注册用户 -->
         <div class="register-one" v-show="step1">
-          <div class="step1" v-if="device === 'desktop'">
+          <div class="register-one-title" v-if="device === 'desktop'">
             <img src="~@/assets/img/register/userRegister.png" />
             <span>用户注册（建管部智能小镇专用版）</span>
           </div>
@@ -21,7 +21,8 @@
               <a-input
                 class="userName"
                 placeholder="请输入用户名"
-                v-decorator="['userName',{ rules:[{required: true, message: '请输入用户名'}]}]"
+                v-decorator="['userName',{ rules:[{required: true, message: ' '},{
+                  validator: usernameOnChange }]}]"
               ></a-input>
             </a-form-item>
             <a-form-item label="真实姓名" class="item">
@@ -65,9 +66,9 @@
               />
             </a-form-item>
             <!-- 手机验证码 -->
-            <a-form-item label="手机验证码" class="item">
+            <a-form-item label="手机验证码" class="item phone">
               <a-input
-                class="code"
+                class="phone-code"
                 v-decorator="['identifyCode',{ rules:[{required: true, message: '请输入验证码'}]}]"
                 placeholder="请输入验证码"
               ></a-input>
@@ -81,8 +82,7 @@
             <a-form-item label="所属小组" class="item">
               <a-select
                 v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
-                placeholder="请选择所属小组"
-              >
+                placeholder="请选择所属小组">
                 <a-select-option value="集团级平台">集团级平台</a-select-option>
                 <a-select-option value="电网、水电">电网、水电</a-select-option>
                 <a-select-option value="轨道交通">轨道交通</a-select-option>
@@ -107,11 +107,11 @@
             </a-checkbox>
             <!-- 提交 下一步 -->
             <div class="next-container">
-              <span class="login" @click="registered">
+              <span class="registered" @click="registered">
                 已有账号登录
                 <img src="@/assets/img/register/left.png" />
               </span>
-              <a-button type="primary" @click.stop.prevent="register" class="one2two">注册</a-button>
+              <a-button type="primary" @click.stop.prevent="register">注册</a-button>
               <span class="help">帮助中心</span>
             </div>
           </a-form>
@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { postAction, getActionUrl, httpActionHeader } from '@/api/manage.js'
+import { postAction, getActionUrl, httpActionHeader, getAction } from '@/api/manage.js'
 import qs from 'qs'
 import { setInterval, clearInterval } from 'timers'
 import { mixinDevice } from '@/utils/mixin.js'
@@ -163,7 +163,7 @@ export default {
       url: {
         registercode: '/sys/sendMessage/register', //获取手机验证码
         register: '/sys/user/register', //用户注册
-        verifyUserName: '/sys/user/verifyUniqueUsername'  //用户名校检
+        verifyUserName: '/sys/user/verifyUniqueUsername' //用户名校检
       },
       jsvalue: false, //滑块验证码的值
       step1: true, //注册页显隐
@@ -178,6 +178,17 @@ export default {
   created() {},
   computed: {},
   methods: {
+    usernameOnChange(rule, val, callback) {
+      let value = this.form.getFieldValue('userName') ? this.form.getFieldValue('userName') : '',
+          params = { username: value }
+      getAction(this.url.verifyUserName, params).then(res => {
+        if (!res.success) {
+          callback(res.message)
+        } else {
+          callback()
+        }
+      })
+    },
     //获取是否同意服务条款的值
     getChecked(e) {
       this.checked = e.target.checked
@@ -261,7 +272,6 @@ export default {
     },
     // 注册
     register() {
-      
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',
@@ -270,7 +280,7 @@ export default {
         })
       } else {
         this.form.validateFields(
-          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode','groupName'],
+          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode', 'groupName'],
           { force: true },
           (err, values) => {
             if (!err) {

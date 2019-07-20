@@ -90,10 +90,8 @@
         <a-form-item>
           <div class="user-login-other">
             <div class="register" @click="register">
-              <div>
                 <img src="@/assets/img/login/arrow.png" />
-                注册
-              </div>
+                <span>注册</span>
             </div>
           </div>
         </a-form-item>
@@ -254,7 +252,6 @@ export default {
   },
   mounted() {
     this.formLogin = { ...Vue.ls.get('FORM_LOGIN') }
-    console.log(this.formLogin)
     this.forminit(this.formLogin)
   },
   watch: {
@@ -552,7 +549,6 @@ export default {
     departChange(value) {
       this.validate_status = 'success'
       this.departSelected = value
-      console.log(value, '部门value')
     },
 
     /* 注册*/
