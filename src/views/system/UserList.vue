@@ -116,6 +116,13 @@
           </div>
         </template>
 
+        <template slot="attachmentAutographsolt" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.attachmentAutograph)"  icon="contacts"/>
+          </div>
+        </template>
+
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -253,6 +260,15 @@
             width: 80,
             dataIndex: 'status_dictText'
           },
+          {
+            title: '签名',
+            align: "center",
+            width: 120,
+            dataIndex: ' attachmentAutograph',
+            scopedSlots: {customRender: "attachmentAutographsolt"}
+
+          },
+
          /* {
             title: '创建时间',
             align: "center",
