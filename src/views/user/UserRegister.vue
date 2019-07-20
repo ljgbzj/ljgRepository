@@ -67,7 +67,7 @@
               />
             </a-form-item>
             <!-- 手机验证码 -->
-            <a-form-item label="手机验证码" class="item phone">
+            <a-form-item label="短信验证码" class="item phone">
               <a-input
                 class="phone-code"
                 v-decorator="['identifyCode',{ rules:[{required: true, message: '请输入验证码'}]}]"
