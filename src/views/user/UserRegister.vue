@@ -67,7 +67,9 @@
               />
             </a-form-item>
             <!-- 手机验证码 -->
-            <a-form-item label="短信验证码" class="item phone">
+            <a-form-item label="短信验证码" class="item phone" :labelCol="{span: 12}"
+        :wrapperCol="{span: 24}">
+              
               <a-input
                 class="phone-code"
                 v-decorator="['identifyCode',{ rules:[{required: true, message: '请输入验证码'}]}]"
@@ -79,6 +81,7 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"
                 @click="getCode"
               >获取验证码</a-button>
+              
             </a-form-item>
             <a-form-item label="所属小组" class="item">
               <a-select
