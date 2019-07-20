@@ -203,7 +203,7 @@
           {
             title: '个性签名',
             align:"center",
-            dataIndex: 'attachmentAutograph'
+            dataIndex: 'personalSignature'
           },
 		   /*{
             title: '办公地址',
