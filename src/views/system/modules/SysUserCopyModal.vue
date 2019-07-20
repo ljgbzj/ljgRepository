@@ -34,18 +34,6 @@
           label="姓名">
           <a-input  disabled placeholder="请输入姓名" v-decorator="['realname', {}]" />
         </a-form-item>
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="密码">
-          <a-input placeholder="请输入密码" v-decorator="['password', {}]" />
-        </a-form-item>-->
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="md5密码盐">
-          <a-input placeholder="请输入md5密码盐" v-decorator="['salt', {}]" />
-        </a-form-item>-->
         <a-form-item label="头像" :labelCol="labelCol1" :wrapperCol="wrapperCol1" >
           <a-upload
             listType="picture-card"
@@ -64,18 +52,6 @@
             </div>
           </a-upload>
         </a-form-item>
-       <!-- <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="生日">
-          <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'birthday', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="性别（1：男 2：女）">
-          <a-input-number v-decorator="[ 'sex', {}]" />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -85,8 +61,8 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="电话">
-          <a-input placeholder="请输入电话" v-decorator="['phone', validatorRules.phone]" />
+          label="手机号码">
+          <a-input placeholder="请输入手机号码" v-decorator="['phone', validatorRules.phone]" />
         </a-form-item>
        <!-- <a-form-item
           :labelCol="labelCol"
@@ -124,18 +100,34 @@
           label="所属项目">
           <a-input placeholder="请输入所属项目" v-decorator="['prjCode', {}]" />
         </a-form-item>-->
-        <a-form-item
+        <!--<a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="小组名称">
           <a-input placeholder="请输入小组名称" v-decorator="['groupName', {}]" />
-        </a-form-item>
-       <!-- <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="所属部门">
-          <a-input placeholder="请输入所属部门" v-decorator="['departName', {}]" />
         </a-form-item>-->
+        <a-form-item label="所属小组" :labelCol="labelCol"
+                     :wrapperCol="wrapperCol">
+          <a-select
+            v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
+            placeholder="请选择所属小组">
+            <a-select-option value="集团级平台">集团级平台</a-select-option>
+            <a-select-option value="电网、水电">电网、水电</a-select-option>
+            <a-select-option value="轨道交通">轨道交通</a-select-option>
+            <a-select-option value="工程云研发">工程云研发</a-select-option>
+            <a-select-option value="建筑">建筑</a-select-option>
+            <a-select-option value="京津冀、华北区域">京津冀、华北区域</a-select-option>
+            <a-select-option value="深圳、珠三角区域">深圳、珠三角区域</a-select-option>
+            <a-select-option value="企业级平台">企业级平台</a-select-option>
+            <a-select-option value="海外">海外</a-select-option>
+            <a-select-option value="移民">移民</a-select-option>
+            <a-select-option value="GIS研发">GIS研发</a-select-option>
+            <a-select-option value="经营">经营</a-select-option>
+            <a-select-option value="UI设计">UI设计</a-select-option>
+            <a-select-option value="测试工作">测试工作</a-select-option>
+            <a-select-option value="其他">其他</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -145,8 +137,14 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="办公地址">
-          <a-input placeholder="请输入办公地址" v-decorator="['address', {}]" />
+          label="兴趣爱好">
+          <a-input placeholder="请输入兴趣爱好" v-decorator="['hobbys', {}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="个性签名">
+          <a-textarea placeholder="请输入个性签名" v-decorator="['attachmentAutograph', {}]" />
         </a-form-item>
 
       </a-form>
@@ -154,18 +152,18 @@
         <a-col :md="24" :sm="8" >
           <a-form-item class="btnClass">
             <a-button
+              @click="handleCancel"
+              icon="close"
+              style="margin-right:10px"
+              class="cancel"
+            >关闭</a-button>
+            <a-button
               @click="handleOk"
               icon="check"
               type="primary"
               style="margin-right:10px"
               class="confirm"
             >保存</a-button>
-            <a-button
-              @click="handleCancel"
-              icon="close"
-              style="margin-right:10px"
-              class="cancel"
-            >关闭</a-button>
           </a-form-item>
         </a-col>
       </a-row>
@@ -180,9 +178,11 @@
   import moment from "moment"
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import {checkUsername} from "../../../api/api";
+  import ATextarea from "ant-design-vue/es/input/TextArea";
 
   export default {
     name: "SysUserCopyModal",
+    components: {ATextarea},
     data () {
       return {
         title:"操作",
@@ -246,9 +246,9 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'realname', 'email','phone', 'groupName', 'officePhone','address'));
+          this.form.setFieldsValue(pick(this.model, 'realname', 'email', 'phone', 'groupName', 'officePhone','attachmentAutograph','hobbys'));
 		  //时间格式化
-          this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})
+          /*this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})*/
         });
         if (record.avatar) {
           this.picUrl = true;

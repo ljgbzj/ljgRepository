@@ -156,7 +156,11 @@
            {
              title: '用户类型',
              align:"center",
-             dataIndex: 'userType'
+             dataIndex: 'userType',
+             customRender: (text, record, index) => {
+               //字典值替换通用方法
+               return filterDictText(this.userTypeList, text)
+             }
            },
 
            {
@@ -204,6 +208,7 @@
       initDictOptions('bpm_status').then((res) => {
         if (res.success) {
           this.statusDictOptions = res.result;
+          console.log(this.statusDictOptions,"this.statusDictOptions");
         }
       });
       initDictOptions('leave_type').then((res) => {
@@ -211,12 +216,20 @@
           this.leaveDictOptions = res.result;
         }
       });
-    initDictOptions("mail_user_list").then((res) =>{
+
+    initDictOptions("mail_user_type").then((res) =>{
       if(res.success) {
         this.userTypeList = res.result;
         console.log("this.userTypeList ",this.userTypeList );
       }
     })
+    /*initDictOptions("meeting_level").then((res) =>{
+      if(res.success) {
+        this.userTypeList = res.result;
+        console.log("meet ",this.userTypeList );
+      }
+    })*/
+
     },
     methods: {
        handleDelete: function (id) {
