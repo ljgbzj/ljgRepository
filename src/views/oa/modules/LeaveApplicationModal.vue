@@ -50,6 +50,7 @@
                       :triggerChange="true"
                       placeholder="请选择类型"
                       dictCode="leave_type"
+                      :disabled="(this.nodeId != '' && this.nodeId != 'UserTask_0') || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
@@ -63,6 +64,7 @@
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeStart', validatorRules.templateStartT]"
                       @change="timeStart"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
@@ -74,6 +76,7 @@
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeEnd', validatorRules.templateEndT]"
                       @change="timeEnd"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
@@ -96,6 +99,7 @@
                       placeholder="请输入请假原因"
                       :rows="3"
                       v-decorator="[ 'reason', validatorRules.templateReason]"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 <!-- </a-col>
@@ -492,7 +496,8 @@ export default {
       nodeName: '',
       timeStartCheck: '',
       timeEndCheck: '',
-      TimeBtn: ''
+      TimeBtn: '',
+      nodeId: ''
     }
   },
   filters: {
@@ -526,8 +531,12 @@ export default {
       this.edit({})
     },
     edit(record) {
-      this.form.resetFields()
+      this.form.resetFields();
+      if (record.nodeId != undefined) {
+        this.nodeId = record.nodeId;
+      }
       if (record.nodeName != undefined) {
+        
         this.nodeName = record.nodeName
       }
       if (record.formData !== undefined) {
@@ -855,10 +864,8 @@ export default {
           if (res.success != true) {
             this.$message.warning(res.message);
             flag = 0;
-            console.log(flag,'keyiya');
             return flag.promise
           } else {
-            console.log(flag,'keyiya');
             return flag.promise
           }
         })
@@ -879,14 +886,19 @@ export default {
       return this.url.fileUpload
     },
     timeLength() {
-      let currentTimeLength = ((moment(this.timeEndCheck) - moment(this.timeStartCheck))/1000/60/60).toFixed(1);
-      if (currentTimeLength < 24) {
-        return currentTimeLength + '小时';
+      if (this.timeEndCheck != null && this.timeStartCheck != null) {
+        let currentTimeLength = ((moment(this.timeEndCheck) - moment(this.timeStartCheck))/1000/60/60).toFixed(1);
+        if (currentTimeLength < 24) {
+          return currentTimeLength + '小时';
+        } else {
+          let day = Math.floor(currentTimeLength/24);
+          let hour = (currentTimeLength % 24).toFixed(1);
+          return day + '天' + hour + '小时'
+        }
       } else {
-        let day = Math.floor(currentTimeLength/24);
-        let hour = (currentTimeLength % 24).toFixed(1);
-        return day + '天' + hour + '小时'
+        return '0.0' + '小时'
       }
+      
       
     },
     TimeBtnC() {
@@ -897,11 +909,6 @@ export default {
       }
     }
 
-  },
-  watch: {
-    'this.timeEndCheck'(val) {
-      console.log(val,'哈哈');
-    }
   }
 }
 </script>
