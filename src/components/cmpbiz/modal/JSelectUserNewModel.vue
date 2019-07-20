@@ -35,7 +35,7 @@
           placeholder="输入账号或姓名搜索"
           style="width: 100%;margin-bottom:10px;"
           @search="searchQuery"
-          v-model="queryParam.name"
+          v-model="queryParam.dimName"
         />
         <!-- <a-card :bordered="true"> -->
           <!-- table区域-begin -->
