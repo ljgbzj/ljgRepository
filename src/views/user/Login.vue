@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="desc">工程建设管理平台</div>
+    <div class="desc">工程企业综合管理云平台</div>
 
     <div class="main">
       <!--  -->
