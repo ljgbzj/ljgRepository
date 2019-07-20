@@ -42,7 +42,7 @@
               label="联系人/主持人">
               <a-input
                 :disabled="disabledValue"
-                v-model="this.username"/>
+                v-model="this.reserveUserName"/>
             </a-form-item>
           </a-col>
 
@@ -127,11 +127,9 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="预订人">
-              <!--<j-select-user-by-dep-->
-              <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
               <a-input
                 :disabled="disabledValue"
-                v-model="this.reserveUserName"/>
+                v-model="this.username"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">

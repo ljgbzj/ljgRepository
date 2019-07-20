@@ -48,8 +48,8 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="联系人">
-              <a-input placeholder="请输入联系人" v-decorator="['contact', validatorRules.contact]" />
+              label="预订人">
+              <a-input :disabled="true" placeholder="请输入联系人" v-decorator="['contact', validatorRules.contact]" />
             </a-form-item>
           </a-col>
 
@@ -58,7 +58,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="联系电话">
-              <a-input placeholder="请输入联系人电话" v-decorator="['contactPhone', validatorRules.contactPhone]" />
+              <a-input :disabled="true" placeholder="请输入联系人电话" v-decorator="['contactPhone', validatorRules.contactPhone]" />
             </a-form-item>
           </a-col>
 

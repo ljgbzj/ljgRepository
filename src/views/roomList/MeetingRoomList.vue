@@ -141,7 +141,7 @@
             dataIndex: 'subject'
           },
           {
-            title: '联系人',
+            title: '预订人',
             align:"center",
             dataIndex: 'contact'
           },
