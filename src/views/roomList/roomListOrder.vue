@@ -164,7 +164,7 @@
                 label="联系人/主持人">
                 <a-input
                   :disabled="disabledValue"
-                  v-decorator="['contact',{initialValue:this.loginUserName}]"/>
+                  v-decorator="['contact',{ rules: [{ required: true, message: '联系人' }],initialValue:this.loginUserName}]"/>
               </a-form-item>
             </a-col>
 
@@ -206,7 +206,7 @@
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
-                label="会议级别">
+                label="会议类型">
                 <j-dict-select-tag
                   v-decorator="['meetingLevel', {initialValue:'小组例会'}]"
                   :triggerChange="true"
