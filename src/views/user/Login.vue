@@ -442,11 +442,12 @@ export default {
       })
     },
     loginSuccess() {
+      let realname = Vue.ls.get(USER_INFO).realname
       this.loginBtn = false
       //this.$router.push({ name: 'dashboard' })
       this.$router.push('/roomList/roomListOrder')
       this.$notification.success({
-        message: '欢迎',
+        message: `欢迎${realname}`,
         description: `${timeFix()}，欢迎回来`
       })
     },
