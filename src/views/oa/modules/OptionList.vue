@@ -13,7 +13,7 @@
                 处理人<span>{{ item.assigneeFullname }}</span>
               </div>
               <div class="shenpi-status">
-                状态<span>{{ item.endTime == undefined ? '处理中' : '已完成' }}</span>
+                状态<span>{{ item.handleType }}</span>
               </div>
             </td>
           </template>
@@ -29,7 +29,12 @@
                       <i></i>
                     </td>
                     <td class="shenpi-detail-sign">
-                        <div>无签名</div>
+                        <div v-if="!item.attachmentAutograph">
+                          无签名
+                        </div>
+                        <div>
+                          <img :src="url.imgerver + '/' + item.attachmentAutograph" style="width:80%;height:80%;"/>
+                        </div>
                         <div>{{ item.endTime | stringSplit }}</div>
                     </td>
                   </tr>
@@ -69,7 +74,10 @@
             admin: '陈敏',
             status: '提交'
           }
-        ]
+        ],
+        url: {
+          imgerver: window._CONFIG['domianURL'] + '/sys/common/view',
+        }
       }
     },
     filters: {

@@ -161,14 +161,18 @@
               </a-form-item>
               <!--v-decorator="[ 'memberNumber', validatorRules.memberNumber]"-->
             </a-col>
+
             <a-col :md="12" :sm="8">
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="联系人/主持人">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['contact',{ rules: [{ required: true, message: '联系人' }],initialValue:this.loginUserName}]"/>
+                <!--<j-select-user-by-dep-->
+                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
+                <j-select-user-new
+                  :selectedDetails="auditUsers1"
+                  @callback="setAuditUser"
+                  class="userSelect"></j-select-user-new>
               </a-form-item>
             </a-col>
 
@@ -290,12 +294,9 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="预订人">
-                <!--<j-select-user-by-dep-->
-                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new
-                  :selectedDetails="auditUsers1"
-                  @callback="setAuditUser"
-                  class="userSelect"></j-select-user-new>
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }],initialValue:this.loginUserName}]"/>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="8">
@@ -405,7 +406,7 @@
           { time: '17:00' }
         ],
         validatorRules: {
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }]},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
           memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]}
         },
         reserveUserName:'',
