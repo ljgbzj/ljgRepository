@@ -1,14 +1,22 @@
 <template>
+  <!--<a-modal-->
+    <!--:title="title"-->
+    <!--:footer="null"-->
+    <!--:width="1000"-->
+    <!--:visible="visible"-->
+    <!--:confirmLoading="confirmLoading"-->
+    <!--@ok="handleOk"-->
+    <!--@cancel="handleCancel"-->
+    <!--cancelText="关闭"-->
+    <!--:maskClosable="false"-->
+    <!--style="top:5%;">-->
   <a-modal
-    :title="title"
-    :footer="null"
+    title="会议室预定"
     :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭"
-    :maskClosable="false"
     style="top:5%;">
 
     <a-spin :spinning="confirmLoading">
@@ -20,7 +28,10 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="会议室名">
-              <a-input placeholder="请输入会议室名" v-decorator="['meetingRoom', validatorRules.meetingRoom]"/>
+              <!--<a-input placeholder="请输入会议室名" v-decorator="['meetingRoom', validatorRules.meetingRoom]"/>-->
+              <a-select v-decorator="['meetingRoom', {}]">
+                <a-select-option v-for="(item,index) in meetingRoomList" :key="item.roomName" @click="selectMeetingRoomName(item,index)" >{{item.roomName}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
 
@@ -70,7 +81,7 @@
                 <a-select-option v-for="(time1,index) in timeNode" :key="time1" @click="selectChat1(time1,index)" >{{time1}}</a-select-option>
               </a-select>
               <span style="width: 20px;"> ~ </span>
-              <a-select style="width: 120px" v-model='model.meetingEndTime'>
+              <a-select style="width: 120px" :disabled="endTimeDisabled" v-model='model.meetingEndTime'>
                 <a-select-option v-for="(time2,index) in timeNode_copy" :key="time2" @click="selectChat2(time2,index)">{{time2}}</a-select-option>
               </a-select>
 
@@ -78,14 +89,14 @@
           </a-col>
         </a-row>
 
-        <a-row :gutter="24">
-          <a-col :md="24" :sm="8">
-            <a-form-item class="btnClass">
-              <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>
-              <a-button @click="handleOk" type="primary" icon="check" class="confirm">{{ model.status == undefined ? '提交' : '确定' }}</a-button>
-            </a-form-item>
-          </a-col>
-        </a-row>
+        <!--<a-row :gutter="24">-->
+          <!--<a-col :md="24" :sm="8">-->
+            <!--<a-form-item class="btnClass">-->
+              <!--<a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">取消</a-button>-->
+              <!--<a-button @click="handleOk" type="primary" icon="check" class="confirm">{{ model.status == undefined ? '提交' : '确定' }}</a-button>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
+        <!--</a-row>-->
       </a-form>
     </a-spin>
   </a-modal>
@@ -126,10 +137,17 @@
       JDate,
     },
     created() {
-      this.timeNode_copy = timeNode.slice();
+      const that = this
+      that.timeNode_copy = timeNode.slice();
+      that.axios.get('/meetingRoom/meetingRoomList/allList')
+        .then(function(response) {
+          that.meetingRoomList = response
+          console.log(that.meetingRoomList)
+        })
     },
     data () {
       return {
+        meetingRoomList:'',
         meetingRoomId:'',
         startTime:'',
         endTime:'',
@@ -256,12 +274,18 @@
         this.startCol = index
         this.timeNode_copy.splice(0, index+1);
         this.endTimeDisabled = false;
+        console.log(this.startCol,"开始的序号")
       },
       selectChat2(time2,index){
         this.endTime = time2
         this.endCol = index + this.startCol
         this.timeNode_copy = timeNode.slice();
         this.endTimeDisabled = true;
+        console.log(this.endCol,"结束的序号")
+      },
+      selectMeetingRoomName(item){
+        this.meetingRoom = item.roomName
+        this.meetingRoomId = item.id
       }
 
     }

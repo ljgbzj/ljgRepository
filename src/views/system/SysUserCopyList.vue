@@ -4,11 +4,11 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
-        <a-row :gutter="24">
+        <a-row :gutter="24" >
 
           <a-col :md="8" :sm="8">
-            <a-form-item label="电话">
-              <a-input placeholder="请输电话" v-model="queryParam.phone"></a-input>
+            <a-form-item label="手机号码">
+              <a-input placeholder="请输手机号码" v-model="queryParam.phone"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">
@@ -16,7 +16,7 @@
               <a-input placeholder="请输入姓名" v-model="queryParam.realname" ></a-input>
             </a-form-item>
           </a-col>
-        <template v-if="toggleSearchStatus">
+        <!--<template v-if="toggleSearchStatus">
           <a-col :md="8" :sm="8">
             <a-form-item label="电子邮箱">
               <a-input placeholder="请输入电子邮箱" v-model="queryParam.email"></a-input>
@@ -29,31 +29,31 @@
           </a-col>
 
 
-          <!--<a-col :md="6" :sm="8">
+          &lt;!&ndash;<a-col :md="6" :sm="8">
             <a-form-item label="密码">
               <a-input placeholder="请输入密码" v-model="queryParam.password"></a-input>
             </a-form-item>
-          </a-col>-->
-          <!--<a-col :md="6" :sm="8">
+          </a-col>&ndash;&gt;
+          &lt;!&ndash;<a-col :md="6" :sm="8">
             <a-form-item label="md5密码盐">
               <a-input placeholder="请输入md5密码盐" v-model="queryParam.salt"></a-input>
             </a-form-item>
-          </a-col>-->
-          <!--<a-col :md="6" :sm="8">
+          </a-col>&ndash;&gt;
+          &lt;!&ndash;<a-col :md="6" :sm="8">
             <a-form-item label="头像">
               <a-input placeholder="请输入头像" v-model="queryParam.avatar"></a-input>
             </a-form-item>
-          </a-col>-->
-        </template>
+          </a-col>&ndash;&gt;
+        </template>-->
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-               <a-button type="primary" style="margin-left: 8px" icon="download" @click="handleExportXls('test')">导出</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+               <a-button type="primary" style="margin-left: 8px" v-has="'mail:export'" icon="download" @click="handleExportXls('test')">导出</a-button>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              </a>-->
             </span>
           </a-col>
         </a-row>
@@ -101,7 +101,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a v-show="record.username === userName" @click="handleEdit(record)">编辑</a>
           <!--<a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
@@ -137,11 +137,12 @@
     data () {
       return {
         description: 'test管理页面',
+        userName: '',
         // 表头
         queryParam:{},
         columns: [
           {
-            title: '#',
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -155,13 +156,21 @@
             align:"center",
             dataIndex: 'username'
            },*/
+          {
+            title: '头像',
+            align:"center",
+            width:120,
+            dataIndex: 'avatar',
+            //slots: {filterIcon: 'avatar'},
+            scopedSlots: {customRender: "avatarslot"}
+          },
 		   {
             title: '姓名',
             align:"center",
             dataIndex: 'realname'
            },
           {
-            title: '电话',
+            title: '手机号码',
             align:"center",
             dataIndex: 'phone'
           },
@@ -176,29 +185,31 @@
             align:"center",
             dataIndex: 'groupName'
           },
-          {
+          /*{
             title: '所属部门',
             align:"center",
             dataIndex: 'departName'
-          },
+          },*/
 		   {
             title: '办公号码',
             align:"center",
             dataIndex: 'officePhone'
            },
-		   {
+          {
+            title: '爱好',
+            align:"center",
+            dataIndex: 'hobbys'
+          },
+          {
+            title: '个性签名',
+            align:"center",
+            dataIndex: 'attachmentAutograph'
+          },
+		   /*{
             title: '办公地址',
             align:"center",
             dataIndex: 'address'
-           },
-          {
-            title: '头像',
-            align:"center",
-            width:120,
-            dataIndex: 'avatar',
-            //slots: {filterIcon: 'avatar'},
-            scopedSlots: {customRender: "avatarslot"}
-          },
+           },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -207,8 +218,8 @@
           }
         ],
 		url: {
-          //list: "/sys/user/list/",
-          list: "/sys/user/userListWithDepartName/",
+          list: "/sys/user/list/",
+          /*list: "/sys/user/userListWithDepartName/",*/
           delete: "/sys/user/delete",
           imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
           /*delete: "/test/sysUserCopy/delete",*/
@@ -219,10 +230,17 @@
        },
     }
   },
+    created() {
+      var a = JSON.parse( localStorage.getItem("pro__Login_Username"))
+      this.userName =a.value;
+    },
   computed: {
     importExcelUrl: function(){
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-    }
+    },
+    /*getAvatarView: function (avatar) {
+      return this.url.imgerver + "/" + avatar;
+    },*/
   },
     methods: {
       getAvatarView: function (avatar) {
@@ -242,16 +260,18 @@
   .ant-form-item-label {
     line-height: 40px;
   }
-  .anty-form-btn{
+  /*.table-page-search-wrapper .ant-form-inline .ant-form-item > .ant-form-item-label{
+    line-height: 40px !important;
+  }*/
+   .anty-form-btn{
     line-height: 40px;
   }
-  .table-page-search-wrapper {
-    .ant-form-inline {
+  .table-page-search-wrapper .ant-form-inline
     .ant-form-item > :global(.ant-form-item-label) {
       line-height: 40px;
     }
-    }
-  }
+
+
   .ant-input {
     height: 40px;
   }

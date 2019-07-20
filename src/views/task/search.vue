@@ -8,7 +8,7 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="发起人">
-              <a-input placeholder="请输入发起人" v-model="queryParam.inputerFullname"></a-input>
+              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -25,7 +25,22 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <a-input placeholder="请输入开始时间" v-model="queryParam.startTime"></a-input>
+                <a-date-picker
+                  v-model="queryParam.minStartTime"
+                  :disabledDate="disabledStartDate"
+                  showTime
+                  format='YYYY-MM-DD HH:mm:ss'
+                  placeholder="开始时间"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="至">
+                <a-date-picker
+                  v-model="queryParam.maxStartTime"
+                  :disabledDate="disabledEndDate"
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="开始时间"/>
               </a-form-item>
             </a-col>
           </template>
@@ -176,6 +191,21 @@
           }
           this.loading = false;
         })
+      },
+      // 时间选择器的禁用封装
+      disabledStartDate (startValue) {
+        const endValue = this.queryParam.maxStartTime;
+        if (!startValue || !endValue) {
+          return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
+      },
+      disabledEndDate (endValue) {
+        const startValue = this.queryParam.minStartTime;
+        if (!endValue || !startValue) {
+          return false;
+        }
+        return startValue.valueOf() >= endValue.valueOf();
       }
     },
     computed: {
@@ -187,52 +217,6 @@
 </script>
 <style lang="less" scoped>
   @import '~@assets/less/common.less';
-    // 组件内直接引入ant组件样式覆盖
-  .ant-form-item-label {
-    line-height: 40px;
-  }
-  .table-page-search-wrapper {
-    .ant-form-inline {
-      .ant-form-item > :global(.ant-form-item-label) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-input {
-    height: 40px;
-  }
-  /* 下拉选框 */
-  .ant-select {
-    /* height: 40px; */
-    :global(.ant-select-selection--single) {
-      height: 40px;
-      :global(.ant-select-selection__rendered) {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-btn-primary {
-    height:40px;
-  }
-  .ant-dropdown-trigger {
-    height: 40px;
-  }
-  .ant-card-body .table-operator {
-    display: flex;
-    margin-bottom: 20px;
-    vertical-align: top;
-    height: 40px;
-  }
-
-  .ant-card-body .table-operator>div {
-    flex: 1;
-    margin-left: 14px;
-  }
-
-  .ant-card-body .table-operator .ant-alert-info {
-    border: unset;
-    border-radius:4px;
-    background: rgba(109,98,255,0.1);
-  }
+  @import '~@assets/less/topBtns.less';
 
 </style>

@@ -77,7 +77,7 @@
         <!-- </a-card> -->
       </a-col> 
       <a-col :span="1">
-        <a-icon type="right" class="selectUserIcon" style="margin-top:200px;margin-left:-5px;width:30px;height:30px;line-height:30px;text-algin:center;border-radius:50%;background: rgba(109,98,255,0.1)"/>
+        <a-icon type="right" class="selectUserIcon" style="margin-top:200px;width:30px;height:30px;line-height:32px;text-algin:center;border-radius:50%;background: rgba(109,98,255,0.1)"/>
       </a-col>
       <a-col :span="10">
         <!-- <a-card title="用户选择" :bordered="true"> -->
@@ -115,8 +115,8 @@
             <span>&nbsp;{{ selectLng }}&nbsp;</span>
             <span>人</span>
           </div>
-          <a-button @click="handleOk" icon="check" type="primary" style="margin-right:10px" class="confirm">确定</a-button>
           <a-button @click="handleCancel" icon="close" style="margin-right:10px" class="cancel">关闭</a-button>
+          <a-button @click="handleOk" icon="check" type="primary" style="margin-right:10px" class="confirm">确定</a-button>
         </div>
     </a-row>
   </a-modal>
@@ -145,27 +145,26 @@
           {
             title: '账号',
             align:"center",
-            width:80,
+            // width: 80,
             dataIndex: 'username'
           },
           {
             title: '姓名',
             align:"center",
-            width:80,
+            width: 80,
             dataIndex: 'realname'
           },
           {
             title: '所属部门',
             align:"center",
-            width:100,
-            dataIndex: 'departNames'
+            width: 100,
+            dataIndex: 'departName'
           }
         ],
         columns2: [
           {
             title: '账号',
             align: "center",
-            width: 80,
             dataIndex: 'username'
           },
           {
@@ -178,13 +177,13 @@
             title: '所属部门',
             align:"center",
             width: 80,
-            dataIndex: 'departNames'
+            dataIndex: 'departName'
           },
           {
             title: '操作',
             dataIndex: 'action',
-            width: 100,
             align:"center",
+            width: 100,
             scopedSlots: { customRender: 'action' },
           }
         ],
@@ -266,16 +265,19 @@
         //   }
         // })
         getUserList(params).then((res) => {
+          var that = this;
           if (res.success) {
-            this.dataSource1 = res.result.records;
-            for (let i=0;i<this.dataSource1.length;i++) {
-              if (this.dataSource1[i].departNames.indexOf(",") != -1) {
-                let arr = this.dataSource1.departNames.split(",");
-                this.dataSource1.departNames = arr[0];
-              }
-            }
-            // this.assignRoleName(this.dataSource);
-            this.ipagination.total = res.result.total;
+            that.dataSource1 = res.result.records;
+            // for (let i=0;i<that.dataSource1.length;i++) {
+              // if (that.dataSource1[i].departNames.indexOf(",") != -1) {
+              //   let arr = that.dataSource1[i].departNames.split(",");
+              //   that.dataSource1[i].departNames = arr[0];
+              //   console.log(that.dataSource1[i].departNames,'错错错吧是你的错');
+              //   console.log(that.dataSource1[i],'错错错吧是你的错+1');
+              // }
+            // }
+            // that.assignRoleName(that.dataSource);
+            that.ipagination.total = res.result.total;
           }
         })
       },
@@ -300,13 +302,9 @@
         //TODO 字段权限控制
       },
       onSelectAll (selected, selectedRows, changeRows) {
-        console.log(selected,'selected');
-        console.log(selectedRows,'selectedRows');
-        console.log(changeRows,'changeRows');
         if (selected===true) {
           for (let a = 0;a<changeRows.length;a++) {
             var c = true;
-            console.log(this.dataSource2,'列表明显能大脑');
             for (let b = 0;b<this.dataSource2.length;b++) {
               if (changeRows[a].username == this.dataSource2[b].username) {
                   c = false;
@@ -392,14 +390,13 @@
       // 根据选择的id来查询用户信息
       queryUserByDepId(selectedKeys) {
         queryUserByDepId({ departId: selectedKeys.toString() }).then((res) => {
-          console.log(res,'打印一下');
           if (res.success) {
             this.dataSource1 = res.result;
-            for (let i=0;this.dataSource1.length;i++) {
-              if (this.dataSource1[i].departName != null) {
-                this.dataSource1[i].departNames = this.dataSource1[i].departName;
-              }             
-            }
+            // for (let i=0;this.dataSource1.length;i++) {
+            //   if (this.dataSource1[i].departName != null) {
+            //     this.dataSource1[i].departNames = this.dataSource1[i].departName;
+            //   }             
+            // }
             this.ipagination.total = res.result.length;
             // this.assignRoleName(this.dataSource);
           }

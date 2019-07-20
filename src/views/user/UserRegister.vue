@@ -11,7 +11,7 @@
       <div class="register">
         <!-- 注册用户 -->
         <div class="register-one" v-show="step1">
-          <div class="step1" v-if="device === 'desktop'">
+          <div class="register-one-title" v-if="device === 'desktop'">
             <img src="~@/assets/img/register/userRegister.png" />
             <span>用户注册（建管部智能小镇专用版）</span>
           </div>
@@ -20,8 +20,9 @@
             <a-form-item label="用户名" class="item">
               <a-input
                 class="userName"
-                placeholder="请输入用户名"
-                v-decorator="['userName',{ rules:[{required: true, message: '请输入用户名'}]}]"
+                placeholder="4-16位，可包含字母、数字和下划线"
+                v-decorator="['userName',{ rules:[{required: true, message: ' '},{
+                  validator: usernameOnChange }]}]"
               ></a-input>
             </a-form-item>
             <a-form-item label="真实姓名" class="item">
@@ -34,9 +35,9 @@
             <a-form-item label="密码" class="item">
               <a-input
                 class="password"
-                v-decorator="['password',{ rules:[{required: true, message: '请输入密码'}]}]"
+                v-decorator="['password',{ rules:[{required: true, message: '请输入密码'},{ validator: handlePasswordLevel }]}]"
                 type="password"
-                placeholder="请输入密码"
+                placeholder="6-12位，可包含字母、数字和下划线"
               ></a-input>
             </a-form-item>
             <a-form-item label="确认密码" class="item">
@@ -52,7 +53,8 @@
             <a-form-item label="手机号码" class="item">
               <a-input
                 class="phoneNumber"
-                v-decorator="['phone',{ rules:[{required: true, message: '手机号码不能为空'}]}]"
+                v-decorator="['phone',{ rules:[{required: true, message: ' '},{
+                  validator: phoneVerify }]}]"
                 placeholder="请输入手机号码"
               ></a-input>
             </a-form-item>
@@ -65,9 +67,9 @@
               />
             </a-form-item>
             <!-- 手机验证码 -->
-            <a-form-item label="手机验证码" class="item">
+            <a-form-item label="手机验证码" class="item phone">
               <a-input
-                class="code"
+                class="phone-code"
                 v-decorator="['identifyCode',{ rules:[{required: true, message: '请输入验证码'}]}]"
                 placeholder="请输入验证码"
               ></a-input>
@@ -107,11 +109,11 @@
             </a-checkbox>
             <!-- 提交 下一步 -->
             <div class="next-container">
-              <span class="login" @click="registered">
+              <span class="registered" @click="registered">
                 已有账号登录
                 <img src="@/assets/img/register/left.png" />
               </span>
-              <a-button type="primary" @click.stop.prevent="register" class="one2two">注册</a-button>
+              <a-button type="primary" @click.stop.prevent="register">注册</a-button>
               <span class="help">帮助中心</span>
             </div>
           </a-form>
@@ -135,7 +137,7 @@
 </template>
 
 <script>
-import { postAction, getActionUrl, httpActionHeader } from '@/api/manage.js'
+import { postAction, getActionUrl, httpActionHeader, getAction } from '@/api/manage.js'
 import qs from 'qs'
 import { setInterval, clearInterval } from 'timers'
 import { mixinDevice } from '@/utils/mixin.js'
@@ -163,7 +165,7 @@ export default {
       url: {
         registercode: '/sys/sendMessage/register', //获取手机验证码
         register: '/sys/user/register', //用户注册
-        verifyUserName: '/sys/user/verifyUniqueUsername'  //用户名校检
+        verifyUserName: '/sys/user/verifyUniqueUsername' //用户名校检
       },
       jsvalue: false, //滑块验证码的值
       step1: true, //注册页显隐
@@ -178,6 +180,48 @@ export default {
   created() {},
   computed: {},
   methods: {
+    // username重复校检
+    usernameOnChange(rule, val, callback) {
+      let value = val ? val : '',
+        params = { username: value },
+        reg = /^[-_a-zA-Z0-9]{4,16}$/
+      if (reg.test(value)) {
+        getAction(this.url.verifyUserName, params).then(res => {
+          if (!res.success) {
+            callback(res.message)
+          } else {
+            callback()
+          }
+        })
+      } else if (value.length == 0) {
+        callback('请输入用户名！')
+      } else {
+        callback('用户名格式不正确！')
+      }
+    },
+    // 密码校检
+    handlePasswordLevel(rule, val, callback) {
+      console.log(val)
+      if (/^[\w]{6,12}$/.test(val)) {
+        callback()
+      } else if (val.length == 0) {
+        callback()
+      } else {
+        callback('密码格式不正确')
+      }
+    },
+    //手机号码校检
+    phoneVerify(rule, val, callback) {
+      let value = val ? val : ''
+      let reg = /^1[3456789]\d{9}$/
+      if (reg.test(value)) {
+        callback()
+      } else if (value.length == 0) {
+        callback('请输入手机号码')
+      } else {
+        callback('请输入正确的手机号码！')
+      }
+    },
     //获取是否同意服务条款的值
     getChecked(e) {
       this.checked = e.target.checked
@@ -261,7 +305,6 @@ export default {
     },
     // 注册
     register() {
-      
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',
@@ -270,7 +313,7 @@ export default {
         })
       } else {
         this.form.validateFields(
-          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode','groupName'],
+          ['userName', 'realName', 'password', 'phone', , 'identifyCode', 'imageIdentifyCode', 'groupName'],
           { force: true },
           (err, values) => {
             if (!err) {

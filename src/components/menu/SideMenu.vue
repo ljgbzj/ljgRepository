@@ -76,18 +76,25 @@ export default {
 /* update_begin author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
 .sider {
   $scrollBarSize: 10px;
-  :global(.ant-layout-sider-children){
-    >:global(.ant-menu) {
-        >:global(li.ant-menu-submenu.ant-menu-submenu-inline){
-          :global(.ant-menu-submenu-title){
-            font-size: 16px;
-          }
+
+  :global(.ant-layout-sider-children) {
+    > :global(.ant-menu) {
+      > :global(li.ant-menu-submenu.ant-menu-submenu-inline) {
+        :global(.ant-menu-submenu-title) {
+          font-size: 16px;
         }
-      
+      }
     }
   }
   :global(.ant-menu.ant-menu-inline.ant-menu-sub) {
     font-size: 16px;
+    :global(li.ant-menu-item) {
+      :global(a) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
 
     :global(li.ant-menu-item) {
       padding: 0 !important;

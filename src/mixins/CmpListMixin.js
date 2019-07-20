@@ -98,7 +98,6 @@ export const CmpListMixin = {
       if(this.superQueryParams){
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
       }
-      console.log(sqp,'sqp');
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
       
       // 时间格式化
@@ -108,7 +107,6 @@ export const CmpListMixin = {
       param.field = this.getQueryField();
       param.pageNo = this.ipagination.current;
       param.pageSize = this.ipagination.pageSize;
-      console.log(param,'param好的');
       return filterObj(param);
     },
     getQueryField() {
@@ -310,7 +308,7 @@ export const CmpListMixin = {
         that.attachment[k].fileTokens = '';
         getAction(that.url.fileFind,{groupId: that.model.attachment}).then((res)=>{
           for (let i = 0;i < res.result.length; i++) {
-            if (res.result[i].viewPath.substring(res.result[i].viewPath.length-4) == 'jpeg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'jpg' || res.result[i].viewPath.substring(res.result[i].viewPath.length-3) == 'png') {
+            if (res.result[i].uploadFile.savePath.substring(res.result[i].uploadFile.savePath.length-4) == 'jpeg' || res.result[i].uploadFile.savePath.substring(res.result[i].uploadFile.savePath.length-3) == 'jpg' || res.result[i].uploadFile.savePath.substring(res.result[i].uploadFile.savePath.length-3) == 'png') {
               let fileChild = {
                 response: {
                   result: {
@@ -321,7 +319,7 @@ export const CmpListMixin = {
                 name: res.result[i].uploadFile.fileName,
                 status: 'done',
                 type: 'image/jpeg',
-                url: that.url.imgerver + "/" + res.result[i].viewPath
+                url: that.url.imgerver + "/" + res.result[i].uploadFile.savePath
               };
               that.fileList.push(fileChild);
               that.attachment[k].fileTokens += res.result[i].fileToken + ','
@@ -336,7 +334,7 @@ export const CmpListMixin = {
                 name: res.result[i].uploadFile.fileName,
                 status: 'done',
                 type: 'text/plain',
-                url: that.url.imgerver + "/" + res.result[i].viewPath
+                url: that.url.imgerver + "/" + res.result[i].uploadFile.savePath
               };
               that.fileList.push(fileChild);
               that.attachment[k].fileTokens += res.result[i].fileToken + ','
@@ -490,6 +488,9 @@ export const CmpListMixin = {
           }
           if (flag) {
             that[that.selectUser[i]].value = that.initSelect(selectColum,selectValue);
+            if (that[that.selectUser[i]].value == undefined) {
+              that[that.selectUser[i]].value = [];
+            }
           }
         }
       }

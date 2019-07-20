@@ -3,7 +3,10 @@ import axios from 'axios'
 import store from '@/store'
 import { VueAxios } from './axios'
 import {Modal, notification} from 'ant-design-vue'
-import { ACCESS_TOKEN } from "@/store/mutation-types"
+import { ACCESS_TOKEN, CURRENT_GENKEY } from "@/store/mutation-types"
+import { aesUtil } from '@/utils/aes'
+import qs from 'qs'
+
 
 // 创建 axios 实例
 const service = axios.create({
@@ -82,6 +85,21 @@ service.interceptors.request.use(config => {
       _t: Date.parse(new Date())/1000,
       ...config.params
     }
+  }
+  if (config.method=='post' && config.url != '/sys/loginEncry' && config.url != '/sys/login') {
+    if (config.headers.common.Accept.indexOf("application/json") != -1) {
+      if (Vue.ls.get(CURRENT_GENKEY) != null) {
+        config.data = ({
+          data: aesUtil.encrypt(config.data, Vue.ls.get(CURRENT_GENKEY))
+        })
+      }
+    } else {
+      if (Vue.ls.get(CURRENT_GENKEY) != null) {
+        config.data = qs.stringify({
+          data: aesUtil.encrypt(config.data, Vue.ls.get(CURRENT_GENKEY))
+        })
+      }
+    }                                                                                                                                                                        
   }
   return config
 },(error) => {

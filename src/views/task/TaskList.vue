@@ -8,7 +8,7 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="发起人">
-              <a-input placeholder="请输入发起人" v-model="queryParam.inputerFullname"></a-input>
+              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -25,13 +25,27 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="环节名称">
-                <a-input placeholder="请输入环节名称" v-model="queryParam.taskName"></a-input>
+                <a-input placeholder="请输入环节名称" v-model="queryParam.processDefinitionName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="开始时间">
-                <a-range-picker v-model="queryParam.startTime" dateFormat="YYYY-MM-DD HH:mm:ss"/>
-                <!-- <j-date v-model="queryParam.startTime" :showTime="true" dateFormat="YYYY-MM-DD HH:mm:ss" :placeholder="'请输入开始时间'" size="large"/> -->
+                <a-date-picker
+                  v-model="queryParam.minStartTime"
+                  :disabledDate="disabledStartDate"
+                  showTime
+                  format='YYYY-MM-DD HH:mm:ss'
+                  placeholder="开始时间"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="至">
+                <a-date-picker
+                  v-model="queryParam.maxStartTime"
+                  :disabledDate="disabledEndDate"
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="开始时间"/>
               </a-form-item>
             </a-col>
           </template>
@@ -63,7 +77,7 @@
         :loading="loading"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditform(record)">审核</a>&nbsp;
+          <a @click="handleEditform(record)">处理</a>&nbsp;
           <a @click="handleEntrust(record)">委托</a>
         </span>
       </a-table>
@@ -162,15 +176,13 @@
           taskId: record.taskId
         }
         getAction(this.url.form, params).then((res) => {
-          console.log(res,'dasdada');
           let that = this;
           if (res.success) {
             that.componentsUrl = res.result.formPath;
             record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName})
-            console.log(record,'没数据');
             setTimeout(function(){ 
               that.$refs.modalForm.edit(record);
-              that.$refs.modalForm.title = "审核";
+              that.$refs.modalForm.title = "处理";
             },)
           }
         })
@@ -198,6 +210,21 @@
       handleEntrust(record) {
         this.$refs.modalForm1.edit(record);
         this.$refs.modalForm1.title = "委托";
+      },
+      // 时间选择器的禁用封装
+      disabledStartDate (startValue) {
+        const endValue = this.queryParam.maxStartTime;
+        if (!startValue || !endValue) {
+          return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
+      },
+      disabledEndDate (endValue) {
+        const startValue = this.queryParam.minStartTime;
+        if (!endValue || !startValue) {
+          return false;
+        }
+        return startValue.valueOf() >= endValue.valueOf();
       }
     },
     computed: {

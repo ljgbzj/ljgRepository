@@ -7,6 +7,9 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :okButtonProps="model.btns ? { style: 'display:none' } : {}"
+    :cancelButtonProps="model.btns ? { style: 'display:none' } : {}"
+    v-dialogDrag
     cancelText="关闭"
     :maskClosable="false"
     style="top:5%;">
@@ -18,8 +21,8 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="真实姓名">
-          <a-input placeholder="请输入真实姓名" v-decorator="['realname', validatorRules.realname]" />
+          label="姓名">
+          <a-input placeholder="请输入姓名" v-decorator="['realname', validatorRules.realname]" />
         </a-form-item>
         </a-col>
 
@@ -52,7 +55,11 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="用户类型">
-          <a-input placeholder="请输入用户类型" v-decorator="['userType', validatorRules.userType]" />
+          <!--<a-input placeholder="请输入用户类型" v-decorator="['userType', validatorRules.userType]" />-->
+          <a-select placeholder="请选择用户类型" v-decorator = "['userType', validatorRules.userType]">
+            <a-select-option value="0">外围</a-select-option>
+            <a-select-option value="1">企业</a-select-option>
+          </a-select>
         </a-form-item>
         </a-col>
         <!--<a-col :md="12" :sm="8">
