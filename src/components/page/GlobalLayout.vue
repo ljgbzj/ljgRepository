@@ -469,7 +469,7 @@ body {
       }
     }
 
-    &.light {
+    &.light, &.dark {
       /* background-color: #fff; */
 
       .header-index-wide {
