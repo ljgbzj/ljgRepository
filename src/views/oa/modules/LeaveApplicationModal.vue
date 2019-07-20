@@ -78,16 +78,17 @@
                   </a-form-item>
                 </a-col>
               </a-row>
-              <!-- <a-row :gutter="24">
+              <a-row :gutter="24">
                 <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假时长">
                     <a-input
+                      placeholder="请假申请"
                       v-model="timeLength"
                       disabled
                     />
                   </a-form-item>
                 </a-col>
-              </a-row> -->
+              </a-row>
               <!-- <a-row :gutter="24">
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="请假原因">
@@ -312,6 +313,7 @@ import STable from '@/components/table/'
 import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import md5 from 'md5'
+import { async } from 'q';
 
 export default {
   name: 'LeaveApplicationModal',
@@ -560,7 +562,11 @@ export default {
         this.form.setFieldsValue({ timeStart: this.model.timeStart ? moment(this.model.timeStart) : null })
         this.form.setFieldsValue({ timeEnd: this.model.timeEnd ? moment(this.model.timeEnd) : null })
         this.form.setFieldsValue({ inputerFullname: this.nickname() })
-
+        
+        // 初始化时长计算字段
+        console.log(this.model.timeStart,'围殴副本');
+        this.timeStartCheck = this.model.timeStart;
+        this.timeEndCheck = this.model.timeEnd;
         // 初始化新任务通知
         if (this.model.notifyMethod != undefined) {
           this.form.setFieldsValue({ notifyMethod: eval(this.model.notifyMethod) })
@@ -581,129 +587,66 @@ export default {
       this.timeStartCheck = '',
       this.timeEndCheck = ''
     },
-    handleOk() {
+   handleOk() {
       const that = this
       if (that.title == '查看') {
         that.close()
       } else {
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            // let that = this;
-            // setTimeout(function(){
-            //   that.TimeBtn = that.checkTime();
-            // },)
-            // setTimeout(function(){
-            //   console.log(this.TimeBtn,'niubi进来了');
-            //   console.log(this.TimeBtnC,'总开关');
-            //   if (this.TimeBtnC) {
-            //     that.confirmLoading = true
-            //     let httpurl = ''
-            //     let method = ''
-            //     let strFormData = Object.assign(this.model, values)
-            //     let strFlowData = {}
-            //     if (!this.model.id) {
-            //       httpurl += this.url.add
-            //       method = 'post'
-            //       strFlowData.api = '/process/startAndSubmit'
-            //       strFlowData.processDefinitionKey = 'leave'
-            //     } else {
-            //       httpurl += this.url.edit
-            //       method = 'post' // put修改
-            //     }
-
-            //     //时间格式化
-            //     strFormData.timeStart = strFormData.timeStart
-            //       ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
-            //       : null
-            //     strFormData.timeEnd = strFormData.timeEnd
-            //       ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
-            //       : null
-
-            //     // 选人控件传值
-            //     this.uploadMan(strFormData,that);
-
-            //     // 上传组件
-            //     for (let i = 0; i < that.attachment.length; i++) {
-            //       strFormData.attachment = that.attachment[i].groupId
-            //     }
-
-            //     let params2 = {
-            //       strFlowData: JSON.stringify(strFlowData),
-            //       strFormData: JSON.stringify(strFormData),
-            //       strAttachment: JSON.stringify(this.attachment)
-            //     }
-                
-                
-            //     httpAction(httpurl, qs.stringify(params2), method)
-            //     .then(res => {
-            //       if (res.success) {
-            //         that.$message.success(res.message)
-            //         that.$emit('ok')
-            //       } else {
-            //         that.$message.warning('操作失败！')
-            //       }
-            //     })
-            //     .finally(() => {
-            //       that.confirmLoading = false
-            //       that.close()
-            //     })
-                
-            //   }
-            // },1000)
-
+       this.form.validateFields((err, values) => {
+        if (!err) {
             that.confirmLoading = true
-                let httpurl = ''
-                let method = ''
-                let strFormData = Object.assign(this.model, values)
-                let strFlowData = {}
-                if (!this.model.id) {
-                  httpurl += this.url.add
-                  method = 'post'
-                  strFlowData.api = '/process/startAndSubmit'
-                  strFlowData.processDefinitionKey = 'leave'
-                } else {
-                  httpurl += this.url.edit
-                  method = 'post' // put修改
-                }
+            let httpurl = ''
+            let method = ''
+            let strFormData = Object.assign(this.model, values)
+            let strFlowData = {}
+            if (!this.model.id) {
+              httpurl += this.url.add
+              method = 'post'
+              strFlowData.api = '/process/startAndSubmit'
+              strFlowData.processDefinitionKey = 'leave'
+            } else {
+              httpurl += this.url.edit
+              method = 'post' // put修改
+            }
 
-                //时间格式化
-                strFormData.timeStart = strFormData.timeStart
-                  ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
-                  : null
-                strFormData.timeEnd = strFormData.timeEnd
-                  ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
-                  : null
+            //时间格式化
+            strFormData.timeStart = strFormData.timeStart
+              ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
+              : null
+            strFormData.timeEnd = strFormData.timeEnd
+              ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
+              : null
 
-                // 选人控件传值
-                this.uploadMan(strFormData,that);
+            // 选人控件传值
+            this.uploadMan(strFormData,that);
 
-                // 上传组件
-                for (let i = 0; i < that.attachment.length; i++) {
-                  strFormData.attachment = that.attachment[i].groupId
-                }
+            // 上传组件
+            for (let i = 0; i < that.attachment.length; i++) {
+              strFormData.attachment = that.attachment[i].groupId
+            }
 
-                let params2 = {
-                  strFlowData: JSON.stringify(strFlowData),
-                  strFormData: JSON.stringify(strFormData),
-                  strAttachment: JSON.stringify(this.attachment)
-                }
-                
-                
-                httpAction(httpurl, qs.stringify(params2), method)
-                .then(res => {
-                  if (res.success) {
-                    that.$message.success(res.message)
-                    that.$emit('ok')
-                  } else {
-                    that.$message.warning('操作失败！')
-                  }
-                })
-                .finally(() => {
-                  that.confirmLoading = false
-                  that.close()
-                })
+            let params2 = {
+              strFlowData: JSON.stringify(strFlowData),
+              strFormData: JSON.stringify(strFormData),
+              strAttachment: JSON.stringify(this.attachment)
+            }
             
+            
+            httpAction(httpurl, qs.stringify(params2), method)
+            .then(res => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+              } else {
+                that.$message.warning('操作失败！')
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+              that.close()
+            })
+              
           }
         })
       }
@@ -800,7 +743,7 @@ export default {
         let params1 = {
           strFlowData: JSON.stringify(strFlowData),
           strFormData: JSON.stringify(strFormData),
-          attachmentString: JSON.stringify(that.attachment)
+          strAttachment: JSON.stringify(that.attachment)
         }
         httpAction(httpurl, qs.stringify(params1), method)
           .then(res => {
@@ -913,15 +856,18 @@ export default {
           if (res.success != true) {
             this.$message.warning(res.message);
             flag = 0;
-            console.log(flag,'keyiya ');
-            return flag
+            console.log(flag,'keyiya');
+            return flag.promise
           } else {
             console.log(flag,'keyiya');
-            return flag
+            return flag.promise
           }
         })
       }
     }
+
+   
+    
   },
   computed: {
     rollback() {
@@ -934,9 +880,14 @@ export default {
       return this.url.fileUpload
     },
     timeLength() {
-      this.$nextTick(() => {
-        return this.form.getFieldValue('timeStart');
-      })
+      let currentTimeLength = ((moment(this.timeEndCheck) - moment(this.timeStartCheck))/1000/60/60).toFixed(1);
+      if (currentTimeLength < 24) {
+        return currentTimeLength + '小时';
+      } else {
+        let day = Math.floor(currentTimeLength/24);
+        let hour = (currentTimeLength % 24).toFixed(1);
+        return day + '天' + hour + '小时'
+      }
       
     },
     TimeBtnC() {
