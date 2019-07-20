@@ -153,9 +153,13 @@
                 :wrapperCol="wrapperCol"
                 label="参与人数">
                 <a-input
+                  style="width: 50%"
                   placeholder="请输入参与人数"
-                  v-decorator="[ 'memberNumber', { rules: [{ required: true, message: '参与人数' }]}]" />
+                  v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
+                   />
+                最大容纳人数：{{this.containNum}}
               </a-form-item>
+              <!--v-decorator="[ 'memberNumber', validatorRules.memberNumber]"-->
             </a-col>
             <a-col :md="12" :sm="8">
               <a-form-item
@@ -402,6 +406,7 @@
         ],
         validatorRules: {
           contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }]},
+          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]}
         },
         reserveUserName:'',
         reserveFullName:'',
@@ -421,6 +426,8 @@
           value: [],
           target: [{ to: 'joinMemberUserName', from: 'username' }, { to: 'joinMemberFullName', from: 'realname' }]
         },
+        // 最大容纳数
+        containNum:'',
       }
     },
     created () {
@@ -475,6 +482,7 @@
       myMouseDown: function(item, items,index,key){
         this.orderRoom = item.roomName
         this.orderRoomId = item.roomId
+        this.containNum = item.containNum
         const that = this
         if (that.endCol != null){
           that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
@@ -695,6 +703,16 @@
           callback();
         }else{
           callback("请输入正确格式的手机号码!");
+        }
+      },
+      memberNumbercheck(rule, value, callback){
+        const r = /^\+?[1-9][0-9]*$/;
+        if (r.test(value) && value <= this.containNum){
+          callback();
+        } else if (r.test(value) && value > this.containNum){
+          callback("人数超过了会议室最大容纳人数");
+        } else {
+          callback("请输入数字!");
         }
       },
       loadData() {}

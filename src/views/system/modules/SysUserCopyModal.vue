@@ -144,7 +144,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="个性签名">
-          <a-textarea placeholder="请输入个性签名" v-decorator="['attachmentAutograph', {}]" />
+          <a-textarea placeholder="请输入个性签名" v-decorator="['personalSignature', {}]" />
         </a-form-item>
 
       </a-form>
@@ -246,7 +246,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'realname', 'email', 'phone', 'groupName', 'officePhone','attachmentAutograph','hobbys'));
+          this.form.setFieldsValue(pick(this.model, 'realname', 'email', 'phone', 'groupName', 'officePhone','personalSignature','hobbys'));
 		  //时间格式化
           /*this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})*/
         });
