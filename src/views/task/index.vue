@@ -39,13 +39,14 @@
   .ant-tabs {
     :global(.ant-tabs-bar) {
       :global(.ant-tabs-nav-container) {
+        line-height: 33px;
         :global(.ant-tabs-nav-scroll) {      
           :global(.ant-tabs-nav) {     
             :global(.ant-tabs-ink-bar) {
-              width:24px!important;
+              width:70px!important;
               height:3px!important;
               border-radius:2px!important;
-              margin-left:30px!important;
+              margin-left:8px!important;
             }
           }
         }

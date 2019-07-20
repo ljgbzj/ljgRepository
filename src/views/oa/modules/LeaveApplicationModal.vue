@@ -34,7 +34,7 @@
           <a-spin :spinning="confirmLoading">
             <a-form :form="form" class>
               <a-row :gutter="24">
-                <a-col :md="12" :sm="8">
+                <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假人">
                     <a-input
                       placeholder="请输入请假人姓名"
@@ -43,7 +43,7 @@
                     />
                   </a-form-item>
                 </a-col>
-                <a-col :md="12" :sm="8">
+                <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假类型">
                     <j-dict-select-tag
                       v-decorator="['type', validatorRules.templateType ]"
@@ -55,88 +55,57 @@
                 </a-col>
               </a-row>
               <a-row :gutter="24">
-                <a-col :md="12" :sm="8">
+                <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始时间">
                     <a-date-picker
                       :disabledDate="disabledStartDate"
                       showTime
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeStart', validatorRules.templateStartT]"
+                      @change="timeStart"
                     />
                   </a-form-item>
                 </a-col>
-                <a-col :md="12" :sm="8">
+                <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结束时间">
                     <a-date-picker
                       :disabledDate="disabledEndDate"
                       showTime
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeEnd', validatorRules.templateEndT]"
+                      @change="timeEnd"
                     />
                   </a-form-item>
                 </a-col>
               </a-row>
-              <a-row :gutter="24">
-                <a-col :md="24" :sm="8">
-                  <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="请假原因">
-                    <a-textarea
-                      placeholder="请输入请假原因"
-                      :rows="4"
-                      v-decorator="[ 'reason', validatorRules.templateReason]"
-                    />
-                  </a-form-item>
-                </a-col>
-              </a-row>
-              <!--  人员选择控件 -->
-              <a-row :gutter="24">
-                <a-col :md="12" :sm="8">
-                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门领导">
-                    <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
-                  </a-form-item>
-                </a-col>
-                <a-col :md="12" :sm="8">
-                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="人事领导">
-                    <j-select-user-new
-                      :selectedDetails="auditUsers2"
-                      @callback="setAuditUser"
-                      class="userSelect"
-                    ></j-select-user-new>
-                  </a-form-item>
-                </a-col>
-              </a-row>
-              <a-row :gutter="24">
-                <a-col :md="12" :sm="8">
-                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="总经理">
-                    <j-select-user-new
-                      :selectedDetails="auditUsers3"
-                      @callback="setAuditUser"
-                      class="userSelect"
-                    ></j-select-user-new>
-                  </a-form-item>
-                </a-col>
-                <a-col :md="12" :sm="8">
-                  <a-form-item
-                    :labelCol="labelCol"
-                    :wrapperCol="wrapperCol"
-                    label="状态"
-                    v-show="model.status !== undefined && title == '编辑'"
-                  >
-                    <j-dict-select-tag
-                      v-decorator="['status', {} ]"
-                      :triggerChange="true"
-                      dictCode="bpm_status"
+              <!-- <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假时长">
+                    <a-input
+                      v-model="timeLength"
                       disabled
                     />
                   </a-form-item>
                 </a-col>
-              </a-row>
-              <a-row :gutter="24">
-                <a-col :md="24" :sm="8">
+              </a-row> -->
+              <!-- <a-row :gutter="24">
+                <a-col :span="24"> -->
+                  <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="请假原因">
+                    <a-textarea
+                      placeholder="请输入请假原因"
+                      :rows="3"
+                      v-decorator="[ 'reason', validatorRules.templateReason]"
+                    />
+                  </a-form-item>
+                <!-- </a-col>
+              </a-row> -->
+              <!-- <a-row :gutter="24">
+                <a-col :span="24"> -->
                   <a-form-item
                     :labelCol="labelCol1"
                     :wrapperCol="wrapperCol1"
                     class="upload"
-                    label="上传附件"
+                    label="书面证明材料"
                   >
                     <a-upload
                       :action="uploadAction"
@@ -157,32 +126,49 @@
                     </a-modal>
                     <br />
                   </a-form-item>
-                </a-col>
-              </a-row>
-              <a-row :gutter="24">
-                <a-col :md="24" :sm="8">
+                <!-- </a-col>
+              </a-row> -->
+              <!-- <a-row :gutter="24">
+                <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
-                    <a-checkbox-group v-decorator="['notifyMethod', {initialValue: ['email']}]">
-                      <a-checkbox value="email" disabled>邮件(默认选择)</a-checkbox>
-                      <a-checkbox value="message">手机短信</a-checkbox>
-                      <a-checkbox value="euc">EUC消息</a-checkbox>
+                    <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]">
+                      <a-checkbox value="email">邮件</a-checkbox>
+                      <a-checkbox value="sms">手机短信</a-checkbox>
+                      <a-checkbox value="euc">站内消息</a-checkbox>
                     </a-checkbox-group>
                   </a-form-item>
-                </a-col>
-              </a-row>
+                  <!--  人员选择控件 -->
               <a-row :gutter="24">
-                <a-col :md="24" :sm="8">
-                  <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注信息">
-                    <a-textarea
-                      placeholder="请输入备注信息"
-                      :rows="4"
-                      v-decorator="[ 'remarks', validatorRules.templateContent]"
-                    />
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目经理/组长">
+                    <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门主任">
+                    <j-select-user-new
+                      :selectedDetails="auditUsers2"
+                      @callback="setAuditUser"
+                      class="userSelect"
+                    ></j-select-user-new>
                   </a-form-item>
                 </a-col>
               </a-row>
-              <a-row :gutter="24">
-                <a-col :md="24" :sm="8">
+                <!-- </a-col>
+              </a-row> -->
+              <!-- <a-row :gutter="24">
+                <a-col :span="24"> -->
+                  <!-- <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="备注信息">
+                    <a-textarea
+                      placeholder="请输入备注信息"
+                      :rows="3"
+                      v-decorator="[ 'remarks', validatorRules.templateContent]"
+                    />
+                  </a-form-item> -->
+                <!-- </a-col>
+              </a-row> -->
+              <!-- <a-row :gutter="24">
+                <a-col :span="24"> -->
                   <a-form-item
                     :labelCol="labelCol1"
                     :wrapperCol="wrapperCol1"
@@ -191,15 +177,15 @@
                     :disabled="title == '编辑'"
                   >
                     <a-textarea
-                      :rows="4"
+                      :rows="3"
                       v-decorator="[ '_taskComment', {}]"
                       :disabled="!model.btns"
                     />
                   </a-form-item>
-                </a-col>
-              </a-row>
+                <!-- </a-col>
+              </a-row> -->
               <a-row :gutter="24" v-if="btns">
-                <a-col :md="24" :sm="8">
+                <a-col :span="24">
                   <a-form-item class="btnClass">
                     <template v-for="(placement, index) in btns">
                       <a-dropdown placement="bottomCenter" :key="index">
@@ -207,7 +193,8 @@
                           style="margin-right:10px"
                           @click="onChange(placement)"
                           :icon="placement.btnIcon"
-                          class="cancel"
+                          class="confirm"
+                          type="primary"
                         >{{placement.btnName}}</a-button>
                         <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
                           <a-menu-item v-for="(v,k) in rollback" :key="k">
@@ -220,7 +207,7 @@
                 </a-col>
               </a-row>
               <a-row :gutter="24" v-if="!btns">
-                <a-col :md="24" :sm="8">
+                <a-col :span="24">
                   <a-form-item class="btnClass">
                     <a-button
                       @click="handleOk"
@@ -228,7 +215,8 @@
                       type="primary"
                       style="margin-right:10px"
                       class="confirm"
-                    >{{model.status == undefined ? '提交' : '保存'}}</a-button>
+                      v-if="model.status == undefined"
+                    >提交</a-button>
                     <a-button
                       @click="handleSave('start')"
                       icon="diff"
@@ -242,12 +230,20 @@
                       style="margin-right:10px"
                       class="cancel"
                     >关闭</a-button>
+                    <a-button
+                      @click="handleOk"
+                      icon="check"
+                      type="primary"
+                      style="margin-right:10px"
+                      class="confirm"
+                      v-if="model.status != undefined"
+                    >保存</a-button>
                   </a-form-item>
                 </a-col>
               </a-row>
             </a-form>
             <a-row :gutter="24">
-              <a-col :md="24" :sm="8">
+              <a-col :span="24">
                 <option-list
                   :commentList="commentList"
                   :currentList="currentList"
@@ -275,6 +271,7 @@
                 <span>已完成</span>
               </h3>
               <s-table
+                rowKey="id"
                 :columns="goodsColumns"
                 :data="loadGoodsData"
                 v-if="commentList"
@@ -286,6 +283,7 @@
                 <span>处理中</span>
               </h3>
               <s-table
+                rowKey="id"
                 :columns="goodsColumns1"
                 :data="loadGoodsData1"
                 v-if="commentList"
@@ -333,19 +331,19 @@ export default {
       model: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 4 }
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 20 }
+        sm: { span: 18 }
       },
       labelCol1: {
         xs: { span: 24 },
-        sm: { span: 2 }
+        sm: { span: 3 }
       },
       wrapperCol1: {
         xs: { span: 24 },
-        sm: { span: 22 }
+        sm: { span: 21 }
       },
       confirmLoading: false,
       form: this.$form.createForm(this),
@@ -374,7 +372,8 @@ export default {
         fileFind: '/file/cmpFileGroup/findFilesByGroupId',
         imgerver: window._CONFIG['domianURL'] + '/sys/common/view',
         pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe',
-        fileDownLoad: '/file/uploadFile/downloadFileById'
+        fileDownLoad: '/file/uploadFile/downloadFileById',
+        timeCheck: '/oa/leaveApplication/verifyOverlapedLeaveTime'
       },
       // imgurl: '',
       // radioStyle: '',
@@ -455,31 +454,24 @@ export default {
       ],
       arr: [], //初始化完成列表
       arr1: [], //初始化进行中列表
-      departmentLeaderUsername: '',
-      departmentLeaderRealname: '',
-      hrLeaderUsername: '',
-      hrLeaderRealname: '',
-      generalManagerUsername: '',
-      generalManagerRealname: '',
+      auditUsername1: '',
+      auditFullname1: '',
+      auditUsername2: '',
+      auditFullname2: '',
 
-      selectUser: ['auditUsers1', 'auditUsers2', 'auditUsers3'],
+      selectUser: ['auditUsers1', 'auditUsers2'],
       auditUsers1: {
         colum: 'auditUsers1',
         value: [],
         target: [
-          { to: 'departmentLeaderUsername', from: 'username' },
-          { to: 'departmentLeaderRealname', from: 'realname' }
+          { to: 'auditUsername1', from: 'username' },
+          { to: 'auditFullname1', from: 'realname' }
         ]
       },
       auditUsers2: {
         colum: 'auditUsers2',
         value: [],
-        target: [{ to: 'hrLeaderUsername', from: 'username' }, { to: 'hrLeaderRealname', from: 'realname' }]
-      },
-      auditUsers3: {
-        colum: 'auditUsers3',
-        value: [],
-        target: [{ to: 'generalManagerUsername', from: 'username' }, { to: 'generalManagerRealname', from: 'realname' }]
+        target: [{ to: 'auditUsername2', from: 'username' }, { to: 'auditFullname2', from: 'realname' }]
       },
       // 上传附件定义
       headers: {},
@@ -495,7 +487,10 @@ export default {
           tableName: 'oa_leave_application'
         }
       ],
-      nodeName: ''
+      nodeName: '',
+      timeStartCheck: '',
+      timeEndCheck: '',
+      TimeBtn: ''
     }
   },
   filters: {
@@ -548,15 +543,8 @@ export default {
             'inputerFullname',
             'type',
             'reason',
-            // 'departmentLeaderUsername',
-            // 'departmentLeaderRealname',
-            // 'hrLeaderUsername',
-            // 'hrLeaderRealname',
-            // 'generalManagerUsername',
-            // 'generalManagerRealname',
             'notifyMethod',
-            'remarks',
-            'status',
+            // 'remarks',
             '_taskComment'
           )
         )
@@ -564,7 +552,7 @@ export default {
         // 初始化选人组件字段
         this.auditUsers1.value = []
         this.auditUsers2.value = []
-        this.auditUsers3.value = []
+        // this.auditUsers3.value = []
 
         // 初始化选人控件
             this.initSelectMan(this,record);
@@ -589,7 +577,9 @@ export default {
       this.$emit('close')
       this.picUrl = ''
       this.fileList = []
-      this.visible = false
+      this.visible = false;
+      this.timeStartCheck = '',
+      this.timeEndCheck = ''
     },
     handleOk() {
       const that = this
@@ -599,55 +589,121 @@ export default {
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+            // let that = this;
+            // setTimeout(function(){
+            //   that.TimeBtn = that.checkTime();
+            // },)
+            // setTimeout(function(){
+            //   console.log(this.TimeBtn,'niubi进来了');
+            //   console.log(this.TimeBtnC,'总开关');
+            //   if (this.TimeBtnC) {
+            //     that.confirmLoading = true
+            //     let httpurl = ''
+            //     let method = ''
+            //     let strFormData = Object.assign(this.model, values)
+            //     let strFlowData = {}
+            //     if (!this.model.id) {
+            //       httpurl += this.url.add
+            //       method = 'post'
+            //       strFlowData.api = '/process/startAndSubmit'
+            //       strFlowData.processDefinitionKey = 'leave'
+            //     } else {
+            //       httpurl += this.url.edit
+            //       method = 'post' // put修改
+            //     }
+
+            //     //时间格式化
+            //     strFormData.timeStart = strFormData.timeStart
+            //       ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
+            //       : null
+            //     strFormData.timeEnd = strFormData.timeEnd
+            //       ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
+            //       : null
+
+            //     // 选人控件传值
+            //     this.uploadMan(strFormData,that);
+
+            //     // 上传组件
+            //     for (let i = 0; i < that.attachment.length; i++) {
+            //       strFormData.attachment = that.attachment[i].groupId
+            //     }
+
+            //     let params2 = {
+            //       strFlowData: JSON.stringify(strFlowData),
+            //       strFormData: JSON.stringify(strFormData),
+            //       strAttachment: JSON.stringify(this.attachment)
+            //     }
+                
+                
+            //     httpAction(httpurl, qs.stringify(params2), method)
+            //     .then(res => {
+            //       if (res.success) {
+            //         that.$message.success(res.message)
+            //         that.$emit('ok')
+            //       } else {
+            //         that.$message.warning('操作失败！')
+            //       }
+            //     })
+            //     .finally(() => {
+            //       that.confirmLoading = false
+            //       that.close()
+            //     })
+                
+            //   }
+            // },1000)
+
             that.confirmLoading = true
-            let httpurl = ''
-            let method = ''
-            let strFormData = Object.assign(this.model, values)
-            let strFlowData = {}
-            if (!this.model.id) {
-              httpurl += this.url.add
-              method = 'post'
-              strFlowData.api = '/process/startAndSubmit'
-              strFlowData.processDefinitionKey = 'leave'
-            } else {
-              httpurl += this.url.edit
-              method = 'post' // put修改
-            }
-
-            //时间格式化
-            strFormData.timeStart = strFormData.timeStart
-              ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
-              : null
-            strFormData.timeEnd = strFormData.timeEnd
-              ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
-              : null
-
-            // 选人控件传值
-            this.uploadMan(strFormData,that);
-
-            // 上传组件
-            for (let i = 0; i < that.attachment.length; i++) {
-              strFormData.attachment = that.attachment[i].groupId
-            }
-
-            let params2 = {
-              strFlowData: JSON.stringify(strFlowData),
-              strFormData: JSON.stringify(strFormData),
-              strAttachment: JSON.stringify(this.attachment)
-            }
-            httpAction(httpurl, qs.stringify(params2), method)
-              .then(res => {
-                if (res.success) {
-                  that.$message.success(res.message)
-                  that.$emit('ok')
+                let httpurl = ''
+                let method = ''
+                let strFormData = Object.assign(this.model, values)
+                let strFlowData = {}
+                if (!this.model.id) {
+                  httpurl += this.url.add
+                  method = 'post'
+                  strFlowData.api = '/process/startAndSubmit'
+                  strFlowData.processDefinitionKey = 'leave'
                 } else {
-                  that.$message.warning('操作失败！')
+                  httpurl += this.url.edit
+                  method = 'post' // put修改
                 }
-              })
-              .finally(() => {
-                that.confirmLoading = false
-                that.close()
-              })
+
+                //时间格式化
+                strFormData.timeStart = strFormData.timeStart
+                  ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
+                  : null
+                strFormData.timeEnd = strFormData.timeEnd
+                  ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
+                  : null
+
+                // 选人控件传值
+                this.uploadMan(strFormData,that);
+
+                // 上传组件
+                for (let i = 0; i < that.attachment.length; i++) {
+                  strFormData.attachment = that.attachment[i].groupId
+                }
+
+                let params2 = {
+                  strFlowData: JSON.stringify(strFlowData),
+                  strFormData: JSON.stringify(strFormData),
+                  strAttachment: JSON.stringify(this.attachment)
+                }
+                
+                
+                httpAction(httpurl, qs.stringify(params2), method)
+                .then(res => {
+                  if (res.success) {
+                    that.$message.success(res.message)
+                    that.$emit('ok')
+                  } else {
+                    that.$message.warning('操作失败！')
+                  }
+                })
+                .finally(() => {
+                  that.confirmLoading = false
+                  that.close()
+                })
+            
           }
         })
       }
@@ -832,6 +888,39 @@ export default {
         return false
       }
       return startValue.valueOf() >= endValue.valueOf()
+    },
+    timeStart(t) {
+      if (t != null) {
+        this.timeStartCheck = t.format('YYYY-MM-DD HH:mm:ss');
+        this.checkTime();
+      }
+      
+    },
+    timeEnd(t) {
+      if (t != null) {
+        this.timeEndCheck = t.format('YYYY-MM-DD HH:mm:ss');
+        this.checkTime();
+      }
+    },
+    checkTime(){
+      var flag = 1;
+      if (this.timeStartCheck != '' && this.timeEndCheck != '') {
+        let params = {
+          timeStart: this.timeStartCheck,
+          timeEnd: this.timeEndCheck
+        }
+        getAction(this.url.timeCheck,params).then((res)=>{
+          if (res.success != true) {
+            this.$message.warning(res.message);
+            flag = 0;
+            console.log(flag,'keyiya ');
+            return flag
+          } else {
+            console.log(flag,'keyiya');
+            return flag
+          }
+        })
+      }
     }
   },
   computed: {
@@ -843,6 +932,25 @@ export default {
     },
     uploadAction: function() {
       return this.url.fileUpload
+    },
+    timeLength() {
+      this.$nextTick(() => {
+        return this.form.getFieldValue('timeStart');
+      })
+      
+    },
+    TimeBtnC() {
+      if (this.TimeBtn) {
+        return this.TimeBtn
+      } else {
+        return 0
+      }
+    }
+
+  },
+  watch: {
+    'this.timeEndCheck'(val) {
+      console.log(val,'哈哈');
     }
   }
 }
@@ -850,4 +958,17 @@ export default {
 
 <style lang="less" scoped>
 @import '~@assets/less/modal.less';
+.ant-col-12 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.ant-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  :global(.ant-form-item-control-wrapper) {
+    :glabal(td) {
+      vertical-align: middle;
+    }
+  }
+}
 </style>

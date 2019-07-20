@@ -108,6 +108,23 @@
         <a-form-item label="工作流引擎" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag  v-decorator="['activitiSync', {}]" placeholder="请选择是否同步工作流引擎" :type="'radio'" :triggerChange="true" dictCode="activiti_sync"/>
         </a-form-item>
+        <!--新增时是否同步到通讯录-->
+        <a-form-item label="是否同步到通讯录" v-if="title == '新增'" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <!--<j-dict-select-tag  v-decorator="['toUserMail', {}]" placeholder="请选择是否同步到通讯录" :type="'radio'" :triggerChange="true" dictCode="toUserMail"/>-->
+          <a-radio-group name="radioGroup" v-model="toUserMail" :defaultValue="true">
+            <a-radio :value="true">是</a-radio>
+            <a-radio :value="false">否</a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <!--编辑时是否将改变内容同步到通讯录-->
+        <a-form-item label="是否同步到通讯录" v-if="title == '编辑'" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <!--<j-dict-select-tag  v-decorator="['toUserMail', {}]" placeholder="请选择是否同步到通讯录" :type="'radio'" :triggerChange="true" dictCode="toUserMail"/>-->
+          <a-radio-group name="radioGroup" v-model="toUserMail" :defaultValue="true">
+            <a-radio :value="true">是</a-radio>
+            <a-radio :value="false">否</a-radio>
+          </a-radio-group>
+        </a-form-item>
+
 
       </a-form>
     </a-spin>
@@ -124,6 +141,7 @@
 
 <script>
   import pick from 'lodash.pick'
+  import qs from 'qs'
   import moment from 'moment'
   import Vue from 'vue'
   // 引入搜索部门弹出框的组件
@@ -147,6 +165,7 @@
         modalWidth:800,
         drawerWidth:700,
         modaltoggleFlag:true,
+        toUserMail: true,
         confirmDirty: false,
         selectedDepartKeys:[], //保存用户选择部门id
         checkedDepartKeys:[],
@@ -210,6 +229,7 @@
           userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
+          addToMail: "/mailList/mailList/add"//添加到用户通讯录
         },
       }
     },
@@ -329,7 +349,9 @@
             if(!values.birthday){
               values.birthday = '';
             }else{
-              values.birthday = values.birthday.format(this.dateFormat);
+                values.birthday = values.birthday.format(this.dateFormat);
+
+
             }
             let formData = Object.assign(this.model, values);
             formData.avatar = avatar;
@@ -340,6 +362,23 @@
             if(!this.model.id){
               formData.id = this.userId;
               obj=addUser(formData);
+              //同步到通讯录
+              if(this.toUserMail){
+                let formData1 = JSON.parse(JSON.stringify(formData));
+                let httpurl = '';
+                let method = 'post';
+                httpurl += this.url.addToMail;
+                formData1.userType = 1;
+                formData1.birthday = null;
+                httpAction(httpurl,qs.stringify(formData1),method).then((res)=>{
+                  if(res.success){
+                    that.$message.success("已经同步到通讯录");
+                    that.$emit('ok');
+                  }else{
+                    that.$message.warning(res.message);
+                  }
+                })
+              }
             }else{
               obj=editUser(formData);
             }
