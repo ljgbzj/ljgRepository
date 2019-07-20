@@ -62,10 +62,29 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="state"
+              slot-scope="text, record">
+          <!--会议开始时间大于当前时间，则会议未开始-->
+              <a-tag  color="#87d068" v-if="(new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() > (new Date()).getTime()">
+                未开始
+              </a-tag>
+          <!--会议开始时间小于当前时间，结束时间大于当前时间。则会议进行中-->
+              <a-tag  color="#2db7f5" v-if="(new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() <= (new Date()).getTime() && (new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() >= (new Date()).getTime()">
+                进行中
+              </a-tag>
+          <!--会议结束时间小于当前时间，则会议已结束-->
+              <a-tag  color="#f50" v-if="(new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() < (new Date()).getTime()">
+                已结束
+              </a-tag>
+        </span>
+
+        <span slot="action"
+              slot-scope="text, record"
+              v-if="(new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() > (new Date()).getTime()">
           <a @click="handleEdit(record)">修改</a>
 
           <a-divider type="vertical" />
@@ -148,6 +167,19 @@
             dataIndex: 'meetingEndTime',
           },
           {
+            title: '状态',
+            align:"center",
+            // dataIndex: this.getStatus('meetingDate','meetingStartTime','meetingEndTime'),
+            // dataIndex: this.test('meetingDate' , 'meetingStartTime'),
+            dataIndex: 'state',
+            scopedSlots: { customRender: 'state' },
+            filters: [
+              { text: '未开始', value: '未开始' },
+              { text: '进行中', value: '进行中' },
+              { text: '已结束', value: '已结束' },
+            ],
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -183,8 +215,8 @@
 
     methods: {
       ...mapGetters(["userId"]),
-      handleDelete: function (id) {
-        if(!this.url.delete){
+      handleDelete: function(id) {
+        if (!this.url.delete) {
           this.$message.error("请设置url.delete属性!")
           return
         }
@@ -192,8 +224,8 @@
         this.$confirm({
           title: "确认取消",
           content: "是否取消预约?",
-          onOk: function () {
-            deleteAction(that.url.delete, {id: id}).then((res) => {
+          onOk: function() {
+            deleteAction(that.url.delete, { id: id }).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
                 that.loadData();
@@ -204,7 +236,7 @@
           }
         });
       },
-      handleEdit: function (record) {
+      handleEdit: function(record) {
         this.$refs.modalForm.edit(record);
         this.$refs.modalForm.title = "编辑";
       },
