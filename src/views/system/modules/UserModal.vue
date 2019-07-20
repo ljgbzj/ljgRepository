@@ -94,7 +94,7 @@
             :beforeUpload="beforeUpload"
             @change="handleChange1"
           >
-            <img v-if="picUrl1" :src="getAvatarView1()" alt="头像" style="height:104px;max-width:300px"/>
+            <img v-if="picUrl1" :src="getAvatarView1()" alt="签名" style="height:104px;max-width:300px"/>
             <div v-else>
               <a-icon :type="uploadLoading1 ? 'loading' : 'plus'" />
               <div class="ant-upload-text">上传</div>
@@ -136,14 +136,14 @@
           </a-radio-group>
         </a-form-item>
         <!--编辑时是否将改变内容同步到通讯录-->
-        <a-form-item label="是否同步到通讯录" v-if="title == '编辑'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <!--<j-dict-select-tag  v-decorator="['toUserMail', {}]" placeholder="请选择是否同步到通讯录" :type="'radio'" :triggerChange="true" dictCode="toUserMail"/>-->
+        <!--<a-form-item label="是否同步到通讯录" v-if="title == '编辑'" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          &lt;!&ndash;<j-dict-select-tag  v-decorator="['toUserMail', {}]" placeholder="请选择是否同步到通讯录" :type="'radio'" :triggerChange="true" dictCode="toUserMail"/>&ndash;&gt;
           <a-radio-group name="radioGroup" v-model="toUserMail" :defaultValue="true">
             <a-radio :value="true">是</a-radio>
             <a-radio :value="false">否</a-radio>
           </a-radio-group>
         </a-form-item>
-
+-->
 
       </a-form>
     </a-spin>
@@ -299,13 +299,13 @@
           this.selectedDepartKeys=[]
           this.checkedDepartKeys=[]
           this.checkedDepartNames=[]
-         this.checkedDepartNameString = ""
+          this.checkedDepartNameString = ""
           this.userId=""
       },
       add () {
         this.picUrl = "";
         this.picUrl1 ="";
-        this.refresh()
+        this.refresh();
         this.edit({activitiSync:'1'});
       },
       edit (record) {
@@ -395,7 +395,7 @@
                 formData1.birthday = null;
                 httpAction(httpurl,qs.stringify(formData1),method).then((res)=>{
                   if(res.success){
-                    that.$message.success("已经同步到通讯录");
+                    /*that.$message.success("已经同步到通讯录");*/
                     that.$emit('ok');
                   }else{
                     that.$message.warning(res.message);

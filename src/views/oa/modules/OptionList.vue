@@ -32,7 +32,7 @@
                         <div v-if="!item.attachmentAutograph">
                           无签名
                         </div>
-                        <div>
+                        <div v-if="item.attachmentAutograph">
                           <img :src="url.imgerver + '/' + item.attachmentAutograph" style="width:80%;height:80%;"/>
                         </div>
                         <div>{{ item.endTime | stringSplit }}</div>

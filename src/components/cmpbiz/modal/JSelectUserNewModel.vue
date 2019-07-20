@@ -11,7 +11,7 @@
     <div class="title">
       <div>
         <img src="@/assets/img/login/selectUser.png" />
-        选择成员
+        选择用户
       </div>
       <a-icon type="close" class="closeIcon" @click="handleCancel"/>
     </div>
@@ -40,7 +40,7 @@
         <!-- <a-card :bordered="true"> -->
           <!-- table区域-begin -->
             <a-tabs type="card">
-              <a-tab-pane tab="人员列表" key="1">
+              <a-tab-pane tab="用户列表" key="1">
                 <div style="border:1px solid #e8e8e8;height:360px;">
                   <a-table
                     size="middle"
@@ -84,7 +84,7 @@
           <!-- table区域-begin -->
           <div>
             <div style="margin-bottom:10px;height:30px;">
-              <span>已选人员</span>
+              <span>已选用户</span>
               <a-button style="float:right;right:0;top:0;" @click="clearSelected">清除</a-button>
             </div>
             <div style="border:1px solid #e8e8e8;height:440px;">

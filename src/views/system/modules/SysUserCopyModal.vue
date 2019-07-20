@@ -175,9 +175,8 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import Vue from 'vue'
-  import moment from "moment"
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import {checkUsername} from "../../../api/api";
+
   import ATextarea from "ant-design-vue/es/input/TextArea";
 
   export default {

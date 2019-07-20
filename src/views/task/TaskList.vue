@@ -179,7 +179,7 @@
           let that = this;
           if (res.success) {
             that.componentsUrl = res.result.formPath;
-            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName})
+            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName},{nodeId: record.nodeId})
             setTimeout(function(){ 
               that.$refs.modalForm.edit(record);
               that.$refs.modalForm.title = "处理";
