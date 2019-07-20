@@ -16,24 +16,16 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="会议室">
-                <a-input placeholder="请输入会议室名称" v-decorator="['searchRoomName',{}]"></a-input>
+                <a-input placeholder="请输入会议室名称"
+                v-model="queryParam.searchRoomName"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="3" :sm="8">
-              <a-form-item label="选择会议室">
-              <a-input placeholder="会议室名称" v-model="this.orderRoom" :disabled="disabledValue"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="3" :sm="8">
-              <a-form-item label="开会时间">
-                <a-input placeholder="开会时间段" v-model="this.orderTime" :disabled="disabledValue"></a-input>
-              </a-form-item>
-            </a-col>
+
             <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a-button type="primary" @click="order" icon="check" style="margin-left: 8px">预定</a-button>
+
             </span>
             </a-col>
           </a-row>
@@ -143,7 +135,7 @@
       <a-spin :spinning="confirmLoading">
         <a-form :form="form">
           <a-row :gutter="24">
-
+            <!--会议主题-->
             <a-col :md="12" :sm="8">
               <a-form-item
                 :labelCol="labelCol"
@@ -154,6 +146,7 @@
                   v-decorator="['subject', { rules: [{ required: true, message: '请输入会议主题' }]}]" />
               </a-form-item>
             </a-col>
+            <!--参与人数-->
             <a-col :md="12" :sm="8">
               <a-form-item
                 :labelCol="labelCol"
@@ -164,7 +157,86 @@
                   v-decorator="[ 'memberNumber', { rules: [{ required: true, message: '参与人数' }]}]" />
               </a-form-item>
             </a-col>
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="联系人/主持人">
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['contact',{ rules: [{ required: true, message: '联系人' }],initialValue:this.loginUserName}]"/>
+              </a-form-item>
+            </a-col>
 
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="联系电话">
+                <a-input
+                  v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
+              </a-form-item>
+            </a-col>
+            <!--会议室名称-->
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="会议室名称">
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['meetingRoom',{initialValue:this.orderRoom}]"/>
+              </a-form-item>
+            </a-col>
+            <!--会议日期-->
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                style="display: none"
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="会议日期">
+                <a-date-picker
+                  :disabledDate="disabledDate"
+                  v-decorator="['meetingDate',{initialValue:this.queryParam.searchDate}]"
+                  @change="onChange" />
+              </a-form-item>
+            </a-col>
+            <!--会议级别-->
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="会议类型">
+                <j-dict-select-tag
+                  v-decorator="['meetingLevel', {initialValue:'小组例会'}]"
+                  :triggerChange="true"
+                  placeholder="请选择会议类型"
+                  dictCode="meeting_level"
+                />
+              </a-form-item>
+            </a-col>
+            <!--会议开始时间-->
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="会议开始时间">
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['meetingStartTime',{initialValue:this.meetingDate + ' ' + this.startTime}]"/>
+              </a-form-item>
+            </a-col>
+            <!--会议结束时间-->
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="会议结束时间">
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['meetingEndTime',{initialValue:this.meetingDate + ' ' +this.endTime}]"/>
+              </a-form-item>
+            </a-col>
             <a-col :md="12" :sm="8" style="display: none">
               <a-form-item
                 :labelCol="labelCol"
@@ -186,56 +258,40 @@
               </a-form-item>
             </a-col>
 
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系人">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['contact',{initialValue:this.loginUserName}]"/>
-              </a-form-item>
-            </a-col>
+            <a-form-item label="meetingRoomId" style="display: none">
+              <input v-decorator="['meetingRoomId',{initialValue:this.orderRoomId}]"/>
+            </a-form-item>
+          </a-row>
 
-            <a-col :md="12" :sm="8">
+          <!--院内主要参与者-->
+          <a-row :gutter="24">
+            <a-col :md="24" :sm="8">
               <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系电话">
-                <a-input
-                  v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="开始时间">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingStartTime',{initialValue:this.startTime}]"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="结束时间">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingEndTime',{initialValue:this.endTime}]"/>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="预定人">
+                :labelCol="{
+                xs: { span: 24},
+                sm: { span: 3 },
+                }"
+                :wrapperCol="{
+                xs: { span: 24},
+                sm: { span: 20 },
+                }"
+                label="院内参与者">
                 <!--<j-select-user-by-dep-->
-                  <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+                <!--v-decorator="['joinMember',{rules: [{ required: true, message: '请选择参与人' }],initialValue:this.loginUserName}]"/>-->
+                <j-select-user-new :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="8">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="预订人">
+                <!--<j-select-user-by-dep-->
+                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
+                <j-select-user-new
+                  :selectedDetails="auditUsers1"
+                  @callback="setAuditUser"
+                  class="userSelect"></j-select-user-new>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="8">
@@ -248,63 +304,11 @@
                   v-decorator="['reserveDate',{initialValue:moment().format('YYYY-MM-DD HH:mm:ss')}]"/>
               </a-form-item>
             </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议室名称">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingRoom',{initialValue:this.orderRoom}]"/>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议日期">
-                <a-date-picker
-                  :disabledDate="disabledDate"
-                  v-decorator="['meetingDate',{initialValue:this.queryParam.searchDate}]"
-                  @change="onChange" />
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议级别">
-                <j-dict-select-tag
-                  v-decorator="['meetingLevel', {initialValue:'例会'}]"
-                  :triggerChange="true"
-                  placeholder="请选择会议类型"
-                  dictCode="meeting_level"
-                />
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="院内参与者">
-                <!--<j-select-user-by-dep-->
-                  <!--v-decorator="['joinMember',{rules: [{ required: true, message: '请选择参与人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
-              </a-form-item>
-            </a-col>
-
-            <a-form-item label="meetingRoomId" style="display: none">
-              <input v-decorator="['meetingRoomId',{initialValue:this.orderRoomId}]"/>
-            </a-form-item>
           </a-row>
-
         </a-form>
       </a-spin>
     </a-modal>
+    <room-list-order-modal ref="modalForm" @ok="modalFormOk"></room-list-order-modal>
   </div>
 </template>
 
@@ -322,11 +326,12 @@
   import ARadioButton from 'ant-design-vue/es/radio/RadioButton'
   import JDictSelectTag from '@/components/dict/JDictSelectTag'
   import JSelectUserNew from '../../components/cmpbiz/JSelectUserNew'
+  import RoomListOrderModal from './modules/roomListOrderModal'
 
 
   export default {
     name: 'roomListOrder',
-    components: { JSelectUserNew, ARadioButton, ARadioGroup, AFormItem, ACol, ARow, JSelectUserByDep, JSelectDepart, JDictSelectTag},
+    components: { RoomListOrderModal, JSelectUserNew, ARadioButton, ARadioGroup, AFormItem, ACol, ARow, JSelectUserByDep, JSelectDepart, JDictSelectTag},
     mixins: [CmpListMixin],
     data() {
       return {
@@ -352,7 +357,7 @@
         nowTime: moment().format("YYYY-MM-DD HH:mm:ss"),
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
@@ -422,7 +427,7 @@
       this.loginUserName = this.$store.getters.nickname
       this.loginUserId = this.$store.getters.userId
       this.confirmLoading2 = true
-      findRoomList({meetingDate:this.meetingDate})
+      findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.queryParam.searchRoomName})
         .then((res) => {
           this.roomList = res.result;
           this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
@@ -439,6 +444,16 @@
         console.log(date, dateString);
         this.queryParam.searchDate = date;
         this.meetingDate = dateString;
+        this.confirmLoading2 = true
+        findRoomList({meetingDate:dateString,meetingRoomName:this.queryParam.searchRoomName})
+          .then((res) => {
+            this.roomList = res.result;
+            this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
+            console.log(res.result.userInfo)
+            if (res.code === 0){
+              this.confirmLoading2 = false
+            }
+          })
       },
       range(start, end) {
         const result = [];
@@ -469,14 +484,18 @@
         if (items == 2){
           that.roomList[key].arrUseInfo[index].status = 0
         } else if (items == 1){
-          that.$message.warning('当前会议室已经被预定')
+          // const message = '当前会议室已经被预定了'
+          // that.$message.warning(message)
+          that.visibleOrder = true
+          that.$refs.modalForm.edit(item.arrUseInfo[index]);
+          console.log(item.arrUseInfo[index],'打印阿斯达')
           that.orderTime = ''
         } else if (items == 0){
           that.roomList[key].arrUseInfo[index].status = 2
           that.isMoving = true
           that.startRow = key //起始行坐标
           that.startCol = index //起始列坐标
-          that.startTime = that.timeList[index].time
+          that.startTime =  that.timeList[index].time
         }
       },
       myMouseUp:function(item, items ,index,key){
@@ -487,9 +506,10 @@
         if (that.startTime != null && that.startTime != '') {
           if (that.startCol <= index) { //正常顺序
             if (that.endCol == 17) {
-              that.endTime = '17:30'
+              that.endTime =  ' 17:30'
             } else {
-              that.endTime = that.timeList[index + 1].time
+              that.endTime =
+                that.timeList[index + 1].time
             }
             that.orderTime = that.startTime + " - " + that.endTime
           } else { //倒序
@@ -510,8 +530,16 @@
           // 初始化选人组件字段
           that.auditUsers1.value = []
           that.auditUsers2.value = []
-
-          this.visible = true //弹出表单
+          // 初始化选人控件
+            that.model = {
+              reserveUserName:that.loginUserId,
+              reserveFullName:that.loginUserName
+            }
+          that.$nextTick( () => { //异步请求选人控件回显当前登录用户
+            that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
+          })
+          that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
+          that.visible = true //弹出表单
           that.isMoving = false //关闭滑动
         }
       },
@@ -542,6 +570,8 @@
           formData.meetingDate = that.meetingDate.substring(0,10);
           formData.startCol = that.startCol;
           formData.endCol = that.endCol;
+          formData.meetingStartTime = that.startTime;
+          formData.meetingEndTime = that.endTime;
           // 选人控件传值
           this.uploadMan(formData,that);
           if (!err){
@@ -564,7 +594,7 @@
                       that.confirmLoading2 = true
                       console.log(response);
                       if (response.code === 200){
-                        findRoomList({meetingDate:that.meetingDate})
+                        findRoomList({meetingDate:that.meetingDate,meetingRoomName:that.queryParam.searchRoomName})
                           .then((res) => {
                             that.roomList = res.result;
                             that.roomListCopy = JSON.parse(JSON.stringify(that.roomList)); //将当前页面数据源深度克隆
@@ -628,7 +658,7 @@
       },
       searchQuery:function() {
         this.confirmLoading2 = true
-        findRoomList({meetingDate:this.meetingDate})
+        findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.queryParam.searchRoomName})
           .then((res) => {
           this.roomList = res.result;
           this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
@@ -640,7 +670,9 @@
       },
       searchReset:function() {
         this.confirmLoading2 = true
-        findRoomList({meetingDate:this.meetingDate})
+        this.meetingDate = moment().format('YYYY-MM-DD')
+        this.queryParam.searchRoomName = ''
+        findRoomList({meetingDate:moment().format('YYYY-MM-DD'),meetingRoomName:this.queryParam.searchRoomName})
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
@@ -673,7 +705,7 @@
 <style scoped lang="less">
   @import '~@assets/less/common.less';
   @import '~@assets/less/topBtns.less';
-  @table-title-heignt: 60px;
+  @table-title-heignt: 50px;
   @table-content-heignt: 50px;
   .active {
     width: auto;

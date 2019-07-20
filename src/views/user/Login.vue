@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="desc">工程建设管理平台</div>
+    <div class="desc">工程企业综合管理云平台</div>
 
     <div class="main">
       <!--  -->
@@ -68,7 +68,7 @@
         </a-tabs>
 
         <a-form-item class="form-out">
-          <a-checkbox v-model="formLogin.rememberMe" class="autologin">自动登陆</a-checkbox>
+          <a-checkbox @change="onChange" :defaultChecked="true" class="autologin">记住密码</a-checkbox>
           <router-link
             :to="{ name: 'login', params: { user: 'aaa'} }"
             class="forge-password"
@@ -90,10 +90,8 @@
         <a-form-item>
           <div class="user-login-other">
             <div class="register" @click="register">
-              <div>
                 <img src="@/assets/img/login/arrow.png" />
-                注册
-              </div>
+                <span>注册</span>
             </div>
           </div>
         </a-form-item>
@@ -128,7 +126,7 @@
       >
         <!-- <template slot="footer">
           <a-button type="primary" @click="departOk">确认</a-button>
-        </template> -->
+        </template>-->
 
         <a-form>
           <a-form-item
@@ -137,12 +135,6 @@
             style="margin-bottom:10px"
             :validate-status="validate_status"
           >
-            <!-- <a-tooltip placement="topLeft">
-              <template slot="title">
-                <span>您隶属于多部门，请选择登录部门</span>
-              </template>
-              <a-avatar style="backgroundColor:#87d068" icon="gold" />
-            </a-tooltip>-->
             <div class="title">
               <img src="@/assets/img/login/depart.png" />
               <span>登录部门选择</span>
@@ -169,13 +161,12 @@
             </a-select>
 
             <div class="departButton">
-              <a-button  @click="departCancel">
-                <a-icon type="close"></a-icon>
-                取消
-                </a-button>
+              <a-button @click="departCancel">
+                <a-icon type="close"></a-icon>取消
+              </a-button>
               <a-button type="primary" @click="departOk">
-                <a-icon type="check"></a-icon>
-                确认</a-button>
+                <a-icon type="check"></a-icon>确认
+              </a-button>
             </div>
           </a-form-item>
         </a-form>
@@ -185,7 +176,6 @@
 </template>
 
 <script>
-//import md5 from "md5"
 import api from '@/api' // 引入api接口，接口放在了api对象里
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha' //两步验证（功能待查）
 import { mapActions } from 'vuex'
@@ -230,10 +220,11 @@ export default {
       formLogin: {
         username: '',
         password: '',
-        identifyCode: '',
+        //identifyCode: '',
         phone: '',
         rememberMe: true
       },
+      FORM_LOGIN: {},
       validatorRules: {
         username: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
@@ -257,11 +248,32 @@ export default {
     }
   },
   created() {
-    Vue.ls.remove(ACCESS_TOKEN) //移除浏览器storage中的token
+    //Vue.ls.remove(ACCESS_TOKEN) //移除浏览器storage中的token
+  },
+  mounted() {
+    this.formLogin = { ...Vue.ls.get('FORM_LOGIN') }
+    this.forminit(this.formLogin)
+  },
+  watch: {
+    customActiveKey() {
+      this.forminit(this.formLogin)
+    }
   },
   methods: {
     ...mapActions(['Login', 'LoginByPhone', 'Logout']), // 引入vuex store中的Login和logout方法，放在当前的methods中
-
+    // 初始化登录表单
+    forminit(val) {
+      let loginMessage = {}
+      if (this.customActiveKey === 'tab1') {
+        loginMessage.username = val.username
+        loginMessage.password = val.password
+      } else {
+        loginMessage.phone = val.phone
+      }
+      this.$nextTick(() => {
+        this.form.setFieldsValue(loginMessage)
+      })
+    },
     // 判断登录方式是邮件还是username,邮件 0，username 1
     handleUsernameOrEmail(rule, value, callback) {
       const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
@@ -276,6 +288,10 @@ export default {
     handleTabClick(key) {
       this.customActiveKey = key
     },
+    // 获取是否记住密码
+    onChange(e) {
+      this.formLogin.rememberMe = e.target.checked
+    },
     // 登录：账号或者手机登录
     handleSubmit() {
       let that = this //将this指向的vue实例赋值给that
@@ -287,9 +303,9 @@ export default {
       getAction(that.urlRsa)
         .then(res => {
           if (res.result != null) {
-            that.backPubKey = res.result.data;
+            that.backPubKey = res.result.data
           }
-          
+
           // 使用账户密码登陆，tab的key值为tab1时，说明是账号密码登录
           if (that.customActiveKey === 'tab1') {
             //检测username和passwoord的值；其中{force: true}表示在change触发时是否再次校检
@@ -300,12 +316,14 @@ export default {
                 //loginParams.password = md5(values.password)
                 loginParams.password = values.password
                 // 执行登录操作
-
+                // 获取用户信息
+                that.formLogin.username = values.username
+                that.formLogin.password = values.password
                 // 生成客户端aes秘钥
                 that.genKey = aesUtil.genKey()
                 //key加密 登录信息
                 let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
-                
+
                 //  公钥加密aes秘钥
                 that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
 
@@ -317,26 +335,27 @@ export default {
                 }
                 if (res.result != null) {
                   that
-                  .Login(qs.stringify(loginParams1))
-                  .then(res => {
-                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
-                    // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
-                    this.departConfirm(res)
-                  })
-                  .catch(err => {
-                    that.requestFailed(err)
-                  })
+                    .Login(qs.stringify(loginParams1))
+                    .then(res => {
+                      // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                      // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
+                      this.departConfirm(res)
+                    })
+                    .catch(err => {
+                      that.requestFailed(err)
+                    })
                 } else {
                   that
-                  .Login(loginParams)
-                  .then(res => {
-                    // 根据归属部门，选择处理，0提示，2选择，1则直接登录
-                    
-                    this.departConfirm(res)
-                  })
-                  .catch(err => {
-                    that.requestFailed(err)
-                  })
+                    .Login(loginParams)
+                    .then(res => {
+                      // 登录成功，则存储登录信息到localstorage,有效期7天
+                      Vue.ls.set('FORM_LOGIN', that.formLogin, 7 * 24 * 60 * 60 * 1000)
+                      // 根据归属部门，选择处理，0提示，2选择，1则直接登录
+                      this.departConfirm(res)
+                    })
+                    .catch(err => {
+                      that.requestFailed(err)
+                    })
                 }
               }
             })
@@ -345,6 +364,7 @@ export default {
             that.form.validateFields(['phone', 'identifyCode'], { force: true }, (err, values) => {
               if (!err) {
                 loginParams = qs.stringify(Object.assign({}, values))
+                that.formLogin.phone = values.phone
                 that.loginBtn = true
                 that
                   .LoginByPhone(loginParams)
@@ -352,6 +372,7 @@ export default {
                     if (that.requiredTwoStepCaptcha) {
                       that.stepCaptchaVisible = true
                     } else {
+                      Vue.ls.set('FORM_LOGIN', that.formLogin, 7 * 24 * 60 * 60 * 1000)
                       this.departConfirm(res)
                     }
                   })
@@ -463,6 +484,7 @@ export default {
         this.inputCodeNull = false
       }
     },
+    // 部门选择
     departConfirm(res) {
       if (res.success) {
         let multi_depart = res.result.multi_depart
@@ -494,11 +516,6 @@ export default {
         this.validate_status = 'error'
         return false
       }
-      /* let name = {
-        corpName: this.departSelected.split('.')[2],
-        prjName: this.departSelected.split('.')[3],
-        departName: this.departSelected.split('.')[4]
-      } */
       let obj = {
         prjCode: this.departSelected.split('.')[0],
         orgCode: this.departSelected.split('.')[1],
@@ -532,7 +549,6 @@ export default {
     departChange(value) {
       this.validate_status = 'success'
       this.departSelected = value
-      console.log(value,'部门value')
     },
 
     /* 注册*/
@@ -555,7 +571,7 @@ export default {
     .ant-modal-body {
       padding: 40px;
       height: 320px;
-      .ant-col-20.ant-form-item-control-wrapper{
+      .ant-col-20.ant-form-item-control-wrapper {
         width: 100%;
       }
       .title {
@@ -577,7 +593,7 @@ export default {
         .ant-select-selection.ant-select-selection--single {
           width: 320px;
           height: 40px;
-          .ant-select-selection__rendered{
+          .ant-select-selection__rendered {
             margin: 0 13px;
           }
           div {
@@ -585,15 +601,15 @@ export default {
             line-height: 40px;
           }
         }
-        .ant-select-selection__placeholder{
+        .ant-select-selection__placeholder {
           margin-top: -20px;
         }
       }
-      .departButton{
+      .departButton {
         display: flex;
         justify-content: center;
         margin-top: 110px;
-        .ant-btn{
+        .ant-btn {
           height: 40px;
           width: 96px;
           margin-right: 10px;
@@ -602,15 +618,15 @@ export default {
     }
   }
 }
-.ant-select-dropdown.ant-select-dropdown--single.ant-select-dropdown-placement-bottomLeft{
-  .ant-select-dropdown-menu-item.departList{
+.ant-select-dropdown.ant-select-dropdown--single.ant-select-dropdown-placement-bottomLeft {
+  .ant-select-dropdown-menu-item.departList {
     line-height: 44px;
     padding: 0 12px;
     margin: 0 20px;
-    &:first-child{
+    &:first-child {
       margin-top: 19px;
     }
-    &:last-child{
+    &:last-child {
       margin-bottom: 19px;
     }
   }
