@@ -564,7 +564,6 @@ export default {
         this.form.setFieldsValue({ inputerFullname: this.nickname() })
         
         // 初始化时长计算字段
-        console.log(this.model.timeStart,'围殴副本');
         this.timeStartCheck = this.model.timeStart;
         this.timeEndCheck = this.model.timeEnd;
         // 初始化新任务通知
