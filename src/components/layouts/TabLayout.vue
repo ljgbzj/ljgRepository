@@ -67,7 +67,8 @@
     created() {
       if (this.$route.path != indexKey) {
         this.pageList.push({
-          name: 'dashboard-analysis',
+          //name: 'dashboard-analysis',
+          name: 'roomList-roomListOrder',
           path: indexKey,
           fullPath: indexKey,
           meta: {
