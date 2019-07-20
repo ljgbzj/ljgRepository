@@ -489,7 +489,7 @@
           that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
           that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
         }
-        console.log("鼠标点下" + "=> 当前行是 =>" + key + "当前列是 =>" + index)
+        // console.log("鼠标点下" + "=> 当前行是 =>" + key + "当前列是 =>" + index)
         if (items == 2){
           that.roomList[key].arrUseInfo[index].status = 0
         } else if (items == 1){
@@ -497,7 +497,6 @@
           // that.$message.warning(message)
           that.visibleOrder = true
           that.$refs.modalForm.edit(item.arrUseInfo[index]);
-          console.log(item.arrUseInfo[index],'打印阿斯达')
           that.orderTime = ''
         } else if (items == 0){
           that.roomList[key].arrUseInfo[index].status = 2
@@ -548,15 +547,24 @@
             that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
           })
           that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
-          that.visible = true //弹出表单
-          that.isMoving = false //关闭滑动
+          //判定时间是否可以选择
+          if ((new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()
+                || (new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()) {
+            that.$message.warning("不能选择过去的时间")
+            that.isMoving = false // 关闭滑动
+            that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
+            that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
+          }else {
+            that.visible = true //弹出表单
+            that.isMoving = false //关闭滑动
+          }
         }
       },
       mymouseOver: function(item, items ,index,key){
         let isMoving = this.isMoving
         const that = this
         if (!isMoving) return false
-        console.log("鼠标划过了" + "(" + key + "," + index + ")")
+        // console.log("鼠标划过了" + "(" + key + "," + index + ")")
         if (items == 0){
           // that.roomList[key].arrUseInfo[index] = 0
           that.roomList[that.startRow].arrUseInfo[index].status = 2
