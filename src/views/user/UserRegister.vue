@@ -28,8 +28,8 @@
             <a-form-item label="真实姓名" class="item">
               <a-input
                 class="userName"
-                placeholder="请输入真实姓名"
-                v-decorator="['realName',{ rules:[{required: true, message: '请输入真实姓名'}]}]"
+                placeholder="请输入真实姓名，中文或英文"
+                v-decorator="['realName',{ rules:[{required: true, message: ' '},{ validator: realnameVerify }]}]"
               ></a-input>
             </a-form-item>
             <a-form-item label="密码" class="item">
@@ -197,6 +197,18 @@ export default {
         callback('请输入用户名！')
       } else {
         callback('用户名格式不正确！')
+      }
+    },
+    // 真实姓名校检
+    realnameVerify(rule, val, callback) {
+      let value = val ? val : ''
+      let reg = /^([\u4e00-\u9fa5]{1,20}|[a-zA-Z\.\s]{1,20})$/
+      if(reg.test(value)){
+        callback()
+      }else if(value.length == 0){
+        callback('请输入姓名！')
+      }else{
+        callback('请输入正确的姓名！')
       }
     },
     // 密码校检
