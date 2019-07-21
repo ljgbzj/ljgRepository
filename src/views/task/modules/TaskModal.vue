@@ -32,7 +32,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="委托人">
-          <j-select-user-new :selectedDetails="departDetails" @userDetails="userDetails" class="userSelect"></j-select-user-new>
+          <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
         </a-form-item>
         <a-row :gutter="24">
           <a-col :span="24">
@@ -54,6 +54,7 @@
 <script>
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import { httpAction, getAction } from '@/api/manage'
+  import { CmpListMixin } from '@/mixins/CmpListMixin'
   import pick from 'lodash.pick'
   import moment from "moment"
   import { format } from 'path';
@@ -64,6 +65,7 @@
     components: {
       JSelectUserNew
     },
+    mixins: [CmpListMixin],
     data () {
       return {
         value: '',
@@ -89,7 +91,15 @@
         },
         assigneeName: '',
         assignee: '',
-        departDetails: []
+        selectUser: ['auditUsers1'],
+        auditUsers1: {
+          colum: 'auditUsers1',
+          value: [],
+          target: [
+            { to: 'auditUsername1', from: 'username' },
+            { to: 'auditFullname1', from: 'realname' }
+          ]
+        },
       }
     },
     created () {
@@ -100,7 +110,6 @@
       },
       edit (record) {
         this.form.resetFields();
-        this.departDetails = [];
         if(record.formData !== undefined) {
           this.model = Object.assign({},record.flowData.processVar, record.flowData, record.formData, {taskId: record.taskId});
         } else {
@@ -108,6 +117,7 @@
         }
         this.visible = true;
         this.taskId = record.taskId;
+        this.auditUsers1.value = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,
           'assigneeFullname',
@@ -135,8 +145,12 @@
             method = 'get'
             let formData = Object.assign(this.model, values, {api: this.value})
 
+            // 选人控件传值
+            let data = {};
+            this.uploadMan(data,that);
+
             formData = {
-              assignee: this.assigneeName,
+              assignee: data.auditUsername1,
               taskId: this.taskId
             }
             // formData = qs.stringify(formData)
@@ -157,9 +171,7 @@
       handleCancel () {
         this.close()
       },
-      userDetails(val) {
-        this.assigneeName = val.username;
-      }
+      loadData() {}
     }
   }
 </script>

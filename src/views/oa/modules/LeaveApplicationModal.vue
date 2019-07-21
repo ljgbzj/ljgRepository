@@ -137,9 +137,9 @@
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
                     <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]">
-                      <a-checkbox value="sms">手机短信</a-checkbox>
-                      <!-- <a-checkbox value="email">邮件</a-checkbox>
-                      <a-checkbox value="euc">站内消息</a-checkbox>-->
+                      <a-checkbox value="email">邮件</a-checkbox>
+                      <!-- <a-checkbox value="sms">手机短信</a-checkbox> -->
+                      <a-checkbox value="euc">站内消息</a-checkbox>
                     </a-checkbox-group>
                   </a-form-item>
                   <!--  人员选择控件 -->
