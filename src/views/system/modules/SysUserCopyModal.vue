@@ -220,7 +220,7 @@
           // add: "/test/sysUserCopy/add",
           // edit: "/test/sysUserCopy/edit",
           add: "/sys/user/add",
-          edit: "/sys/user/edit",
+          edit: "/sys/user/edit2",
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
           imgerver: window._CONFIG['domianURL']+"/sys/common/view",
