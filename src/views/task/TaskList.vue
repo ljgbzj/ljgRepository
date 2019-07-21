@@ -87,7 +87,7 @@
 
     <!-- 表单区域 -->
     <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
-    <task-modal ref="modalForm1"></task-modal>
+    <task-modal ref="modalForm1" @ok="modalFormOk"></task-modal>
   </a-card>
 </template>
 

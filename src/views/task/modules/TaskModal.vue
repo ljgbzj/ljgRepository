@@ -138,16 +138,20 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+            // 选人控件传值
+            let data = {};
+            this.uploadMan(data,that);
+            if (data.auditUsername1 == undefined) {
+              that.confirmLoading = false;
+              that.$message.warning('请选择委托人员！');
+              return;
+            }
             that.confirmLoading = true;
             let httpurl = ''
             let method = ''
             httpurl += this.url.add
             method = 'get'
-            let formData = Object.assign(this.model, values, {api: this.value})
-
-            // 选人控件传值
-            let data = {};
-            this.uploadMan(data,that);
+            let formData = Object.assign(this.model, values, {api: this.value});
 
             formData = {
               assignee: data.auditUsername1,
@@ -158,12 +162,15 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.confirmLoading = false;
+                that.close();
               }else{
+                that.confirmLoading = false;
                 that.$message.warning(res.message);
               }
             }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
+              // that.confirmLoading = false;
+              // that.close();
             })
           }
         })
