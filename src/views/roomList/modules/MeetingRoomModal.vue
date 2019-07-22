@@ -233,6 +233,7 @@
         indexOne:'',
         indexTwo:'',
         endTimeDisabled:true,
+        repeat:"1",
         labelCol: {
           xs: { span: 24 },
           sm: { span: 6 },
@@ -284,23 +285,12 @@
     },
     methods: {
       moment,
-      recordIndex(value) {
-        var indexOne = this.timeNode.indexOf(value)
-      },
-      check(value) {
-        var indexTwo = this.timeNode.indexOf(value)
-        console.log(indexTwo);
-        if((this.indexTwo - this.indexOne) <= 0){
-          //this.$message.warning("结束时间不能小于等于开始时间");
-          // alert(this.time2);
-        }
-      },
-
       add () {
         this.edit({});
       },
       edit (record) {
         const that = this
+        this.endTimeDisabled = true;
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
           .then(function (response){
             that.containNum = response.containNum
@@ -354,7 +344,15 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
+
+            // 判断开始时间是否小于结束时间，如果不是，提示用户重新输入
+            if (this.startCol > this.endCol) {
+              that.$message.warning("开始时间不能大于结束时间，请重新选择");
+              e.preventDefault();
+            }
+
             that.confirmLoading = true;
+
             let httpurl = '';
             let method = 'post';
             if(!this.model.id){
@@ -396,9 +394,20 @@
       },
       selectChat1(time1,index){
         this.startTime = time1;
-        this.startCol = index
-        this.timeNode_copy.splice(0, index+1);
-        this.endTimeDisabled = false;
+        this.startCol = index;
+
+        if (this.repeat === '1') {
+          this.timeNode_copy.splice(0, index+1);
+          this.endTimeDisabled = false;
+          this.repeat = this.repeat + 1;
+        } else {
+          //重复触发事件1即repeat大于1时，还原timeNode_copy数组，重新截取
+          this.timeNode_copy = [];
+          this.timeNode_copy = this.timeNode_copy.concat(this.timeNode);
+          this.timeNode_copy.splice(0, index+1);
+          this.endTimeDisabled = false;
+        }
+
         console.log(this.startCol,"开始的序号")
       },
       selectChat2(time2,index){
@@ -406,6 +415,7 @@
         this.endCol = index + this.startCol
         this.timeNode_copy = timeNode.slice();
         this.endTimeDisabled = true;
+        this.repeat = "1";
         console.log(this.endCol,"结束的序号")
       },
       selectMeetingRoomName(item){
