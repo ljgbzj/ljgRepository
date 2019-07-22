@@ -58,7 +58,7 @@
               </a-tab-pane>
               <a-tab-pane tab="最近添加" key="2">
                 <div style="border:1px solid #e8e8e8;height:360px;">
-                  <a-table
+                  <a-table               
                     size="middle"
                     rowKey="id"
                     :columns="columns1"
@@ -68,7 +68,7 @@
                     :scroll="{ y: 250 }"
                     style="border-top:unset;"
                     :rowSelection="{selectedRowKeys: selectedRowKeys,onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
-                    @change="handleTableChange">
+                    @change="handleTableChange3">
                   </a-table>
                 </div>
               </a-tab-pane>
@@ -145,13 +145,13 @@
           {
             title: '账号',
             align:"center",
-            // width: 80,
+            width: 100,
             dataIndex: 'username'
           },
           {
             title: '姓名',
             align:"center",
-            width: 80,
+            width: 100,
             dataIndex: 'realname'
           },
           {
@@ -269,7 +269,7 @@
         if(arg===1){
           this.ipagination.current = 1;
         }
-        var params = this.getQueryParams();//查询条件
+        var params = this.getQueryParams(this.ipagination);//查询条件
         // getAction(this.url.list,params).then((res)=>{
         //   if(res.success){
         //     this.dataSource1 = res.result.records;
@@ -279,6 +279,7 @@
         getUserList(params).then((res) => {
           var that = this;
           if (res.success) {
+            console.log(res,'刚开始进来');
             that.dataSource1 = res.result.records;
             // for (let i=0;i<that.dataSource1.length;i++) {
               // if (that.dataSource1[i].departNames.indexOf(",") != -1) {
@@ -293,9 +294,14 @@
           }
         })
       },
-      latestTwoSelected() {
-        let params = {};
+      latestTwoSelected(arg) {
+        // let params = {};
+        if(arg===1){
+          this.ipagination3.current = 1;
+        }
+        var params = this.getQueryParams(this.ipagination3);
         getLastlatestTwoList(params).then((res) => {
+          console.log(res,'最近两天');
           if (res.success) {
             this.dataSource3 = res.result.records;
             // this.assignRoleName(this.dataSource);
@@ -303,11 +309,11 @@
           }
         })
       },
-      getQueryParams(){
+      getQueryParams(ipagination){
         var param = Object.assign({}, this.queryParam,this.isorter);
         param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
+        param.pageNo = ipagination.current;
+        param.pageSize = ipagination.pageSize;
         return filterObj(param);
       },
       getQueryField(){
@@ -382,6 +388,16 @@
         }
         this.ipagination = pagination;
         this.loadData();
+      },
+      handleTableChange3(pagination, filters, sorter){
+        //分页、排序、筛选变化时触发
+        //TODO 筛选
+        if (Object.keys(sorter).length>0){
+          this.isorter.column = sorter.field;
+          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
+        }
+        this.ipagination3 = pagination;
+        this.latestTwoSelected();
       },
       queryDepartTree() {
         queryDepartTreeList().then((res) => {
