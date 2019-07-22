@@ -123,7 +123,6 @@
         </div>
         <!-- 注册完成 -->
         <div class="register-done" v-show="step2">
-          <!-- <div class="step step2" v-if="device === 'desktop'">注册成功</div> -->
           <div class="result">
             <img src="@/assets/img/register/registerdone.png" />
             <div>恭喜您完成注册</div>
@@ -180,8 +179,6 @@ export default {
       }
     }
   },
-  created() {},
-  computed: {},
   methods: {
     // username重复校检
     usernameOnChange(rule, val, callback) {
@@ -320,6 +317,9 @@ export default {
     },
     // 注册
     register() {
+      /* this.step1 = false
+      this.step2 = true */
+
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',

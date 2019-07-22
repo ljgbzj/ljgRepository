@@ -404,9 +404,7 @@ export default {
               &.checked {
                 background: rgba(109, 98, 255, 0.1);
                 border-radius: 4px;
-                & > a {
-                  color: #6d62ff;
-                }
+                
               }
             }
           }

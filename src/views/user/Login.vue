@@ -1,17 +1,17 @@
 <template>
   <div class="login">
-    <div class="desc">工程企业综合管理云平台</div>
+    <div class="login-title">工程企业综合管理云平台</div>
 
     <div class="main">
       <!--  -->
       <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
         <a-tabs
           :activeKey="customActiveKey"
-          :tabBarStyle="{ textAlign: 'left', borderBottom: 'unset' }"
+          :tabBarStyle="{ textAlign: 'left' }"
           @change="handleTabClick"
         >
           <!-- 账号密码登录 -->
-          <a-tab-pane key="tab1" tab="密码登录">
+          <a-tab-pane key="tab1" tab="账号登录">
             <a-form-item>
               <a-input
                 size="large"
@@ -28,6 +28,14 @@
                 autocomplete="false"
                 placeholder="密码"
               ></a-input>
+            </a-form-item>
+            <a-form-item class="form-out">
+              <a-checkbox @change="onChange" :defaultChecked="true" class="autologin">记住账号</a-checkbox>
+              <router-link
+                :to="{ name: 'login', params: { user: 'aaa'} }"
+                class="forge-password"
+                style="float: right;"
+              >忘记密码</router-link>
             </a-form-item>
           </a-tab-pane>
 
@@ -60,21 +68,12 @@
                   tabindex="-1"
                   :disabled="state.smsSendBtn"
                   @click.stop.prevent="getCaptcha"
-                  v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"
+                  v-text="!state.smsSendBtn && getCaptchaText || (state.time+' s')"
                 ></a-button>
               </a-col>
             </a-row>
           </a-tab-pane>
         </a-tabs>
-
-        <a-form-item class="form-out">
-          <a-checkbox @change="onChange" :defaultChecked="true" class="autologin">记住密码</a-checkbox>
-          <router-link
-            :to="{ name: 'login', params: { user: 'aaa'} }"
-            class="forge-password"
-            style="float: right;"
-          >忘记密码</router-link>
-        </a-form-item>
 
         <a-form-item class="login-btn">
           <!-- loginBtn控制按钮的实效状态和载入状态，为true时按钮实效，表现载入 -->
@@ -87,13 +86,10 @@
             :disabled="loginBtn"
           >登录</a-button>
         </a-form-item>
-        <a-form-item>
-          <div class="user-login-other">
-            <div class="register" @click="register">
-                <img src="@/assets/img/login/arrow.png" />
-                <span>注册</span>
-            </div>
-          </div>
+
+        <a-form-item class="register-btn">
+          <img src="@/assets/img/login/arrow.png" @click="register"/>
+          <span @click="register">注册</span>
         </a-form-item>
       </a-form>
 
@@ -122,8 +118,7 @@
         :closable="false"
         :footer="null"
         class="departChosen"
-        :destroyOnClose="true"
-      >
+        :destroyOnClose="true">
         <!-- <template slot="footer">
           <a-button type="primary" @click="departOk">确认</a-button>
         </template>-->
@@ -214,13 +209,13 @@ export default {
       stepCaptchaVisible: false,
       form: this.$form.createForm(this),
       state: {
-        time: 60,
+        time: 10,
         smsSendBtn: false
       },
+      getCaptchaText: '获取验证码',
       formLogin: {
         username: '',
         password: '',
-        //identifyCode: '',
         phone: '',
         rememberMe: true
       },
@@ -396,9 +391,10 @@ export default {
           that.formLogin.phone = val.phone
           let interval = window.setInterval(() => {
             if (that.state.time-- <= 0) {
-              that.state.time = 60
+              that.state.time = 10
               that.state.smsSendBtn = false
               window.clearInterval(interval)
+              this.getCaptchaText = '重新获取'
             }
           }, 1000)
 
