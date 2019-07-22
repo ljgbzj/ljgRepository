@@ -68,7 +68,7 @@
       />
 
       <!-- layout content -->
-      <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0px' }">
+      <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0px' }" :class="navTheme">
         <slot></slot>
       </a-layout-content>
 
@@ -469,7 +469,7 @@ body {
       }
     }
 
-    &.light {
+    &.light, &.dark {
       /* background-color: #fff; */
 
       .header-index-wide {

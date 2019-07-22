@@ -14,7 +14,7 @@
           <h3 class="setting-drawer-index-title">整体风格设置</h3>
 
           <div class="setting-drawer-index-blockChecbox">
-            <!-- <a-tooltip>
+            <a-tooltip>
               <template slot="title">
                 暗色菜单风格
               </template>
@@ -24,7 +24,7 @@
                   <a-icon type="check"/>
                 </div>
               </div>
-            </a-tooltip> -->
+            </a-tooltip>
 
             <a-tooltip>
               <template slot="title">

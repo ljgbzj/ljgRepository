@@ -50,6 +50,7 @@
                       :triggerChange="true"
                       placeholder="请选择类型"
                       dictCode="leave_type"
+                      :disabled="(this.nodeId != '' && this.nodeId != 'UserTask_0') || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
@@ -63,6 +64,7 @@
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeStart', validatorRules.templateStartT]"
                       @change="timeStart"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
@@ -74,20 +76,22 @@
                       format="YYYY-MM-DD HH:mm:ss"
                       v-decorator="[ 'timeEnd', validatorRules.templateEndT]"
                       @change="timeEnd"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 </a-col>
               </a-row>
-              <!-- <a-row :gutter="24">
+              <a-row :gutter="24">
                 <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假时长">
                     <a-input
+                      placeholder="请假申请"
                       v-model="timeLength"
                       disabled
                     />
                   </a-form-item>
                 </a-col>
-              </a-row> -->
+              </a-row>
               <!-- <a-row :gutter="24">
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="请假原因">
@@ -95,6 +99,7 @@
                       placeholder="请输入请假原因"
                       :rows="3"
                       v-decorator="[ 'reason', validatorRules.templateReason]"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     />
                   </a-form-item>
                 <!-- </a-col>
@@ -132,9 +137,9 @@
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
                     <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]">
-                      <a-checkbox value="email">邮件</a-checkbox>
+                      <!-- <a-checkbox value="email">邮件</a-checkbox> -->
                       <a-checkbox value="sms">手机短信</a-checkbox>
-                      <a-checkbox value="euc">站内消息</a-checkbox>
+                      <!-- <a-checkbox value="euc">站内消息</a-checkbox> -->
                     </a-checkbox-group>
                   </a-form-item>
                   <!--  人员选择控件 -->
@@ -312,6 +317,7 @@ import STable from '@/components/table/'
 import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import md5 from 'md5'
+import { async } from 'q';
 
 export default {
   name: 'LeaveApplicationModal',
@@ -418,9 +424,18 @@ export default {
           align: 'center'
         },
         {
-          title: '处理意见',
-          dataIndex: 'num',
-          key: 'num'
+          title: '审批意见',
+          dataIndex: '_taskComment',
+          key: '_taskComment',
+          customRender: (text, record, index) => {
+            let re = "";
+            if (!text) {
+              re = "无意见";
+            } else {
+              re = text;
+            }
+            return re;
+          }
         }
       ],
       goodsColumns1: [
@@ -490,7 +505,8 @@ export default {
       nodeName: '',
       timeStartCheck: '',
       timeEndCheck: '',
-      TimeBtn: ''
+      TimeBtn: '',
+      nodeId: ''
     }
   },
   filters: {
@@ -524,8 +540,12 @@ export default {
       this.edit({})
     },
     edit(record) {
-      this.form.resetFields()
+      this.form.resetFields();
+      if (record.nodeId != undefined) {
+        this.nodeId = record.nodeId;
+      }
       if (record.nodeName != undefined) {
+        
         this.nodeName = record.nodeName
       }
       if (record.formData !== undefined) {
@@ -560,7 +580,10 @@ export default {
         this.form.setFieldsValue({ timeStart: this.model.timeStart ? moment(this.model.timeStart) : null })
         this.form.setFieldsValue({ timeEnd: this.model.timeEnd ? moment(this.model.timeEnd) : null })
         this.form.setFieldsValue({ inputerFullname: this.nickname() })
-
+        
+        // 初始化时长计算字段
+        this.timeStartCheck = this.model.timeStart;
+        this.timeEndCheck = this.model.timeEnd;
         // 初始化新任务通知
         if (this.model.notifyMethod != undefined) {
           this.form.setFieldsValue({ notifyMethod: eval(this.model.notifyMethod) })
@@ -581,129 +604,77 @@ export default {
       this.timeStartCheck = '',
       this.timeEndCheck = ''
     },
-    handleOk() {
+   handleOk() {
       const that = this
       if (that.title == '查看') {
         that.close()
       } else {
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            // let that = this;
-            // setTimeout(function(){
-            //   that.TimeBtn = that.checkTime();
-            // },)
-            // setTimeout(function(){
-            //   console.log(this.TimeBtn,'niubi进来了');
-            //   console.log(this.TimeBtnC,'总开关');
-            //   if (this.TimeBtnC) {
-            //     that.confirmLoading = true
-            //     let httpurl = ''
-            //     let method = ''
-            //     let strFormData = Object.assign(this.model, values)
-            //     let strFlowData = {}
-            //     if (!this.model.id) {
-            //       httpurl += this.url.add
-            //       method = 'post'
-            //       strFlowData.api = '/process/startAndSubmit'
-            //       strFlowData.processDefinitionKey = 'leave'
-            //     } else {
-            //       httpurl += this.url.edit
-            //       method = 'post' // put修改
-            //     }
+       this.form.validateFields((err, values) => {
+        if (!err) {
 
-            //     //时间格式化
-            //     strFormData.timeStart = strFormData.timeStart
-            //       ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
-            //       : null
-            //     strFormData.timeEnd = strFormData.timeEnd
-            //       ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
-            //       : null
-
-            //     // 选人控件传值
-            //     this.uploadMan(strFormData,that);
-
-            //     // 上传组件
-            //     for (let i = 0; i < that.attachment.length; i++) {
-            //       strFormData.attachment = that.attachment[i].groupId
-            //     }
-
-            //     let params2 = {
-            //       strFlowData: JSON.stringify(strFlowData),
-            //       strFormData: JSON.stringify(strFormData),
-            //       strAttachment: JSON.stringify(this.attachment)
-            //     }
-                
-                
-            //     httpAction(httpurl, qs.stringify(params2), method)
-            //     .then(res => {
-            //       if (res.success) {
-            //         that.$message.success(res.message)
-            //         that.$emit('ok')
-            //       } else {
-            //         that.$message.warning('操作失败！')
-            //       }
-            //     })
-            //     .finally(() => {
-            //       that.confirmLoading = false
-            //       that.close()
-            //     })
-                
-            //   }
-            // },1000)
-
-            that.confirmLoading = true
-                let httpurl = ''
-                let method = ''
-                let strFormData = Object.assign(this.model, values)
-                let strFlowData = {}
-                if (!this.model.id) {
-                  httpurl += this.url.add
-                  method = 'post'
-                  strFlowData.api = '/process/startAndSubmit'
-                  strFlowData.processDefinitionKey = 'leave'
-                } else {
-                  httpurl += this.url.edit
-                  method = 'post' // put修改
-                }
-
-                //时间格式化
-                strFormData.timeStart = strFormData.timeStart
-                  ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
-                  : null
-                strFormData.timeEnd = strFormData.timeEnd
-                  ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
-                  : null
-
-                // 选人控件传值
-                this.uploadMan(strFormData,that);
-
-                // 上传组件
-                for (let i = 0; i < that.attachment.length; i++) {
-                  strFormData.attachment = that.attachment[i].groupId
-                }
-
-                let params2 = {
-                  strFlowData: JSON.stringify(strFlowData),
-                  strFormData: JSON.stringify(strFormData),
-                  strAttachment: JSON.stringify(this.attachment)
-                }
-                
-                
-                httpAction(httpurl, qs.stringify(params2), method)
-                .then(res => {
-                  if (res.success) {
-                    that.$message.success(res.message)
-                    that.$emit('ok')
-                  } else {
-                    that.$message.warning('操作失败！')
-                  }
-                })
-                .finally(() => {
-                  that.confirmLoading = false
-                  that.close()
-                })
             
+            let strFormData = Object.assign(this.model, values)
+
+            // 选人控件传值
+            this.uploadMan(strFormData,that);
+            if (!strFormData.auditUsername1) {
+              this.$message.warning('部门经理/组长不能为空！');
+              return;
+            } else if (!strFormData.auditUsername2){
+              this.$message.warning('部门主任不能为空！');
+              return;
+            }
+            that.confirmLoading = true
+            let httpurl = ''
+            let method = ''
+            let strFlowData = {}
+            if (!this.model.id) {
+              httpurl += this.url.add
+              method = 'post'
+              strFlowData.api = '/process/startAndSubmit'
+              strFlowData.processDefinitionKey = 'leave'
+            } else {
+              httpurl += this.url.edit
+              method = 'post' // put修改
+            }
+
+            //时间格式化
+            strFormData.timeStart = strFormData.timeStart
+              ? strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss')
+              : null
+            strFormData.timeEnd = strFormData.timeEnd
+              ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
+              : null
+
+            
+
+            // 上传组件
+            for (let i = 0; i < that.attachment.length; i++) {
+              strFormData.attachment = that.attachment[i].groupId
+            }
+
+            let params2 = {
+              strFlowData: JSON.stringify(strFlowData),
+              strFormData: JSON.stringify(strFormData),
+              strAttachment: JSON.stringify(this.attachment)
+            }
+            
+            
+            httpAction(httpurl, qs.stringify(params2), method)
+            .then(res => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+              } else {
+                that.$message.warning('操作失败！')
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+              that.close()
+            })
+              
           }
         })
       }
@@ -800,7 +771,7 @@ export default {
         let params1 = {
           strFlowData: JSON.stringify(strFlowData),
           strFormData: JSON.stringify(strFormData),
-          attachmentString: JSON.stringify(that.attachment)
+          strAttachment: JSON.stringify(that.attachment)
         }
         httpAction(httpurl, qs.stringify(params1), method)
           .then(res => {
@@ -852,7 +823,7 @@ export default {
       return new Promise(resolve => {
         resolve({
           data: that.arr
-        })
+        })   
       }).then(res => {
         return res
       })
@@ -893,6 +864,8 @@ export default {
       if (t != null) {
         this.timeStartCheck = t.format('YYYY-MM-DD HH:mm:ss');
         this.checkTime();
+      } else {
+        this.timeEndCheck = '';
       }
       
     },
@@ -900,6 +873,8 @@ export default {
       if (t != null) {
         this.timeEndCheck = t.format('YYYY-MM-DD HH:mm:ss');
         this.checkTime();
+      } else {
+        this.timeEndCheck = '';
       }
     },
     checkTime(){
@@ -913,15 +888,16 @@ export default {
           if (res.success != true) {
             this.$message.warning(res.message);
             flag = 0;
-            console.log(flag,'keyiya ');
-            return flag
+            return flag.promise
           } else {
-            console.log(flag,'keyiya');
-            return flag
+            return flag.promise
           }
         })
       }
     }
+
+   
+    
   },
   computed: {
     rollback() {
@@ -934,9 +910,19 @@ export default {
       return this.url.fileUpload
     },
     timeLength() {
-      this.$nextTick(() => {
-        return this.form.getFieldValue('timeStart');
-      })
+      if (this.timeEndCheck != null && this.timeStartCheck != null) {
+        let currentTimeLength = ((moment(this.timeEndCheck) - moment(this.timeStartCheck))/1000/60/60).toFixed(1);
+        if (currentTimeLength < 24) {
+          return currentTimeLength + '小时';
+        } else {
+          let day = Math.floor(currentTimeLength/24);
+          let hour = (currentTimeLength % 24).toFixed(1);
+          return day + '天' + hour + '小时'
+        }
+      } else {
+        return '0.0' + '小时'
+      }
+      
       
     },
     TimeBtnC() {
@@ -947,11 +933,6 @@ export default {
       }
     }
 
-  },
-  watch: {
-    'this.timeEndCheck'(val) {
-      console.log(val,'哈哈');
-    }
   }
 }
 </script>

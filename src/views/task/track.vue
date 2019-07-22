@@ -137,7 +137,7 @@
 		      {
             title: '执行人',
             align:"center",
-            dataIndex: 'assigneeName'
+            dataIndex: 'assigneeFullname'
           },
           {
             title: '操作',

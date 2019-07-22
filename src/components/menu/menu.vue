@@ -206,7 +206,8 @@ export default {
       let firstMenu = this.menu
       if (firstMenu && firstMenu.length > 0) {
         firstMenu.forEach((firstItem, firstIndex) => {
-          if (firstItem.path && firstItem.path === '/dashboard/analysis') {
+          if (firstItem.path && firstItem.path === '/roomList/roomListOrder') {
+          //if (firstItem.path && firstItem.path === '/dashboard/analysis') {
             this.clear()
           }
           if (firstItem.children && firstItem.children.length > 0) {

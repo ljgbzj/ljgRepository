@@ -87,11 +87,12 @@
 
     <!-- 表单区域 -->
     <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
+    <task-modal ref="modalForm1" @ok="modalFormOk"></task-modal>
   </a-card>
 </template>
 
 <script>
-  // import TaskModal from './modules/TaskModal'
+  import TaskModal from './modules/TaskModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
   import JDate from '@/components/cmp/JDate'
@@ -101,7 +102,8 @@
     name: "TaskList",
     mixins:[CmpListMixin],
     components: {
-      JDate
+      JDate,
+      TaskModal
     },
     data () {
       return {
@@ -179,7 +181,7 @@
           let that = this;
           if (res.success) {
             that.componentsUrl = res.result.formPath;
-            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName})
+            record = Object.assign(res.result, {taskId: record.taskId},{nodeName: record.nodeName},{nodeId: record.nodeId})
             setTimeout(function(){ 
               that.$refs.modalForm.edit(record);
               that.$refs.modalForm.title = "处理";

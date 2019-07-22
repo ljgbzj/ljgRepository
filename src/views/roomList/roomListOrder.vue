@@ -153,18 +153,26 @@
                 :wrapperCol="wrapperCol"
                 label="参与人数">
                 <a-input
+                  style="width: 50%"
                   placeholder="请输入参与人数"
-                  v-decorator="[ 'memberNumber', { rules: [{ required: true, message: '参与人数' }]}]" />
+                  v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
+                   />
+                最大容纳人数：{{this.containNum}}
               </a-form-item>
+              <!--v-decorator="[ 'memberNumber', validatorRules.memberNumber]"-->
             </a-col>
+
             <a-col :md="12" :sm="8">
               <a-form-item
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="联系人/主持人">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['contact',{ rules: [{ required: true, message: '联系人' }],initialValue:this.loginUserName}]"/>
+                <!--<j-select-user-by-dep-->
+                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
+                <j-select-user-new
+                  :selectedDetails="auditUsers1"
+                  @callback="setAuditUser"
+                  class="userSelect"></j-select-user-new>
               </a-form-item>
             </a-col>
 
@@ -286,12 +294,9 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="预订人">
-                <!--<j-select-user-by-dep-->
-                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new
-                  :selectedDetails="auditUsers1"
-                  @callback="setAuditUser"
-                  class="userSelect"></j-select-user-new>
+                <a-input
+                  :disabled="disabledValue"
+                  v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }],initialValue:this.loginUserName}]"/>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="8">
@@ -401,7 +406,8 @@
           { time: '17:00' }
         ],
         validatorRules: {
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }]},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
+          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]}
         },
         reserveUserName:'',
         reserveFullName:'',
@@ -421,6 +427,8 @@
           value: [],
           target: [{ to: 'joinMemberUserName', from: 'username' }, { to: 'joinMemberFullName', from: 'realname' }]
         },
+        // 最大容纳数
+        containNum:'',
       }
     },
     created () {
@@ -475,12 +483,13 @@
       myMouseDown: function(item, items,index,key){
         this.orderRoom = item.roomName
         this.orderRoomId = item.roomId
+        this.containNum = item.containNum
         const that = this
         if (that.endCol != null){
           that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
           that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
         }
-        console.log("鼠标点下" + "=> 当前行是 =>" + key + "当前列是 =>" + index)
+        // console.log("鼠标点下" + "=> 当前行是 =>" + key + "当前列是 =>" + index)
         if (items == 2){
           that.roomList[key].arrUseInfo[index].status = 0
         } else if (items == 1){
@@ -488,7 +497,6 @@
           // that.$message.warning(message)
           that.visibleOrder = true
           that.$refs.modalForm.edit(item.arrUseInfo[index]);
-          console.log(item.arrUseInfo[index],'打印阿斯达')
           that.orderTime = ''
         } else if (items == 0){
           that.roomList[key].arrUseInfo[index].status = 2
@@ -539,15 +547,24 @@
             that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
           })
           that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
-          that.visible = true //弹出表单
-          that.isMoving = false //关闭滑动
+          //判定时间是否可以选择
+          if ((new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()
+                || (new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()) {
+            that.$message.warning("不能选择过去的时间")
+            that.isMoving = false // 关闭滑动
+            that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
+            that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
+          }else {
+            that.visible = true //弹出表单
+            that.isMoving = false //关闭滑动
+          }
         }
       },
       mymouseOver: function(item, items ,index,key){
         let isMoving = this.isMoving
         const that = this
         if (!isMoving) return false
-        console.log("鼠标划过了" + "(" + key + "," + index + ")")
+        // console.log("鼠标划过了" + "(" + key + "," + index + ")")
         if (items == 0){
           // that.roomList[key].arrUseInfo[index] = 0
           that.roomList[that.startRow].arrUseInfo[index].status = 2
@@ -695,6 +712,16 @@
           callback();
         }else{
           callback("请输入正确格式的手机号码!");
+        }
+      },
+      memberNumbercheck(rule, value, callback){
+        const r = /^\+?[1-9][0-9]*$/;
+        if (r.test(value) && value <= this.containNum){
+          callback();
+        } else if (r.test(value) && value > this.containNum){
+          callback("人数超过了会议室最大容纳人数");
+        } else {
+          callback("请输入数字!");
         }
       },
       loadData() {}

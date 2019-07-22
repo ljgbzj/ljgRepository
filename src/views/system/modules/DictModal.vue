@@ -120,7 +120,7 @@
             let obj
             console.log(formData)
             if (!this.model.id) {
-              formData.delFlag = '1'
+              /*formData.delFlag = '1'*/
               obj = addDict(formData)
             } else {
               obj = editDict(formData)

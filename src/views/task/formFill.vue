@@ -76,7 +76,7 @@
 <script>
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
-import { setTimeout } from 'timers';
+  import { setTimeout } from 'timers';
 
   export default {
     name: "formFill",
@@ -159,7 +159,13 @@ import { setTimeout } from 'timers';
           }
           this.loading = false;
         })
-      }
+      },
+      // 覆盖刷新界面
+      modalFormOk() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
+        this.$emit('ok');
+      },
     },
     created() {
       this.loadData();

@@ -81,11 +81,13 @@ export function formatDate(value, fmt) {
 export function generateIndexRouter(data) {
 let indexRouter = [{
           path: '/',
-          name: 'dashboard',
+          name: 'roomList',
+          //name: 'dashboard',
           //component: () => import('@/components/layouts/BasicLayout'),
           component: resolve => require(['@/components/layouts/TabLayout'], resolve),
           meta: { title: '首页' },
-          redirect: '/dashboard/analysis',
+          redirect: '/roomList/roomListOrder',
+          //redirect: '/dashboard/analysis',
           children: [
             ...generateChildRouters(data)
           ]

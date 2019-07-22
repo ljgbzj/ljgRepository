@@ -144,7 +144,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="个性签名">
-          <a-textarea placeholder="请输入个性签名" v-decorator="['attachmentAutograph', {}]" />
+          <a-textarea placeholder="请输入个性签名" v-decorator="['personalSignature', {}]" />
         </a-form-item>
 
       </a-form>
@@ -175,9 +175,8 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import Vue from 'vue'
-  import moment from "moment"
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import {checkUsername} from "../../../api/api";
+
   import ATextarea from "ant-design-vue/es/input/TextArea";
 
   export default {
@@ -221,7 +220,7 @@
           // add: "/test/sysUserCopy/add",
           // edit: "/test/sysUserCopy/edit",
           add: "/sys/user/add",
-          edit: "/sys/user/edit",
+          edit: "/sys/user/edit2",
           userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
           fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
           imgerver: window._CONFIG['domianURL']+"/sys/common/view",
@@ -246,7 +245,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'realname', 'email', 'phone', 'groupName', 'officePhone','attachmentAutograph','hobbys'));
+          this.form.setFieldsValue(pick(this.model, 'realname', 'email', 'phone', 'groupName', 'officePhone','personalSignature','hobbys'));
 		  //时间格式化
           /*this.form.setFieldsValue({birthday:this.model.birthday?moment(this.model.birthday):null})*/
         });
