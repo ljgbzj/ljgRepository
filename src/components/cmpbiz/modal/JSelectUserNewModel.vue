@@ -63,7 +63,7 @@
                     rowKey="id"
                     :columns="columns1"
                     :dataSource="dataSource3"
-                    :pagination="ipagination"
+                    :pagination="ipagination3"
                     :loading="loading"
                     :scroll="{ y: 250 }"
                     style="border-top:unset;"
@@ -197,6 +197,18 @@
           pageSize: 10,
           pageSizeOptions: ['10', '20', '30'],
           showTotal: (total, range) => {
+            console.log(total,range,'想想就扯犊子');
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        ipagination3:{
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
           showQuickJumper: true,
@@ -287,7 +299,7 @@
           if (res.success) {
             this.dataSource3 = res.result.records;
             // this.assignRoleName(this.dataSource);
-            this.ipagination.total = res.result.total;
+            this.ipagination3.total = res.result.total;
           }
         })
       },

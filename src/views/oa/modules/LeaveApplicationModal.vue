@@ -137,9 +137,9 @@
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
                     <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]">
+                      <!-- <a-checkbox value="email">邮件</a-checkbox> -->
                       <a-checkbox value="sms">手机短信</a-checkbox>
-                      <!-- <a-checkbox value="email">邮件</a-checkbox>
-                      <a-checkbox value="euc">站内消息</a-checkbox>-->
+                      <!-- <a-checkbox value="euc">站内消息</a-checkbox> -->
                     </a-checkbox-group>
                   </a-form-item>
                   <!--  人员选择控件 -->
@@ -424,9 +424,18 @@ export default {
           align: 'center'
         },
         {
-          title: '处理意见',
-          dataIndex: 'num',
-          key: 'num'
+          title: '审批意见',
+          dataIndex: '_taskComment',
+          key: '_taskComment',
+          customRender: (text, record, index) => {
+            let re = "";
+            if (!text) {
+              re = "无意见";
+            } else {
+              re = text;
+            }
+            return re;
+          }
         }
       ],
       goodsColumns1: [
@@ -603,10 +612,22 @@ export default {
         // 触发表单验证
        this.form.validateFields((err, values) => {
         if (!err) {
+
+            
+            let strFormData = Object.assign(this.model, values)
+
+            // 选人控件传值
+            this.uploadMan(strFormData,that);
+            if (!strFormData.auditUsername1) {
+              this.$message.warning('部门经理/组长不能为空！');
+              return;
+            } else if (!strFormData.auditUsername2){
+              this.$message.warning('部门主任不能为空！');
+              return;
+            }
             that.confirmLoading = true
             let httpurl = ''
             let method = ''
-            let strFormData = Object.assign(this.model, values)
             let strFlowData = {}
             if (!this.model.id) {
               httpurl += this.url.add
@@ -626,8 +647,7 @@ export default {
               ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
               : null
 
-            // 选人控件传值
-            this.uploadMan(strFormData,that);
+            
 
             // 上传组件
             for (let i = 0; i < that.attachment.length; i++) {
@@ -803,7 +823,7 @@ export default {
       return new Promise(resolve => {
         resolve({
           data: that.arr
-        })
+        })   
       }).then(res => {
         return res
       })
@@ -844,6 +864,8 @@ export default {
       if (t != null) {
         this.timeStartCheck = t.format('YYYY-MM-DD HH:mm:ss');
         this.checkTime();
+      } else {
+        this.timeEndCheck = '';
       }
       
     },
@@ -851,6 +873,8 @@ export default {
       if (t != null) {
         this.timeEndCheck = t.format('YYYY-MM-DD HH:mm:ss');
         this.checkTime();
+      } else {
+        this.timeEndCheck = '';
       }
     },
     checkTime(){

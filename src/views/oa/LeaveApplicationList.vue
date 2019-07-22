@@ -23,7 +23,7 @@
           </a-col>
         <!-- <template v-if="toggleSearchStatus"> -->
           <a-col :md="6" :sm="8">
-            <a-form-item label="填写时间">
+            <a-form-item label="请假时间">
               <a-date-picker
                 v-model="queryParam.minStartTime"
                 :disabledDate="disabledStartDate"
@@ -35,7 +35,7 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="至">
               <a-date-picker
-                v-model="queryParam.maxStartTime"
+                v-model="queryParam.maxEndTime"
                 :disabledDate="disabledEndDate"
                 showTime
                 format="YYYY-MM-DD HH:mm:ss"
@@ -66,11 +66,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">发起</a-button>
-      <a-button @click="batchAbandone" type="primary" icon="delete">删除</a-button>
+      <!-- <a-button @click="batchAbandone" type="primary" icon="delete">删除</a-button> -->
       <a-button @click="searchReset" type="primary" icon="reload">刷新</a-button>
     </div>
 
     <!-- table区域-begin -->
+    <!-- :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type: 'radio'}" -->
     <div>
       <a-table
         ref="table"
@@ -81,9 +82,9 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type: 'radio'}"
+        
         @change="handleTableChange">
-
+        
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -117,6 +118,8 @@
   import { httpAction } from '@/api/manage'
   import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
   import qs from 'qs';
+  import moment from "moment"
+  import { filterObj } from '@/utils/util';
 
   export default {
     name: "LeaveApplicationList",
@@ -257,7 +260,7 @@
       },
       // 时间选择器的禁用封装
       disabledStartDate (startValue) {
-        const endValue = this.queryParam.maxStartTime;
+        const endValue = this.queryParam.maxEndTime;
         if (!startValue || !endValue) {
           return false;
         }
@@ -269,7 +272,26 @@
           return false;
         }
         return startValue.valueOf() >= endValue.valueOf();
-      }
+      },
+      // 时间条件覆盖
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        
+        // 时间格式化
+        param.minStartTime = param.minStartTime ? moment(param.minStartTime).format('YYYY-MM-DD HH:mm:ss') : null;
+        param.maxEndTime = param.maxEndTime ? moment(param.maxEndTime).format('YYYY-MM-DD HH:mm:ss') : null;
+
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        console.log(param,'不走你说气不气');
+        return filterObj(param);
+      },
     },
     beforeCreate(){
       // 自行定义方法，引用字典
