@@ -106,16 +106,6 @@
           float: right;
           cursor: pointer;
           color: #6D62FF;
-
-          :global(.ant-form-item-children) {
-            height: 16px;
-            display: flex;
-            align-items: center;
-
-            img {
-              margin-right: 4px;
-            }
-          }
         }
       }
     }
@@ -123,12 +113,14 @@
 }
 
 
-
+// mobile端样式
 #userLayout.user-layout-wrapper.mobile {
   .login {
     margin: 0;
     padding: 0;
-
+    .ant-tabs.ant-tabs-top.ant-tabs-line{
+      height: 267px;
+    }
     .login-title {
       font-size: 26px;
       color: #fff;
@@ -176,9 +168,11 @@
         }
       }
 
-      .user-login-other {
-        margin-top: 0;
-        margin-bottom: 0;
+      //注册跳转按钮
+      .register-btn {
+        font-size: 16px;
+        text-align: right;
+        color: #6D62FF;
       }
     }
   }

@@ -86,11 +86,9 @@
             :disabled="loginBtn"
           >登录</a-button>
         </a-form-item>
-
-        <a-form-item class="register-btn">
-          <img src="@/assets/img/login/arrow.png" @click="register"/>
-          <span @click="register">注册</span>
-        </a-form-item>
+        <div class="register-btn">
+          <span @click="register">立即注册</span>
+        </div>
       </a-form>
 
       <!-- 用户注册组件 -->
