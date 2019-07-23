@@ -1,26 +1,26 @@
 <template>
-  <!--<a-modal-->
-  <!--:title="title"-->
-  <!--:footer="null"-->
-  <!--:width="1000"-->
-  <!--:visible="visible"-->
-  <!--:confirmLoading="confirmLoading"-->
-  <!--@ok="handleOk"-->
-  <!--@cancel="handleCancel"-->
-  <!--cancelText="关闭"-->
-  <!--:maskClosable="false"-->
-  <!--style="top:5%;">-->
   <a-modal
-    title="会议室预定"
+    :footer="null"
+    :title="null"
     :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :closable="false"
+    cancelText="关闭"
+    v-dialogDrag
+    :maskClosable="false"
     style="top:5%;">
+    <div class="title">
+      <div>
+        修改预约
+      </div>
+      <a-icon type="close" class="closeIcon" @click="handleCancel" />
+    </div>
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" style="margin-top: 25px">
         <a-row :gutter="24">
 
           <!--会议主题-->
@@ -64,7 +64,7 @@
               :wrapperCol="wrapperCol"
               label="联系电话">
               <a-input
-                v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
+                v-model="contactPhone"/>
             </a-form-item>
           </a-col>
           <!--会议室名称-->
@@ -117,16 +117,6 @@
 
             </a-form-item>
           </a-col>
-          <!--<a-col :md="12" :sm="8" style="display: none">-->
-          <!--<a-form-item-->
-          <!--:labelCol="labelCol"-->
-          <!--:wrapperCol="wrapperCol"-->
-          <!--label="申请部门">-->
-          <!--<j-select-depart-->
-          <!--v-decorator="['applyDepart',{ }]"-->
-          <!--:trigger-change="true" ></j-select-depart>-->
-          <!--</a-form-item>-->
-          <!--</a-col>-->
         </a-row>
 
         <!--院内主要参与者-->
@@ -163,6 +153,25 @@
               <a-input
                 :disabled="disabledValue"
                 v-decorator="['reserveDate',{initialValue:moment().format('YYYY-MM-DD HH:mm:ss')}]"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24">
+            <a-form-item class="btnClass">
+              <a-button
+                @click="handleOk"
+                icon="check"
+                type="primary"
+                style="margin-right:10px"
+                class="confirm"
+              >提交</a-button>
+              <a-button
+                @click="handleCancel"
+                icon="close"
+                style="margin-right:10px"
+                class="cancel"
+              >关闭</a-button>
             </a-form-item>
           </a-col>
         </a-row>
@@ -220,6 +229,7 @@
     },
     data () {
       return {
+        contactPhone:'',
         disabledValue:true,
         meetingRoomList:'',
         meetingRoomId:'',
@@ -302,6 +312,7 @@
         that.meetingRoomId = record.meetingRoomId;
         that.startCol = record.startCol;
         that.endCol = record.endCol;
+        that.contactPhone = record.contactPhone;
 
         that.$nextTick(() => {
           setTimeout(()=>{
@@ -341,53 +352,60 @@
       },
       handleOk () {
         const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
+        if (that.reserveUserName == ''){
+          that.$message.warn("联系人/主持人不能为空")
+        }else  if (that.contactPhone == ''){
+          that.$message.warn("联系电话不能为空")
+        }else {
+          // 触发表单验证
+          this.form.validateFields((err, values) => {
+            if (!err) {
+              // 判断开始时间是否小于结束时间，如果不是，提示用户重新输入
+              if (this.startCol > this.endCol) {
+                that.$message.warning("开始时间不能大于结束时间，请重新选择");
+                e.preventDefault();
+              }
 
-            // 判断开始时间是否小于结束时间，如果不是，提示用户重新输入
-            if (this.startCol > this.endCol) {
-              that.$message.warning("开始时间不能大于结束时间，请重新选择");
-              e.preventDefault();
+              that.confirmLoading = true;
+
+              let httpurl = '';
+              let method = 'post';
+              if (!this.model.id) {
+                httpurl += this.url.edit;
+              } else {
+                httpurl += this.url.edit;
+              }
+              values.startCol = this.startCol;
+              values.endCol = this.endCol;
+              values.meetingRoomId = this.meetingRoomId;
+              let formData = Object.assign(this.model, values);
+              formData.contactPhone = that.contactPhone;
+              // 选人控件传值
+              that.uploadMan(formData, that);
+              that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit', formData)
+                .then(function(response) {
+                  if (response.code === 200) {
+                    console.log(response)
+                    httpAction(httpurl, qs.stringify(formData), method).then((res) => {
+                      if (res.success) {
+                        that.$message.success(res.message);
+                        that.$emit('ok');
+                      } else {
+                        that.$message.warning(res.message);
+                      }
+                    })
+                  } else {
+                    that.$message.warning(response.message);
+                    that.confirmLoading = false
+                  }
+                })
+                .finally(() => {
+                  that.confirmLoading = false;
+                  that.close();
+                })
             }
-
-            that.confirmLoading = true;
-
-            let httpurl = '';
-            let method = 'post';
-            if(!this.model.id){
-              httpurl+=this.url.edit;
-            }else{
-              httpurl+=this.url.edit;
-            }
-            values.startCol = this.startCol;
-            values.endCol = this.endCol;
-            values.meetingRoomId = this.meetingRoomId;
-            let formData = Object.assign(this.model, values);
-
-            that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit',formData)
-              .then(function (response){
-                if (response.code === 200){
-                  console.log(response)
-                  httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
-                    if(res.success){
-                      that.$message.success(res.message);
-                      that.$emit('ok');
-                    }else{
-                      that.$message.warning(res.message);
-                    }
-                  })
-                }else {
-                  that.$message.warning(response.message);
-                  that.confirmLoading = false
-                }
-              })
-              .finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
-          }
-        })
+          })
+        }
       },
       handleCancel () {
         this.close()
@@ -439,11 +457,23 @@
           callback("请输入正确格式的手机号码!");
         }
       },
-
+    },
+    watch :{
+      //监听联系人字段
+      reserveUserName: function () {
+        const that = this
+        that.axios.get('/meetingRoom/getInfo?userName=' + that.reserveUserName)
+          .then(function(response) {
+            console.log(response)
+            that.contactPhone = response.result.phone
+          })
+      }
     }
   }
 </script>
 
 <style lang="less" scoped>
   @import '~@assets/less/modal.less';
+  @import '~@assets/less/common.less';
+  @import '~@assets/less/topBtns.less';
 </style>

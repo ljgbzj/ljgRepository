@@ -1,17 +1,24 @@
 <template>
   <a-modal
-  :title="title"
-  :footer="null"
-  :width="1000"
-  :visible="visible"
-  :confirmLoading="confirmLoading"
-  @cancel="handleCancel"
-  cancelText="关闭"
-  :maskClosable="false"
-  style="top:5%;">
+    :footer="null"
+    :title="null"
+    :width="1000"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    :closable="false"
+    cancelText="关闭"
+    v-dialogDrag
+    :maskClosable="false"
+    style="top:5%;">
+    <div class="title">
+      <div>
+        预定信息
+      </div>
+      <a-icon type="close" class="closeIcon" @click="handleCancel" />
+    </div>
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" style="margin-top: 25px">
         <a-row :gutter="24">
           <!--会议主题-->
           <a-col :md="12" :sm="8">
@@ -78,26 +85,29 @@
                 v-model="this.meetingLevel"/>
             </a-form-item>
           </a-col>
-          <!--会议开始时间-->
+          <!--会议日期-->
           <a-col :md="12" :sm="8">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="会议开始时间">
+              label="会议日期">
               <a-input
                 :disabled="disabledValue"
-                v-model="this.startTime"/>
+                v-model="this.meetingDate"/>
             </a-form-item>
           </a-col>
-          <!--会议结束时间-->
           <a-col :md="12" :sm="8">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="会议结束时间">
-              <a-input
-                :disabled="disabledValue"
-                v-model="this.endTime"/>
+              label="会议时间">
+
+              <a-select style="width: 120px" :disabled="disabledValue" v-model='this.startTime'>
+              </a-select>
+              <span style="width: 20px;"> ~ </span>
+              <a-select style="width: 120px" :disabled="disabledValue" v-model='this.endTime'>
+              </a-select>
+
             </a-form-item>
           </a-col>
         </a-row>
@@ -168,7 +178,6 @@
     data () {
       return {
         disabledValue: true,
-        title:"预定信息",
         visible: false,
         model: {},
         indexOne:'',
@@ -191,6 +200,7 @@
         contactPhone:'',
         roomName:'',
         meetingLevel:'',
+        meetingDate: '',
         startTime:'',
         endTime:'',
         joinMember:'',
@@ -219,10 +229,11 @@
         this.joinMember=record.joinMember
         this.reserveUserName=record.reserveUserName
         this.reserveTime=record.reserveTime
+        this.meetingDate=record.meetingDate
         this.$nextTick(() => {
           setTimeout(()=>{
             this.form.setFieldsValue(
-              pick(this.model,'subject','containNum','username','contactPhone','roomName','meetingLevel','startTime','endTime','joinMember','reserveUserName','reserveTime')
+              pick(this.model,'subject','containNum','username','contactPhone','roomName','meetingLevel','startTime','endTime','joinMember','reserveUserName','reserveTime','meetingDate')
             )
           },0)
         });
