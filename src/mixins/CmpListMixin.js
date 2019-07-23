@@ -56,7 +56,7 @@ export const CmpListMixin = {
     //初始化字典配置 在自己页面定义
     this.initDictConfig();
     //
-    
+
   },
   methods:{
     loadData(arg) {
@@ -99,7 +99,7 @@ export const CmpListMixin = {
         sqp['superQueryParams']=encodeURI(this.superQueryParams)
       }
       var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
-      
+
       // 时间格式化
       param.minStartTime = param.minStartTime ? moment(param.minStartTime).format('YYYY-MM-DD HH:mm:ss') : null;
       param.maxStartTime = param.maxStartTime ? moment(param.maxStartTime).format('YYYY-MM-DD HH:mm:ss') : null;
@@ -182,10 +182,24 @@ export const CmpListMixin = {
         }
       });
     },
-    handleEdit: function (record) {
-      this.$refs.modalForm.edit(record);
-      this.$refs.modalForm.title = "编辑";
+    /*isDisabled是针对于通讯录的  其他的可以不传*/
+    handleEdit: function (record, isDisabled) {
+      this.$refs.modalForm.edit(record, isDisabled);
+      if(isDisabled){
+        this.$refs.modalForm.title = "查看";
+      }else{
+        this.$refs.modalForm.title = "编辑";
+      }
     },
+    /*/!*针对用户管理的*!/
+    handleEdit1: function (record, isDisabled) {
+      this.$refs.modalForm.edit(record, isDisabled);
+      if(isDisabled){
+        this.$refs.modalForm.title = "查看";
+      }else{
+        this.$refs.modalForm.title = "编辑";
+      }
+    },*/
     handleAdd: function () {
       this.$refs.modalForm.add();
       this.$refs.modalForm.title = "新增";
@@ -468,12 +482,6 @@ export const CmpListMixin = {
     setAuditUser(val){    //val:{ colum:'' , target   ,value }
       for(var i=0;i<this[val.colum].target.length;i++){
         this[this[val.colum].target[i].to] = val.value[this[val.colum].target[i].from];
-        if (i == 0) {
-          let keys = this[val.colum].target[i].to;
-          this.form.setFieldsValue({
-            [keys]: val.value[this[val.colum].target[i].from]
-          })
-        }
       }
     },
     // 初始化选人
