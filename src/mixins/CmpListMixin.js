@@ -468,6 +468,12 @@ export const CmpListMixin = {
     setAuditUser(val){    //val:{ colum:'' , target   ,value }
       for(var i=0;i<this[val.colum].target.length;i++){
         this[this[val.colum].target[i].to] = val.value[this[val.colum].target[i].from];
+        if (i == 0) {
+          let keys = this[val.colum].target[i].to;
+          this.form.setFieldsValue({
+            [keys]: val.value[this[val.colum].target[i].from]
+          })
+        }
       }
     },
     // 初始化选人

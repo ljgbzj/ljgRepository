@@ -77,7 +77,7 @@
         <!-- </a-card> -->
       </a-col> 
       <a-col :span="1">
-        <a-icon type="right" class="selectUserIcon" style="margin-top:200px;width:30px;height:30px;line-height:32px;text-algin:center;border-radius:50%;background: rgba(109,98,255,0.1)"/>
+        <!-- <a-icon type="right" class="selectUserIcon" style="margin-top:200px;width:30px;height:30px;line-height:32px;text-algin:center;border-radius:50%;background: rgba(109,98,255,0.1)"/> -->
       </a-col>
       <a-col :span="10">
         <!-- <a-card title="用户选择" :bordered="true"> -->
@@ -279,7 +279,6 @@
         getUserList(params).then((res) => {
           var that = this;
           if (res.success) {
-            console.log(res,'刚开始进来');
             that.dataSource1 = res.result.records;
             // for (let i=0;i<that.dataSource1.length;i++) {
               // if (that.dataSource1[i].departNames.indexOf(",") != -1) {
@@ -301,7 +300,6 @@
         }
         var params = this.getQueryParams(this.ipagination3);
         getLastlatestTwoList(params).then((res) => {
-          console.log(res,'最近两天');
           if (res.success) {
             this.dataSource3 = res.result.records;
             // this.assignRoleName(this.dataSource);
