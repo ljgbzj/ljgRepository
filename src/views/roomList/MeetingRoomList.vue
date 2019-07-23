@@ -86,7 +86,7 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <meetingRoom-modal ref="modalForm" @ok="modalFormOk"></meetingRoom-modal>
+    <meetingRoom-modal ref="modalForm" @ok="modalFormOk" @searchQuery="searchQuery"></meetingRoom-modal>
   </a-card>
 </template>
 
