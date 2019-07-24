@@ -188,8 +188,8 @@
         validatorRules:{
         },
         url: {
-          add: "/flowConfig/flowConfig/add",
-          edit: "/flowConfig/flowConfig/edit",
+          add: "/sysFlow/flowConfig/add",
+          edit: "/sysFlow/flowConfig/edit",
         },
       }
     },

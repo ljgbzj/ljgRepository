@@ -25,8 +25,8 @@
           </template>
         <template v-if="toggleSearchStatus">
           <a-col :md="6" :sm="8">
-            <a-form-item label="功能是否弃用">
-              <a-input placeholder="请输入功能是否弃用" v-model="queryParam.status"></a-input>
+            <a-form-item label="功能状态">
+              <a-input placeholder="请输入功能状态" v-model="queryParam.status"></a-input>
             </a-form-item>
           </a-col>
         </template>
@@ -137,25 +137,6 @@
              dataIndex: 'formName'
            },
            {
-             title: '描述',
-             align:"center",
-             dataIndex: 'description'
-           },
-           {
-             title: '功能是否弃用（0正常 1弃用）',
-             align:"center",
-             dataIndex: 'status',
-             customRender: (text, record, index) => {
-               //字典值替换通用方法
-               return filterDictText(this.statusDictOptions, text);
-             }
-           },
-           {
-             title: '上级菜单名称',
-             align:"center",
-             dataIndex: 'parentMenuName'
-           },
-           {
              title: '菜单名称',
              align:"center",
              dataIndex: 'menuName'
@@ -171,39 +152,29 @@
              dataIndex: 'formPath'
            },
            {
-             title: '后端package所在路径(如:oa/leaveApplication）',
+             title: '后端代码路径',
              align:"center",
              dataIndex: 'packagePath'
            },
            {
-             title: '实体类名（首字母改为小写字母）',
+             title: '实体类名',
              align:"center",
              dataIndex: 'entityName'
            },
            {
-             title: '表单数据表名',
+             title: '数据表名',
              align:"center",
              dataIndex: 'formTableName'
            },
            {
-             title: '表单所在数据库名',
+             title: '数据库名',
              align:"center",
              dataIndex: 'formDbName'
            },
            {
-             title: '维护人员用户名',
-             align:"center",
-             dataIndex: 'maintainUserName'
-           },
-           {
-             title: '维护人员姓名',
+             title: '技术支持',
              align:"center",
              dataIndex: 'maintainUserFullname'
-           },
-           {
-             title: '维护人员联系电话',
-             align:"center",
-             dataIndex: 'maintainUserPhoneNum'
            },
           {
             title: '操作',
@@ -213,9 +184,9 @@
           }
         ],
 		url: {
-          list: "/sysFlow/flowConfig/list",
-          delete: "/sysFlow/flowConfig/delete",
-          deleteBatch: "/sysFlow/flowConfig/deleteBatch",
+          list: "sysFlow/flowConfig/list",
+          delete: "sysFlow/flowConfig/delete",
+          deleteBatch: "sysFlow/flowConfig/deleteBatch",
           exportXlsUrl: "sysFlow/flowConfig/exportXls",
           importExcelUrl: "sysFlow/flowConfig/importExcel",
        },
