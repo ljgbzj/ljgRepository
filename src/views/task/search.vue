@@ -143,7 +143,7 @@
           }
         ],
 		    url: {
-          list: "/flowable/form/list",
+          list: "/sysFlow/flowConfig/list",
           form: "/flowable/tasks/form"
         },
         rowkey: '',

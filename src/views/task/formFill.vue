@@ -124,7 +124,7 @@
           }
         ],
 		    url: {
-          list: "/flowable/formType/list",
+          list: "/sysFlow/flowConfig/list",
           form: "/flowable/tasks/form"
         },
         rowkey: '',
