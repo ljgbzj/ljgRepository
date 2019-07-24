@@ -22,10 +22,6 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--              <a @click="handleToggleSearch" style="margin-left: 8px">-->
-              <!--                {{ toggleSearchStatus ? '收起' : '展开' }}-->
-              <!--                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--              </a>-->
             </span>
           </a-col>
 
@@ -35,18 +31,13 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
-      <!--      <a-button type="primary" icon="download" @click="handleExportXls('meeting')">导出</a-button>-->
-      <!--      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-      <!--        <a-button type="primary" icon="import">导入</a-button>-->
-      <!--      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
-      <div class="ant-alert ant-alert-info">
+      <div class="ant-alert ant-alert-info" style="margin-left: 0px">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -95,7 +86,7 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <meetingRoom-modal ref="modalForm" @ok="modalFormOk"></meetingRoom-modal>
+    <meetingRoom-modal ref="modalForm" @ok="modalFormOk" @searchQuery="searchQuery"></meetingRoom-modal>
   </a-card>
 </template>
 
@@ -106,7 +97,6 @@
   import { deleteAction } from '@/api/manage'
   import JDate from '@/components/cmp/JDate'
   import { mapGetters } from 'vuex'
-  import Vue from 'vue'
 
   export default {
     name: "MeetingRoomList",
@@ -154,7 +144,8 @@
             title: '会议日期',
             align:"center",
             dataIndex: 'meetingDate',
-            sorter:"true"
+            // sorter:"true"
+            sorter: (a, b) =>  (new Date(a.meetingDate).getTime()) -  (new Date(b.meetingDate).getTime()),
           },
           {
             title: '开始时间',
@@ -169,8 +160,6 @@
           {
             title: '状态',
             align:"center",
-            // dataIndex: this.getStatus('meetingDate','meetingStartTime','meetingEndTime'),
-            // dataIndex: this.test('meetingDate' , 'meetingStartTime'),
             dataIndex: 'state',
             scopedSlots: { customRender: 'state' },
             filters: [
@@ -178,6 +167,15 @@
               { text: '进行中', value: '进行中' },
               { text: '已结束', value: '已结束' },
             ],
+            onFilter : (value, record) => {
+              if (value == '未开始') {
+                return (new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() > (new Date()).getTime()
+              }else if (value == '进行中') {
+                return (new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() <= (new Date()).getTime() && (new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() >= (new Date()).getTime()
+              }else if (value == '已结束') {
+                return (new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() < (new Date()).getTime()
+              }
+            }
           },
           {
             title: '操作',
@@ -212,7 +210,6 @@
         }
       });
     },
-
     methods: {
       ...mapGetters(["userId"]),
       handleDelete: function(id) {
@@ -220,7 +217,7 @@
           this.$message.error("请设置url.delete属性!")
           return
         }
-        var that = this;
+        const that = this;
         this.$confirm({
           title: "确认取消",
           content: "是否取消预约?",
@@ -236,11 +233,7 @@
           }
         });
       },
-      handleEdit: function(record) {
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-      },
-    }
+    },
   }
 </script>
 <style lang="less" scoped>

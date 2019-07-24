@@ -1,14 +1,16 @@
 .desc {
+
   .title {
     height: 62px;
     font-size: 64px;
     font-family: SourceHanSansCN-Bold;
     font-weight: bold;
-    color: rgba(255, 255, 255, 1);
+    color: #fff;
     line-height: 40px;
     margin-bottom: 39px;
   }
-  .title.title-desc{
+
+  .title.title-desc {
     font-size: 40px;
   }
 
@@ -18,7 +20,7 @@
     font-size: 16px;
     font-family: SourceHanSansCN-Normal;
     font-weight: 400;
-    color: rgba(255, 255, 255, 1);
+    color: #fff;
     line-height: 32px;
     margin-bottom: 59px;
   }
@@ -32,31 +34,18 @@
     font-family: MicrosoftYaHei;
     font-weight: 400;
     line-height: 32px;
+    cursor: pointer;
   }
 
-  button.login {
+  button.chosed {
     color: #6857ff;
     background-color: #fff;
-
-    &:hover {
-      background: none;
-      color: rgba(255, 255, 255, 1);
-      border: 1px solid rgba(255, 255, 255, 1);
-      cursor: pointer;
-    }
   }
 
-  button.register {
+  button.unchosed {
     color: #fff;
     background-color: #6857ff;
     border: 1px solid rgba(255, 255, 255, 1);
-
-    &:hover {
-      color: #6857ff;
-      background-color: #fff;
-      border: 1px solid rgba(255, 255, 255, 1);
-      cursor: pointer;
-    }
   }
 
 }
@@ -64,23 +53,32 @@
 /* 移动端适配 */
 #userLayout.user-layout-wrapper {
   &.mobile {
-    div {
-      text-align: center;
-      font-size: 2rem;
-      margin-top: 20%;
-    }
+    .desc {
 
-    p {
-      width: 80%;
-      margin: 10% auto 20%;
-      height: auto;
-      font-size: 1rem;
-    }
+      .title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-top: 20%;
+        margin-bottom: 0;
+      }
+      .title.title-desc{
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
 
-    a {
-      button {
-        margin: 10px;
+      p {
+        width: 80%;
+        margin: 10% auto 10%;
+        height: auto;
+        font-size: 1rem;
+      }
+      
+      a {
+        button {
+          margin: 10px;
+        }
       }
     }
+
   }
 }

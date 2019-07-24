@@ -77,6 +77,7 @@
               ></a-input>
               <a-button
                 class="get-phone-code"
+                type="primary"
                 :disabled="state.smsSendBtn"
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"
                 @click="getCode"
@@ -108,13 +109,12 @@
             <!-- 单选框，服务条款 -->
             <a-checkbox @change="getChecked">
               <span>我同意</span>&nbsp;
-              <a href="/">服务条款</a>
+              <a href="#">服务条款</a>
             </a-checkbox>
             <!-- 提交 下一步 -->
             <div class="next-container">
               <span class="registered" @click="registered">
                 已有账号登录
-                <img src="@/assets/img/register/left.png" />
               </span>
               <a-button type="primary" @click.stop.prevent="register">注册</a-button>
               <span class="help">帮助中心</span>
@@ -123,7 +123,6 @@
         </div>
         <!-- 注册完成 -->
         <div class="register-done" v-show="step2">
-          <!-- <div class="step step2" v-if="device === 'desktop'">注册成功</div> -->
           <div class="result">
             <img src="@/assets/img/register/registerdone.png" />
             <div>恭喜您完成注册</div>
@@ -180,8 +179,6 @@ export default {
       }
     }
   },
-  created() {},
-  computed: {},
   methods: {
     // username重复校检
     usernameOnChange(rule, val, callback) {
@@ -320,6 +317,9 @@ export default {
     },
     // 注册
     register() {
+      /* this.step1 = false
+      this.step2 = true */
+
       if (!this.checked) {
         this.$notification['error']({
           message: '提示',

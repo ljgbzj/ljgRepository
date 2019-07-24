@@ -19,14 +19,16 @@
 
       <div class="title">
         <div>
-          <img src="@assets/img/login/edit.png" />
+
+          <img v-if="!isDisabled" src="@assets/img/login/edit.png" />
+          <img v-if="isDisabled" src="@assets/img/login/view.png" />
           {{title}}
         </div>
         <a-icon type="close" class="closeIcon" @click="handleCancel" />
       </div>
 
-    <a-spin :spinning="confirmLoading">
-      <a-form :form="form" class="row">
+    <a-spin :spinning="confirmLoading" disabled>
+      <a-form :form="form"  class="row" style="margin-top:15px">
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -34,8 +36,8 @@
           label="姓名">
           <a-input  disabled placeholder="请输入姓名" v-decorator="['realname', {}]" />
         </a-form-item>
-        <a-form-item label="头像" :labelCol="labelCol1" :wrapperCol="wrapperCol1" >
-          <a-upload
+        <a-form-item label="头像"  :labelCol="labelCol1" :wrapperCol="wrapperCol1" >
+          <a-upload :disabled='isDisabled'
             listType="picture-card"
             class="avatar-uploader"
             :showUploadList="false"
@@ -56,60 +58,18 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="电子邮件">
-          <a-input placeholder="请输入电子邮件" v-decorator="['email', validatorRules.email]" />
+          <a-input :disabled='isDisabled' placeholder="请输入电子邮件" v-decorator="['email', validatorRules.email]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="手机号码">
-          <a-input placeholder="请输入手机号码" v-decorator="['phone', validatorRules.phone]" />
+          <a-input :disabled='isDisabled' placeholder="请输入手机号码" v-decorator="['phone', validatorRules.phone]" />
         </a-form-item>
-       <!-- <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="部门code">
-          <a-input placeholder="请输入部门code" v-decorator="['orgCode', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="状态(1：正常  2：冻结 ）">
-          <a-input-number v-decorator="[ 'status', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="删除状态（0，正常，1已删除）">
-          <a-input placeholder="请输入删除状态（0，正常，1已删除）" v-decorator="['delFlag', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="同步工作流引擎1同步0不同步">
-          <a-input placeholder="请输入同步工作流引擎1同步0不同步" v-decorator="['activitiSync', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="所属租户">
-          <a-input placeholder="请输入所属租户" v-decorator="['corpCode', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="所属项目">
-          <a-input placeholder="请输入所属项目" v-decorator="['prjCode', {}]" />
-        </a-form-item>-->
-        <!--<a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="小组名称">
-          <a-input placeholder="请输入小组名称" v-decorator="['groupName', {}]" />
-        </a-form-item>-->
         <a-form-item label="所属小组" :labelCol="labelCol"
                      :wrapperCol="wrapperCol">
-          <a-select
-            v-decorator="['groupName',{rules: [{ required: true, message: '请选择所属小组！' }]}]"
+          <a-select :disabled='isDisabled'
+            v-decorator="['groupName',{rules: [{ required: false, message: '请选择所属小组！' }]}]"
             placeholder="请选择所属小组">
             <a-select-option value="集团级平台">集团级平台</a-select-option>
             <a-select-option value="电网、水电">电网、水电</a-select-option>
@@ -132,32 +92,32 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="办公号码">
-          <a-input placeholder="请输入办公号码" v-decorator="['officePhone', {}]" />
+          <a-input :disabled='isDisabled' placeholder="请输入办公号码" v-decorator="['officePhone', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="兴趣爱好">
-          <a-input placeholder="请输入兴趣爱好" v-decorator="['hobbys', {}]" />
+          <a-input :disabled='isDisabled' mexlength="" placeholder="请输入兴趣爱好" v-decorator="['hobbys', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="个性签名">
-          <a-textarea placeholder="请输入个性签名" v-decorator="['personalSignature', {}]" />
+          <a-textarea mexlength="" v-bind:disabled='isDisabled' placeholder="请输入个性签名" v-decorator="['personalSignature', {}]" />
         </a-form-item>
 
       </a-form>
-      <a-row :gutter="24"  style=" margin-left: 510px">
-        <a-col :md="24" :sm="8" >
-          <a-form-item class="btnClass">
+      <a-row :gutter="24" >
+        <a-col :md="24" :sm="8">
+          <a-form-item class="btnClass1" >
             <a-button
               @click="handleCancel"
               icon="close"
               style="margin-right:10px"
               class="cancel"
             >关闭</a-button>
-            <a-button
+            <a-button :disabled="isDisabled"
               @click="handleOk"
               icon="check"
               type="primary"
@@ -186,6 +146,7 @@
       return {
         title:"操作",
         visible: false,
+        isDisabled: false,
         model: {
 
         },
@@ -195,7 +156,7 @@
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 20 },
+          sm: { span: 18 },
         },
         labelCol1: {
           xs: { span: 24 },
@@ -240,7 +201,12 @@
       add () {
         this.edit({});
       },
-      edit (record) {
+      edit (record, isDisabled) {
+        if(isDisabled){
+          this.isDisabled = isDisabled;
+        }else{
+          this.isDisabled =false;
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -298,7 +264,7 @@
 
 
       validatePhone(rule, value, callback){
-        if(!value || new RegExp(/^1[3|4|5|6|7|8][0-9]\d{8}$/).test(value)){
+        if(!value || new RegExp(/^1[3|4|5|6|7|8|9][0-9]\d{8}$/).test(value)){
           callback();
         }else{
           callback("请输入正确格式的手机号码!");
@@ -358,5 +324,36 @@
 
 <style lang="less" scoped>
   @import '~@assets/less/modal.less';
+  .btnClass1 {
+    // margin-top: 20px;
+    :global(.ant-form-item-control-wrapper) {
+      // width: 100%;
+      text-align: center;
+      margin-top: 20px;
+      button {
+        margin: 0;
+        padding: 0;
+        border: 1px solid transparent;  //自定义边框
+        outline: none;  //消除默认点击蓝色边框效果
+        margin-right:10px;
+      }
+      .cancel {
+        min-width:96px;
+        height:40px;
+        background:rgba(238,238,238,1);
+        border-radius:4px;
+        color:rgba(51,51,51,1);
+        padding: 5px;
+      }
+      .confirm {
+        min-width:96px;
+        height:40px;
+        // background:rgba(109,98,255,1);
+        border-radius:4px;
+        // color: rgba(255,255,255,1);
+        padding: 5px;
+      }
+    }
+  }
 
 </style>

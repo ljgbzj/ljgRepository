@@ -4,9 +4,9 @@
     <div class="title title-desc">小微工程企业综合管理云平台</div>
     <p>云办公平台专注服务于各大数字化系统，汇集存储各大系统的信息数据。平台有大量的组件可以直接使用，提高项目的开发效率，减少开发工作量。</p>
     <router-link to="/user/login">
-      <button class="login">登录</button>
+      <button :class="loginClass">登录</button>
     </router-link>
-    <button @click="register" class="register">注册</button>
+    <button @click="register" @mouseover="addClass" @mouseleave="removeClass" :class="registerClass">注册</button>
 
     <!-- 三步注册组件 -->
     <!-- 加v-if可以在关闭注册表单时清除表单数据 -->
@@ -27,7 +27,9 @@ export default {
   name: 'description',
   data() {
     return {
-      visible: false  // 控制注册组件显隐
+      visible: false,  // 控制注册组件显隐
+      registerClass: 'unchosed',
+      loginClass: 'chosed'
     }
   },
   components: {
@@ -41,6 +43,14 @@ export default {
     // 关闭注册对话框
     closeregister() {
       this.visible = false
+    },
+    addClass() {
+      this.registerClass = 'chosed'
+      this.loginClass = 'unchosed'
+    },
+    removeClass() {
+      this.registerClass = 'unchosed'
+      this.loginClass = 'chosed'
     }
   }
 }

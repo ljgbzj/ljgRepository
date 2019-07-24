@@ -1,26 +1,26 @@
 <template>
-  <!--<a-modal-->
-  <!--:title="title"-->
-  <!--:footer="null"-->
-  <!--:width="1000"-->
-  <!--:visible="visible"-->
-  <!--:confirmLoading="confirmLoading"-->
-  <!--@ok="handleOk"-->
-  <!--@cancel="handleCancel"-->
-  <!--cancelText="关闭"-->
-  <!--:maskClosable="false"-->
-  <!--style="top:5%;">-->
   <a-modal
-    title="会议室预定"
+    :footer="null"
+    :title="null"
     :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :closable="false"
+    cancelText="关闭"
+    v-dialogDrag
+    :maskClosable="false"
     style="top:5%;">
+    <div class="title">
+      <div>
+        {{title}}
+      </div>
+      <a-icon type="close" class="closeIcon" @click="handleCancel" />
+    </div>
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" style="margin-top: 25px">
         <a-row :gutter="24">
 
           <!--会议主题-->
@@ -29,7 +29,9 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="会议主题">
-              <a-input placeholder="请输入会议主题" v-decorator="['subject', validatorRules.subject]" />
+              <a-input
+                :disabled="disabedVal"
+                placeholder="请输入会议主题" v-decorator="['subject', validatorRules.subject]" />
             </a-form-item>
           </a-col>
           <!--参与人数-->
@@ -39,6 +41,7 @@
               :wrapperCol="wrapperCol"
               label="参与人数">
               <a-input
+                :disabled="disabedVal"
                 style="width: 50%"
                 placeholder="请输入参与人数"
                 v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
@@ -54,7 +57,12 @@
               <j-select-user-new
                 :selectedDetails="auditUsers1"
                 @callback="setAuditUser"
-                class="userSelect"></j-select-user-new>
+                class="userSelect"
+              v-if="this.action !== 2"></j-select-user-new>
+              <a-input
+                v-if="this.action === 2 "
+                :disabled="disabledValue"
+                v-model="this.reserveFullName"/>
             </a-form-item>
           </a-col>
 
@@ -64,7 +72,8 @@
               :wrapperCol="wrapperCol"
               label="联系电话">
               <a-input
-                v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
+                :disabled="disabedVal"
+                v-model="contactPhone"/>
             </a-form-item>
           </a-col>
           <!--会议室名称-->
@@ -74,7 +83,9 @@
               :wrapperCol="wrapperCol"
               label="会议室名称">
               <!--<a-input placeholder="请输入会议室名" v-decorator="['meetingRoom', validatorRules.meetingRoom]"/>-->
-              <a-select v-decorator="['meetingRoom', {}]">
+              <a-select
+                :disabled="disabedVal"
+                v-decorator="['meetingRoom', {}]">
                 <a-select-option v-for="(item,index) in meetingRoomList" :key="item.roomName" @click="selectMeetingRoomName(item,index)" >{{item.roomName}}</a-select-option>
               </a-select>
             </a-form-item>
@@ -86,6 +97,7 @@
               :wrapperCol="wrapperCol"
               label="会议类型">
               <j-dict-select-tag
+                :disabled="disabedVal"
                 v-decorator="['meetingLevel', {initialValue:'小组例会'}]"
                 :triggerChange="true"
                 placeholder="请选择会议类型"
@@ -98,7 +110,13 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="会议日期">
-              <j-date placeholder="请选择会议日期" :triggerChange="true" v-decorator="['meetingDate', validatorRules.meetingDate]" dateFormat="YYYY-MM-DD"/>
+              <j-date
+                v-if="this.action !== 2"
+                placeholder="请选择会议日期" :triggerChange="true" v-decorator="['meetingDate', validatorRules.meetingDate]" dateFormat="YYYY-MM-DD"/>
+              <a-input
+                v-if="this.action === 2"
+                :disabled="disabledValue"
+                v-model="this.meetingDate"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
@@ -107,26 +125,16 @@
               :wrapperCol="wrapperCol"
               label="会议时间">
 
-              <a-select style="width: 120px" v-model='model.meetingStartTime'>
+              <a-select style="width: 120px" v-model='model.meetingStartTime' :disabled="disabedVal">
                 <a-select-option v-for="(time1,index) in timeNode" :key="time1" @click="selectChat1(time1,index)" >{{time1}}</a-select-option>
               </a-select>
               <span style="width: 20px;"> ~ </span>
-              <a-select style="width: 120px" :disabled="endTimeDisabled" v-model='model.meetingEndTime'>
+              <a-select style="width: 120px" :disabled="endTimeDisabled" v-model='model.meetingEndTime' >
                 <a-select-option v-for="(time2,index) in timeNode_copy" :key="time2" @click="selectChat2(time2,index)">{{time2}}</a-select-option>
               </a-select>
 
             </a-form-item>
           </a-col>
-          <!--<a-col :md="12" :sm="8" style="display: none">-->
-          <!--<a-form-item-->
-          <!--:labelCol="labelCol"-->
-          <!--:wrapperCol="wrapperCol"-->
-          <!--label="申请部门">-->
-          <!--<j-select-depart-->
-          <!--v-decorator="['applyDepart',{ }]"-->
-          <!--:trigger-change="true" ></j-select-depart>-->
-          <!--</a-form-item>-->
-          <!--</a-col>-->
         </a-row>
 
         <!--院内主要参与者-->
@@ -142,7 +150,13 @@
                 sm: { span: 20 },
                 }"
               label="院内参与者">
-              <j-select-user-new :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+              <j-select-user-new
+                v-if="this.action !== 2"
+                :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+              <a-input
+                v-if="this.action === 2"
+                :disabled="disabledValue"
+                v-model="this.joinMemberFullName"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
@@ -166,6 +180,27 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24">
+            <a-form-item class="btnClass">
+              <a-button
+                @click="handleOk"
+                icon="check"
+                type="primary"
+                style="margin-right:10px"
+                class="confirm"
+                v-if="this.action !== 2"
+              >提交</a-button>
+              <a-button
+                @click="handleCancel"
+                icon="close"
+                style="margin-right:10px"
+                class="cancel"
+                v-if="this.action !== 2"
+              >关闭</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -180,6 +215,7 @@
   import qs from 'qs'
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
+  import roomListOrder from '../roomListOrder'
 
   const timeNode = [
     "8:30",
@@ -220,6 +256,12 @@
     },
     data () {
       return {
+        title:'',
+        //action决定表单类型，可读与可操作
+        action:'',
+        disabedVal:'',
+        meetingDate:'',
+        contactPhone:'',
         disabledValue:true,
         meetingRoomList:'',
         meetingRoomId:'',
@@ -227,11 +269,8 @@
         endTime:'',
         startCol:'',
         endCol:'',
-        title:"操作",
         visible: false,
         model: {},
-        indexOne:'',
-        indexTwo:'',
         endTimeDisabled:true,
         repeat:"1",
         labelCol: {
@@ -285,10 +324,21 @@
     },
     methods: {
       moment,
-      add () {
-        this.edit({});
-      },
       edit (record) {
+        this.action = record.action
+        if (record.action === 1){
+          this.disabedVal = false
+          this.title = '会议室预约'
+        } else if (record.action === 2){
+          this.disabedVal = true
+          this.title = '查看预约'
+        } else if (record.action == null || record.action == undefined) {
+          this.disabedVal = false
+          this.title = '会议室预约'
+        }
+        this.meetingDate = record.meetingDate
+        this.reserveFullName = record.reserveFullName
+        this.joinMemberFullName = record.joinMemberFullName
         const that = this
         this.endTimeDisabled = true;
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
@@ -302,6 +352,7 @@
         that.meetingRoomId = record.meetingRoomId;
         that.startCol = record.startCol;
         that.endCol = record.endCol;
+        that.contactPhone = record.contactPhone;
 
         that.$nextTick(() => {
           setTimeout(()=>{
@@ -320,8 +371,9 @@
                 'reserveDate',
                 'reserveFullName',
                 'reserveUserName',
-                'reserveFullName',
-                'reserveUserName'
+                'meetingLevel',
+                'startCol',
+                'endCol',
               )
             )
           },0)
@@ -330,9 +382,6 @@
           this.auditUsers2.value = []
           // 初始化选人控件
           this.initSelectMan(this,record);
-          // this.form.setFieldsValue(pick(this.model,'meetingRoomId','meetingRoom','subject','applyDepart','departLeader','contactId','contact','contactPhone','meetingDate','meetingStartTime','meetingEndTime','memberNumber','meetingLevel','reserveUserId','reserveUser','status','startCol','endCol'))
-          //时间格式化
-          // this.form.setFieldsValue({reserveDate:this.model.reserveDate?moment(this.model.reserveDate):null})
         });
       },
       close () {
@@ -341,53 +390,110 @@
       },
       handleOk () {
         const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-
-            // 判断开始时间是否小于结束时间，如果不是，提示用户重新输入
-            if (this.startCol > this.endCol) {
-              that.$message.warning("开始时间不能大于结束时间，请重新选择");
-              e.preventDefault();
-            }
-
-            that.confirmLoading = true;
-
-            let httpurl = '';
-            let method = 'post';
-            if(!this.model.id){
-              httpurl+=this.url.edit;
-            }else{
-              httpurl+=this.url.edit;
-            }
-            values.startCol = this.startCol;
-            values.endCol = this.endCol;
-            values.meetingRoomId = this.meetingRoomId;
-            let formData = Object.assign(this.model, values);
-
-            that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit',formData)
-              .then(function (response){
-                if (response.code === 200){
-                  console.log(response)
-                  httpAction(httpurl,qs.stringify(formData),method).then((res)=>{
-                    if(res.success){
-                      that.$message.success(res.message);
-                      that.$emit('ok');
-                    }else{
-                      that.$message.warning(res.message);
+        if (that.reserveUserName == ''){
+          that.$message.warn("联系人/主持人不能为空")
+        }else  if (that.contactPhone == ''){
+          that.$message.warn("联系电话不能为空")
+        }else {
+          // 触发表单验证
+          this.form.validateFields((err, values) => {
+            if (!err) {
+              // 判断开始时间是否小于结束时间，如果不是，提示用户重新输入
+              if (this.startCol > this.endCol) {
+                that.$message.warning("开始时间不能大于结束时间，请重新选择");
+                e.preventDefault();
+              }
+              that.confirmLoading = true;
+              let httpurl = '';
+              let method = 'post';
+              if (!this.model.id) {
+                httpurl += this.url.edit;
+              } else {
+                httpurl += this.url.edit;
+              }
+              values.startCol = this.startCol;
+              values.endCol = this.endCol;
+              values.meetingRoomId = this.meetingRoomId;
+              let formData = Object.assign(this.model, values);
+              formData.contactPhone = that.contactPhone;
+              // 选人控件传值
+              that.uploadMan(formData, that);
+              console.log(formData,'表单值')
+              //新增操作
+              if (that.action === 1){
+                that.axios.post('/meetingRoom/meetingRoomTimeStatus/add', {
+                  roomId: formData.meetingRoomId,
+                  meetingDate: formData.meetingDate,
+                  startSort: formData.startCol,
+                  endSort: formData.endCol,
+                })
+                  .then(function(response) {
+                    if (response.code === 200) {
+                      that.$notification.success({
+                        message: '您好',
+                        description: response.message,
+                      })
+                      //  新增记录
+                      that.axios.post('/meetingRoom/add', formData)
+                        .then(function(response){
+                          console.log(response);
+                          if (response.code === 200) {
+                            that.$emit('searchQuery')
+                          }
+                        })
+                        .catch(function(error) {
+                          console.log(error);
+                        });
+                    } else if (response.code === 10002) {
+                      that.$notification.warning({
+                        message: '抱歉',
+                        description: response.message,
+                      })
+                    } else {
+                      that.$notification.error({
+                        message: '错误',
+                        description: '服务器开小差了',
+                      })
                     }
                   })
-                }else {
-                  that.$message.warning(response.message);
-                  that.confirmLoading = false
-                }
-              })
-              .finally(() => {
-                that.confirmLoading = false;
+                  .catch(function(error) {
+                    that.$notification.error({
+                      message: '错误',
+                      description: '请求出现错误',
+                    })
+                  })
+                that.confirmLoading = false
                 that.close();
-              })
-          }
-        })
+              }else if (that.action !== 1 && that.action == undefined) {
+                //修改功能
+                that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit', formData)
+                  .then(function(response) {
+                    if (response.code === 200) {
+                      console.log(response)
+                      httpAction(httpurl, qs.stringify(formData), method).then((res) => {
+                        if (res.success) {
+                          that.$message.success(res.message);
+                          that.$emit('ok');
+                        } else {
+                          that.$message.warning(res.message);
+                        }
+                      })
+                    } else {
+                      that.$message.warning(response.message);
+                      that.confirmLoading = false
+                    }
+                  })
+                  .finally(() => {
+                    that.confirmLoading = false;
+                    that.close();
+                    that.$emit('searchQuery')
+                  })
+              }else {
+                that.$message.error("服务出错")
+              }
+            }
+          })
+        }
       },
       handleCancel () {
         this.close()
@@ -439,11 +545,23 @@
           callback("请输入正确格式的手机号码!");
         }
       },
-
+    },
+    watch :{
+      //监听联系人字段
+      reserveUserName: function () {
+        const that = this
+        that.axios.get('/meetingRoom/getInfo?userName=' + that.reserveUserName)
+          .then(function(response) {
+            console.log(response)
+            that.contactPhone = response.result.phone
+          })
+      }
     }
   }
 </script>
 
 <style lang="less" scoped>
   @import '~@assets/less/modal.less';
+  @import '~@assets/less/common.less';
+  @import '~@assets/less/topBtns.less';
 </style>
