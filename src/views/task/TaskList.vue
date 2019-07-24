@@ -40,7 +40,7 @@
                   :disabledDate="disabledStartDate"
                   showTime
                   format='YYYY-MM-DD HH:mm:ss'
-                  placeholder="任务创建时间1"/>
+                  placeholder="任务创建开始时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -50,7 +50,7 @@
                   :disabledDate="disabledEndDate"
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="任务创建时间2"/>
+                  placeholder="任务创建结束时间"/>
               </a-form-item>
             </a-col>
           </template>

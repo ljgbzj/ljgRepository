@@ -19,13 +19,23 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
+              <a-form-item label="执行人">
+                <a-input placeholder="请输入执行人" v-model="queryParam.assigneeFullname" @keyup.enter="searchQuery"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="任务名称">
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject" @keyup.enter="searchQuery"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="任务创建时间">
                 <a-date-picker
                   v-model="queryParam.minStartTime"
                   :disabledDate="disabledStartDate"
                   showTime
                   format='YYYY-MM-DD HH:mm:ss'
-                  placeholder="任务创建时间1"/>
+                  placeholder="任务创建开始时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -35,17 +45,7 @@
                   :disabledDate="disabledEndDate"
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="任务创建时间2"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="执行人">
-                <a-input placeholder="请输入执行人" v-model="queryParam.assigneeFullname" @keyup.enter="searchQuery"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="任务名称">
-                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject" @keyup.enter="searchQuery"></a-input>
+                  placeholder="任务创建结束时间"/>
               </a-form-item>
             </a-col>
           </template>
@@ -165,7 +165,6 @@
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record,'追踪');
         let params = {
           businessKey: record.businessKey,
           processDefinitionKey: record.processDefinitionKey, 

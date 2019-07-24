@@ -284,7 +284,6 @@
                 <span>已完成</span>
               </h3>
               <s-table
-                rowKey="id"
                 :columns="goodsColumns"
                 :data="loadGoodsData"
                 v-if="commentList"
@@ -296,7 +295,6 @@
                 <span>处理中</span>
               </h3>
               <s-table
-                rowKey="id"
                 :columns="goodsColumns1"
                 :data="loadGoodsData1"
                 v-if="commentList"
@@ -451,7 +449,7 @@ export default {
       goodsColumns1: [
         {
           title: '序号',
-          dataIndex: '',
+          dataIndex: '1',
           key: 'rowIndex',
           width: 80,
           align: 'center',
@@ -565,7 +563,6 @@ export default {
       } else {
         this.model = Object.assign({}, record)
       }
-      console.log(this.model,'初始化的model');
       this.visible = true
       this.$nextTick(() => {
         this.form.setFieldsValue(
