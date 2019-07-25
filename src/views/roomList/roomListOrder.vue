@@ -32,7 +32,8 @@
         </a-form>
       </div>
       <!--表头-->
-      <a-spin :spinning="confirmLoading2" class="loading">
+      <div style="width: 100%;overflow-x: auto">
+      <a-spin :spinning="confirmLoading2" class="loading" style="width: 1950px">
       <div class="father-box">
         <div class="title-room-name-box">
           <div class="title-box">会议室名称</div>
@@ -122,6 +123,7 @@
         <!-- </a-row> -->
       </div>
       </a-spin>
+      </div>
     </a-card>
     <!--表单区域-->
     <!--<room-list-order-modal ref="modalForm" @ok="modalFormOk"></room-list-order-modal>-->
@@ -194,9 +196,9 @@
         roomList:'',
         roomListCopy: '',
         timeList: [
-          { time: '8:30' },
-          { time: '9:00' },
-          { time: '9:30' },
+          { time: '08:30' },
+          { time: '09:00' },
+          { time: '09:30' },
           { time: '10:00' },
           { time: '10:30' },
           { time: '11:00' },
@@ -211,7 +213,16 @@
           { time: '15:30' },
           { time: '16:00' },
           { time: '16:30' },
-          { time: '17:00' }
+          { time: '17:00' },
+          { time: '17:30' },
+          { time: '18:00' },
+          { time: '18:30' },
+          { time: '19:00' },
+          { time: '19:30' },
+          { time: '20:00' },
+          { time: '20:30' },
+          { time: '21:00' },
+          { time: '21:30' },
         ],
         validatorRules: {
           // contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue: this.$store.getters.userInfo.phone},
@@ -289,15 +300,15 @@
         //对 起始 和 终止时间排序 防止异常
         if (that.startTime != null && that.startTime != '') {
           if (that.startCol <= index) { //正常顺序
-            if (that.endCol == 17) {
-              that.endTime = '17:30'
+            if (that.endCol == 26) {
+              that.endTime = '22:00'
             } else {
               that.endTime =
                 that.timeList[index + 1].time
             }
           } else { //倒序
-            if (that.startCol == 17) {
-              that.startTime = '17:30'
+            if (that.startCol == 26) {
+              that.startTime = '22:00'
               that.endTime = that.timeList[index].time
             } else {
               that.startTime = that.timeList[that.startCol].time
@@ -368,7 +379,7 @@
           time2 = this.timeList[index + 1].time
         }
         if (index === this.timeList.length - 1) {
-          time2 = "17:30"
+          time2 = "22:00"
         }
         this.hoverRoomName = '会议室预定 【时间段：' + time1 + "—" + time2 + '】'
       },
@@ -485,7 +496,10 @@
   .title-box {
     width: auto;
     height: 100%;
-    margin-left: 1px;
+    /*margin: 0 1q 1q 0 ;*/
+    border-style:none solid solid none;
+    border-width: 1q;
+    border-color: white;
     text-align: center;
     /*background-color: #0099ff;*/
     font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'STHeitiSC-Light', 'Microsoft YaHei', '微软雅黑', Arial,
@@ -505,13 +519,13 @@
   }
 
   .title-room-name-box {
-    width: 15%;
+    width: 10%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-room-name-box {
-    width: 15%;
+    width: 10%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;
@@ -520,25 +534,25 @@
     border-color: #d5d5d5;
   }
   .title-contain-number{
-    width: 5%;
+    width: 3%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-contain-number{
-    width: 5%;
+    width: 3%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;
   }
   .title-room-time-box {
-    width: 5.55%;
+    width: 3.7%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-room-time-box {
-    width: 5.55%;
+    width: 3.7%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;

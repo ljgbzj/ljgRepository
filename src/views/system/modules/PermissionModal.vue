@@ -97,7 +97,7 @@
         </a-form-item>
 
         <a-form-item
-          v-show="show"
+          v-show="localMenuType==0"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="菜单图标">

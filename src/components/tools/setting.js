@@ -23,13 +23,13 @@ const colorList = [
     key: '拂晓蓝', color: '#1890FF',
   },
   {
-    key: '极客蓝', color: '#2F54EB',
+    key: '极客蓝', color: '#2377FC',
   },
   {
     key: '酱紫', color: '#722ED1',
   },
   {
-    key: '设计紫', color: '#6455ff'
+    key: '设计紫', color: '#0493f3'
   }
 ];
 
