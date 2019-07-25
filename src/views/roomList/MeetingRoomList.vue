@@ -75,7 +75,7 @@
 
         <span slot="action"
               slot-scope="text, record"
-              v-if="(new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() > (new Date()).getTime()">
+              v-if="(new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() > (new Date()).getTime()">
           <a @click="handleEdit(record)">修改</a>
 
           <a-divider type="vertical" />
@@ -105,7 +105,6 @@
       MeetingRoomModal,
       JDate,
     },
-
     data () {
       return {
         description: '',
@@ -233,10 +232,14 @@
           }
         });
       },
-      test () {
-        alert('123')
-      }
     },
+    watch : {
+      $route(to,from){
+        // console.log(to.path,'我的预约跳转');
+        //路由跳转刷新页面
+        this.searchQuery();
+      }
+    }
   }
 </script>
 <style lang="less" scoped>

@@ -10,14 +10,14 @@
                 <a-date-picker
                   :disabledDate="disabledDate"
                   :defaultValue="moment(moment(),'YYYY-MM-DD')"
-                  v-model="queryParam.searchDate"
+                  v-model="myQueryParam.searchDate"
                   @change="onChange" />
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="会议室">
                 <a-input placeholder="请输入会议室名称"
-                v-model="queryParam.searchRoomName"></a-input>
+                v-model="myQueryParam.searchRoomName"></a-input>
               </a-form-item>
             </a-col>
 
@@ -33,7 +33,7 @@
       </div>
       <!--表头-->
       <div style="width: 100%;overflow-x: auto">
-      <a-spin :spinning="confirmLoading2" class="loading" style="width: 1950px">
+      <a-spin :spinning="confirmLoading2" class="loading" style="width: 1839px">
       <div class="father-box">
         <div class="title-room-name-box">
           <div class="title-box">会议室名称</div>
@@ -183,7 +183,7 @@
           sm: { span: 16 },
         },
         // 查询参数
-        queryParam:{
+        myQueryParam:{
           searchDate:moment(moment(),'YYYY-MM-DD'),
           searchRoomName:'',
         },
@@ -233,6 +233,87 @@
         contactPhone:'',
         // 最大容纳数
         containNum:'',
+        description: '',
+        columns: [
+          {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
+            title: '会议室名',
+            align:"center",
+            dataIndex: 'meetingRoom'
+          },
+          {
+            title: '会议主题',
+            align:"center",
+            dataIndex: 'subject'
+          },
+          {
+            title: '预订人',
+            align:"center",
+            dataIndex: 'contact'
+          },
+          {
+            title: '联系人电话',
+            align:"center",
+            dataIndex: 'contactPhone'
+          },
+          {
+            title: '会议日期',
+            align:"center",
+            dataIndex: 'meetingDate',
+            // sorter:"true"
+            sorter: (a, b) =>  (new Date(a.meetingDate).getTime()) -  (new Date(b.meetingDate).getTime()),
+          },
+          {
+            title: '开始时间',
+            align:"center",
+            dataIndex: 'meetingStartTime',
+          },
+          {
+            title: '结束时间',
+            align:"center",
+            dataIndex: 'meetingEndTime',
+          },
+          {
+            title: '状态',
+            align:"center",
+            dataIndex: 'state',
+            scopedSlots: { customRender: 'state' },
+            filters: [
+              { text: '未开始', value: '未开始' },
+              { text: '进行中', value: '进行中' },
+              { text: '已结束', value: '已结束' },
+            ],
+            onFilter : (value, record) => {
+              if (value == '未开始') {
+                return (new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() > (new Date()).getTime()
+              }else if (value == '进行中') {
+                return (new Date(record.meetingDate + ' ' + record.meetingStartTime)).getTime() <= (new Date()).getTime() && (new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() >= (new Date()).getTime()
+              }else if (value == '已结束') {
+                return (new Date(record.meetingDate + ' ' + record.meetingEndTime)).getTime() < (new Date()).getTime()
+              }
+            }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            scopedSlots: { customRender: 'action' },
+          }
+        ],
+        url: {
+          list: "/meetingRoom/list",
+          delete: "/meetingRoom/cancel",
+          deleteBatch: "/meetingRoom/cancelBatch",
+        },
       }
     },
     created () {
@@ -240,11 +321,10 @@
       this.loginUserId = this.$store.getters.userId
       this.confirmLoading2 = true
       //查询数据
-      findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.queryParam.searchRoomName})
+      findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.myQueryParam.searchRoomName})
         .then((res) => {
           this.roomList = res.result;
           this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-          console.log(res.result.userInfo)
           if (res.code === 0){
             this.confirmLoading2 = false
           }
@@ -254,15 +334,14 @@
       ...mapGetters(["nickname", "avatar", "userId"]),
       moment,
       onChange(date, dateString) {
-        this.queryParam.searchDate = date;
+        this.myQueryParam.searchDate = date;
         this.meetingDate = dateString;
         this.confirmLoading2 = true
         //切换日历时，请求查询接口
-        findRoomList({ meetingDate: dateString, meetingRoomName: this.queryParam.searchRoomName })
+        findRoomList({ meetingDate: dateString, meetingRoomName: this.myQueryParam.searchRoomName })
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
@@ -394,11 +473,10 @@
       //查询
       searchQuery: function() {
         this.confirmLoading2 = true
-        findRoomList({ meetingDate: this.meetingDate, meetingRoomName: this.queryParam.searchRoomName })
+        findRoomList({ meetingDate: this.meetingDate, meetingRoomName: this.myQueryParam.searchRoomName })
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
@@ -408,17 +486,16 @@
       searchReset: function() {
         this.confirmLoading2 = true
         this.meetingDate = moment().format('YYYY-MM-DD')
-        this.queryParam.searchRoomName = ''
-        findRoomList({ meetingDate: moment().format('YYYY-MM-DD'), meetingRoomName: this.queryParam.searchRoomName })
+        this.myQueryParam.searchRoomName = ''
+        findRoomList({ meetingDate: moment().format('YYYY-MM-DD'), meetingRoomName: this.myQueryParam.searchRoomName })
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
           })
-        this.queryParam.searchDate = moment(moment(), 'YYYY-MM-DD')
+        this.myQueryParam.searchDate = moment(moment(), 'YYYY-MM-DD')
       },
       //转换百分数
       toPercent(val) {
@@ -449,6 +526,13 @@
           callback("请输入数字!");
         }
       },
+    },
+    watch : {
+      $route(to,from){
+        // console.log(to.path,'会议室预定跳转');
+        //路由跳转刷新页面
+        this.searchQuery();
+      }
     }
   }
 </script>
@@ -482,7 +566,7 @@
     width: 100%;
   }
   .room-time-father-box {
-    width: 80%;
+    width: 87%;
     float: left;
   }
   /*.info-icon {*/

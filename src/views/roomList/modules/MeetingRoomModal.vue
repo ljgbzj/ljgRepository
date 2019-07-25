@@ -22,7 +22,6 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" style="margin-top: 25px">
         <a-row :gutter="24">
-
           <!--会议主题-->
           <a-col :md="12" :sm="8">
             <a-form-item
@@ -44,7 +43,6 @@
                 :disabled="disabedVal"
                 style="width: 50%"
                 placeholder="请输入参与人数"
-                v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
               />
               最大容纳人数：{{this.containNum}}
             </a-form-item>
@@ -55,6 +53,7 @@
               :wrapperCol="wrapperCol"
               label="联系人/主持人">
               <j-select-user-new
+                v-decorator="['reserveUserName', validatorRules.reserveUserName]"
                 :selectedDetails="auditUsers1"
                 @callback="setAuditUser"
                 class="userSelect"
@@ -72,8 +71,9 @@
               :wrapperCol="wrapperCol"
               label="联系电话">
               <a-input
+                v-model="this.contactPhone"
                 :disabled="disabedVal"
-                v-model="contactPhone"/>
+               />
             </a-form-item>
           </a-col>
           <!--会议室名称-->
@@ -82,7 +82,6 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="会议室名称">
-              <!--<a-input placeholder="请输入会议室名" v-decorator="['meetingRoom', validatorRules.meetingRoom]"/>-->
               <a-select
                 :disabled="disabedVal"
                 v-decorator="['meetingRoom', {}]">
@@ -129,7 +128,7 @@
                 <a-select-option v-for="(time1,index) in timeNode" :key="time1" @click="selectChat1(time1,index)" >{{time1}}</a-select-option>
               </a-select>
               <span style="width: 20px;"> ~ </span>
-              <a-select style="width: 120px" :disabled="endTimeDisabled" v-model='model.meetingEndTime' >
+              <a-select style="width: 120px" :disabled="disabedVal" v-model='model.meetingEndTime' >
                 <a-select-option v-for="(time2,index) in timeNode_copy" :key="time2" @click="selectChat2(time2,index)">{{time2}}</a-select-option>
               </a-select>
 
@@ -166,7 +165,7 @@
               label="预订人">
               <a-input
                 :disabled="disabledValue"
-                v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }]}]"/>
+                v-decorator="['contact',{}]"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
@@ -215,9 +214,11 @@
   import qs from 'qs'
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
+  import Vue from 'vue'
   import roomListOrder from '../roomListOrder'
+  import MeetingRoomList from '../MeetingRoomList'
 
-  const timeNode = [
+  const timeList = [
     "8:30",
     "9:00",
     "9:30",
@@ -257,7 +258,8 @@
     mixins: [CmpListMixin],
     created() {
       const that = this
-      that.timeNode_copy = timeNode.slice();
+      that.timeNode = timeList.slice(0,27)
+      that.timeNode_copy = timeList.slice(1,28)
       that.axios.get('/meetingRoom/meetingRoomList/allList')
         .then(function(response) {
           that.meetingRoomList = response
@@ -281,8 +283,7 @@
         endCol:'',
         visible: false,
         model: {},
-        endTimeDisabled:true,
-        repeat:"1",
+        repeat: 0,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 6 },
@@ -291,7 +292,8 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        timeNode,
+        timeList,
+        timeNode:[],
         timeNode_copy:[],
         confirmLoading: false,
         form: this.$form.createForm(this),
@@ -299,10 +301,10 @@
           meetingRoom:{rules: [{ required: true, message: '请输入会议室名!' }]},
           subject:{rules: [{ required: true, message: '请输入会议主题!' }]},
           contact:{rules: [{ required: true, message: '请输入联系人!' }]},
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.contactPhone},
           meetingDate:{rules: [{ required: true, message: '请输入会议日期!' }]},
           memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]},
-          reserveFullName: {rules: [{ required: true, message: '请选择联系人!' }]},
+          reserveUserName: {rules: [{ required: true, message: '请选择联系人!' }]},
         },
         url: {
           list: "/meetingRoom/meetingRoomList/allList",
@@ -351,7 +353,6 @@
         this.reserveFullName = record.reserveFullName
         this.joinMemberFullName = record.joinMemberFullName
         const that = this
-        that.endTimeDisabled = true;
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
           .then(function (response){
             that.containNum = response.containNum
@@ -369,22 +370,23 @@
           setTimeout(()=>{
             that.form.setFieldsValue(
               pick(that.model,
-                'meetingRoom',
                 'subject',
-                'contact',
+                'memberNumber',
+                'joinMemberFullName',
+                'joinMemberUserName',
+                'meetingLevel',
+                'action',
+                'startCol',
+                'endCol',
                 'contactPhone',
+                'meetingRoomId',
+                'reserveUserName',
+                'reserveFullName',
+                'contact',
+                'meetingRoom',
                 'meetingDate',
                 'meetingStartTime',
                 'meetingEndTime',
-                'joinMemberFullName',
-                'joinMemberUserName',
-                'memberNumber',
-                'reserveDate',
-                'reserveFullName',
-                'reserveUserName',
-                'meetingLevel',
-                'startCol',
-                'endCol',
               )
             )
           },0)
@@ -512,28 +514,31 @@
       selectChat1(time1,index){
         this.startTime = time1;
         this.startCol = index;
-
-        if (this.repeat === '1') {
-          this.timeNode_copy.splice(0, index+1);
-          this.endTimeDisabled = false;
-          this.repeat = this.repeat + 1;
+        //如果第一次点击起始时间选择框，切割结束时间，使其永远在开始时间点的后面
+        if (this.repeat === 0) {
+          this.timeNode_copy.splice(0, index);
+          this.repeat = 1;
         } else {
-          //重复触发事件1即repeat大于1时，还原timeNode_copy数组，重新截取
+          //重复点击起始时间选择框，还原timeNode_copy数组，重新截取
           this.timeNode_copy = [];
-          this.timeNode_copy = this.timeNode_copy.concat(this.timeNode);
-          this.timeNode_copy.splice(0, index+1);
-          this.endTimeDisabled = false;
+          this.timeNode_copy = this.timeNode_copy.concat(this.timeList);
+          this.timeNode_copy.splice(0, index);
         }
 
         console.log(this.startCol,"开始的序号")
       },
       selectChat2(time2,index){
         this.endTime = time2
-        this.endCol = index + this.startCol
-        this.timeNode_copy = timeNode.slice();
-        this.endTimeDisabled = true;
-        this.repeat = "1";
-        console.log(this.endCol,"结束的序号")
+        //如果没有点击起始时间，直接选择结束时间
+        if (this.repeat === 0 ){
+          this.endCol = index
+          this.timeNode_copy = timeList.slice(1,28);
+        } else {
+          this.endCol = index + this.startCol
+          this.timeNode_copy = timeList.slice(1,28)
+        }
+        this.repeat = 0;
+        console.log(this.endCol,"结束的序号");
       },
       selectMeetingRoomName(item){
         this.meetingRoom = item.roomName
@@ -556,6 +561,15 @@
           callback("请输入正确格式的手机号码!");
         }
       },
+      // startTimecheck(rule, value, callback){
+      //   console.log(value)
+      //   console.log("触发了时间校验",this.startCol,this.endCol)
+      //   if (this.startCol > this.endCol){
+      //     callback("开始时间不能大于结束时间");
+      //   } else {
+      //     callback();
+      //   }
+      // },
     },
     watch :{
       //监听联系人字段
@@ -566,7 +580,7 @@
             console.log(response)
             that.contactPhone = response.result.phone
           })
-      }
+      },
     }
   }
 </script>
