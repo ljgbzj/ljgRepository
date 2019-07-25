@@ -147,7 +147,7 @@ export default {
       url: {
         list: '/stakeholder/stakeholder/list',  //获取列表数据接口
         delete: '/stakeholder/stakeholder/delete',
-        deleteBatch: '/flowable/action',  //废弃接口
+        deleteBatch: '/flowable/delete',  //废弃接口
         exportXlsUrl: 'stakeholder/stakeholder/exportXls',
         importExcelUrl: 'stakeholder/stakeholder/importExcel'
       }
@@ -184,17 +184,11 @@ export default {
           ids = id
         }
       }
-      let strFlowData = {
-        api: '/process/delete',
+      let params = {
+        id: ids,
         processDefinitionKey: 'stakeholder'
       }
-      let strFormData = {
-        id: ids
-      }
-      let params = {
-        strFlowData: JSON.stringify(strFlowData),
-        strFormData: JSON.stringify(strFormData)
-      }
+      
       let method = 'post'
       var that = this
       this.$confirm({
