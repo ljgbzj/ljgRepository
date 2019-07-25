@@ -43,6 +43,7 @@
                 :disabled="disabedVal"
                 style="width: 50%"
                 placeholder="请输入参与人数"
+                v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
               />
               最大容纳人数：{{this.containNum}}
             </a-form-item>
@@ -53,7 +54,6 @@
               :wrapperCol="wrapperCol"
               label="联系人/主持人">
               <j-select-user-new
-                v-decorator="['reserveUserName', validatorRules.reserveUserName]"
                 :selectedDetails="auditUsers1"
                 @callback="setAuditUser"
                 class="userSelect"
@@ -71,9 +71,8 @@
               :wrapperCol="wrapperCol"
               label="联系电话">
               <a-input
-                v-model="this.contactPhone"
                 :disabled="disabedVal"
-               />
+                v-model="contactPhone"/>
             </a-form-item>
           </a-col>
           <!--会议室名称-->
@@ -165,7 +164,7 @@
               label="预订人">
               <a-input
                 :disabled="disabledValue"
-                v-decorator="['contact',{}]"/>
+                v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }]}]"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
@@ -214,9 +213,6 @@
   import qs from 'qs'
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
-  import Vue from 'vue'
-  import roomListOrder from '../roomListOrder'
-  import MeetingRoomList from '../MeetingRoomList'
 
   const timeList = [
     "8:30",
@@ -301,10 +297,10 @@
           meetingRoom:{rules: [{ required: true, message: '请输入会议室名!' }]},
           subject:{rules: [{ required: true, message: '请输入会议主题!' }]},
           contact:{rules: [{ required: true, message: '请输入联系人!' }]},
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.contactPhone},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
           meetingDate:{rules: [{ required: true, message: '请输入会议日期!' }]},
           memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]},
-          reserveUserName: {rules: [{ required: true, message: '请选择联系人!' }]},
+          reserveFullName: {rules: [{ required: true, message: '请选择联系人!' }]},
         },
         url: {
           list: "/meetingRoom/meetingRoomList/allList",
@@ -488,6 +484,7 @@
                           that.$message.success(res.message);
                           //刷新父页面
                           that.$emit('ok');
+                          that.$root.$emit('searchQuery')
                         } else {
                           that.$message.warning(res.message);
                         }

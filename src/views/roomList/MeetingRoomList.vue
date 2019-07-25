@@ -105,6 +105,7 @@
       MeetingRoomModal,
       JDate,
     },
+
     data () {
       return {
         description: '',
@@ -235,8 +236,7 @@
     },
     watch : {
       $route(to,from){
-        // console.log(to.path,'我的预约跳转');
-        //路由跳转刷新页面
+        console.log(to.path,'我的预约跳转');
         this.searchQuery();
       }
     }
