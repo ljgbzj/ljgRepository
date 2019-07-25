@@ -6,22 +6,20 @@
       <a-form layout="inline">
         <a-row :gutter="24" >
 
-          <a-col :md="8" :sm="8">
+          <a-col :md="8" :sm="8" :xs="24">
             <a-form-item label="手机号码">
-              <a-input placeholder="请输手机号码" v-model="queryParam.phone"></a-input>
+              <a-input placeholder="请输手机号码" v-model="queryParam.dimPhone"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="8">
-            <a-form-item label="姓名">
-              <a-input placeholder="请输入姓名" v-model="queryParam.realname" ></a-input>
+          <a-col :md="8" :sm="8" :xs="24">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="姓名搜索">
+              <a-input  placeholder="请输入姓名" v-model="queryParam.dimRealName" ></a-input>
             </a-form-item>
           </a-col>
-
-
         <template v-if="toggleSearchStatus">
 
 
-          <a-col :md="8" :sm="8">
+          <a-col :md="8" :sm="8" :xs="24">
             <a-form-item label="小组名称" >
               <a-select placeholder="请选择小组名称" v-model="queryParam.groupName" style="position: static; height: 40px" >
                 <a-select-option   :value="item.value" v-for="(item,index) in groupList" :key="index">
@@ -42,7 +40,7 @@
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
                <a-button type="primary" style="margin-left: 8px" v-has="'mail:export'" icon="download" @click="handleExportXls('test')">导出</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+              <a @click="handleToggleSearch" style="">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>
@@ -143,6 +141,15 @@
     },
     data () {
       return {
+        labelCol: {
+          xs: { span: 24},
+          sm: { span: 15 },
+          md:{span:15}
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 15 },
+        },
         description: 'test管理页面',
         userName: '',
         filteredInfo: null,
@@ -176,6 +183,7 @@
 		   {
             title: '姓名',
             align:"left",
+            width:60,
             dataIndex: 'realname',
             customHeaderCell:this.handleClick
             /*customHeaderRow: this.refreshlist(column,index)*/
@@ -185,12 +193,14 @@
            },
           {
             title: '手机号码',
+            width:60,
             align:"left",
             dataIndex: 'phone'
           },
 		   {
             title: '电子邮件',
             align:"left",
+            width:60,
             dataIndex: 'email'
            },
 
@@ -208,6 +218,7 @@
 		   {
             title: '办公号码',
             align:"left",
+           width:60,
             dataIndex: 'officePhone'
            },
           {
@@ -232,6 +243,7 @@
           {
             title: '操作',
             dataIndex: 'action',
+            width:60,
             align:"center",
             scopedSlots: { customRender: 'action' },
           }
