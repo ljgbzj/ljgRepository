@@ -74,20 +74,47 @@ export default {
 </script>
 <style lang="scss" scoped>
 /* update_begin author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
+
 .sider {
   $scrollBarSize: 10px;
 
   :global(.ant-layout-sider-children) {
     > :global(.ant-menu) {
       > :global(li.ant-menu-submenu.ant-menu-submenu-inline) {
-        :global(.ant-menu-submenu-title) {
-          font-size: 16px;
+        /* 一级菜单 标题 */
+        :global(div.ant-menu-submenu-title) {
+          /* font-size: 16px; */
+
+          > :global(span){
+            display: flex;
+            align-items: center;
+
+            :global(img){
+              margin-right: 8px;
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+
+        > :global(ul.ant-menu.ant-menu-inline.ant-menu-sub){
+          :global(li.ant-menu-item){
+            /* :global(a){
+              display: flex;
+              align-items: center;
+              :global(img){
+                height: 16px;
+                width: 16px;
+                margin-right: 14px;
+              }
+            } */
+          }
         }
       }
     }
   }
   :global(.ant-menu.ant-menu-inline.ant-menu-sub) {
-    font-size: 16px;
+    /* font-size: 16px; */
     :global(li.ant-menu-item) {
       :global(a) {
         overflow: hidden;

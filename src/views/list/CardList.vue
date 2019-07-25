@@ -4,7 +4,7 @@
       :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}"
       :dataSource="dataSource"
     >
-      <a-list-item slot="renderItem" slot-scope="item, index">
+      <a-list-item slot="renderItem" slot-scope="item">
         <template v-if="item === null">
           <a-button class="new-btn" type="dashed">
             <a-icon type="plus"/>
@@ -85,7 +85,7 @@
         display: inline-block;
         width: 100%;
         &:hover {
-          color: #6455ff;
+          color: #0493f3;
         }
       }
     }

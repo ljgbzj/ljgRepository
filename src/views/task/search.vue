@@ -25,7 +25,7 @@
                   :disabledDate="disabledStartDate"
                   showTime
                   format='YYYY-MM-DD HH:mm:ss'
-                  placeholder="任务创建时间1"/>
+                  placeholder="任务创建开始时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -35,7 +35,7 @@
                   :disabledDate="disabledEndDate"
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="任务创建时间2"/>
+                  placeholder="任务创建结束时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -43,6 +43,7 @@
                 <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject" @keyup.enter="searchQuery"></a-input>
               </a-form-item>
             </a-col>
+            
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">

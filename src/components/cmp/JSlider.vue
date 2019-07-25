@@ -109,7 +109,7 @@
      background: #fff url("~@/assets/img/register/pass.png") no-repeat center;
   }
   .drag_bg{
-    background-color: #6D62FF;
+    background-color: #0493F3;
     height: 34px;
     width: 0px;
   }

@@ -12,7 +12,7 @@
           v-show="item.meta.title !== '首页'"
         >
           <div class="item-container">
-            <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
+            <img :src="require(`@/assets/img/icon/${item.meta.icon}.png`)" />
             <span :title="item.meta.title">{{item.meta.title}}</span>
           </div>
 
@@ -57,11 +57,11 @@
 
     <div class="su-menu-control">
       <div class="scroll">
-        <img src="@/assets/img/menu/up.png" @click="up" />
-        <img src="@/assets/img/menu/down.png" @click="down" />
+        <img src="@/assets/img/setting/up.png" @click="up" />
+        <img src="@/assets/img/setting/down.png" @click="down" />
       </div>
       <div class="all">
-        <img src="@/assets/img/menu/allmenu.png" @click="toggleAll" />
+        <img src="@/assets/img/setting/allmenu.png" @click="toggleAll" />
       </div>
     </div>
 
@@ -80,7 +80,7 @@
             <div class="item-container">
               <!-- <i class="iconfont icon-icon-1"></i> -->
               <div class="img-container">
-                <img :src="require(`@/assets/img/menu/${item.meta.icon}.png`)" />
+                <img :src="require(`@/assets/img/icon/${item.meta.icon}.png`)" />
               </div>
 
               <span>{{item.meta.title}}</span>

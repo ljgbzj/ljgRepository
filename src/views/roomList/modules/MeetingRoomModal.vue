@@ -149,7 +149,7 @@
                 xs: { span: 24},
                 sm: { span: 20 },
                 }"
-              label="院内参与者">
+              label="参会人员">
               <j-select-user-new
                 v-if="this.action !== 2"
                 :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
@@ -236,7 +236,17 @@
     "16:00",
     "16:30",
     "17:00",
-    "17:30"];
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+    "20:00",
+    "20:30",
+    "21:00",
+    "21:30",
+    "22:00",
+  ];
   export default {
     name: "MeetingRoomModal",
     components: {
@@ -291,7 +301,8 @@
           contact:{rules: [{ required: true, message: '请输入联系人!' }]},
           contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
           meetingDate:{rules: [{ required: true, message: '请输入会议日期!' }]},
-          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]}
+          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]},
+          reserveFullName: {rules: [{ required: true, message: '请选择联系人!' }]},
         },
         url: {
           list: "/meetingRoom/meetingRoomList/allList",
@@ -340,7 +351,7 @@
         this.reserveFullName = record.reserveFullName
         this.joinMemberFullName = record.joinMemberFullName
         const that = this
-        this.endTimeDisabled = true;
+        that.endTimeDisabled = true;
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
           .then(function (response){
             that.containNum = response.containNum
@@ -378,10 +389,11 @@
             )
           },0)
           // 初始化选人组件字段
-          this.auditUsers1.value = []
-          this.auditUsers2.value = []
+          that.auditUsers1.value = []
+          that.auditUsers2.value = []
           // 初始化选人控件
-          this.initSelectMan(this,record);
+          that.initSelectMan(that,record);
+          that.form.setFieldsValue({ inputerFullname: that.reserveFullName })
         });
       },
       close () {
@@ -390,9 +402,7 @@
       },
       handleOk () {
         const that = this;
-        if (that.reserveUserName == ''){
-          that.$message.warn("联系人/主持人不能为空")
-        }else  if (that.contactPhone == ''){
+         if (that.contactPhone == ''){
           that.$message.warn("联系电话不能为空")
         }else {
           // 触发表单验证
@@ -438,6 +448,7 @@
                         .then(function(response){
                           console.log(response);
                           if (response.code === 200) {
+                            //刷新父页面
                             that.$emit('searchQuery')
                           }
                         })
@@ -473,6 +484,7 @@
                       httpAction(httpurl, qs.stringify(formData), method).then((res) => {
                         if (res.success) {
                           that.$message.success(res.message);
+                          //刷新父页面
                           that.$emit('ok');
                         } else {
                           that.$message.warning(res.message);
@@ -486,7 +498,6 @@
                   .finally(() => {
                     that.confirmLoading = false;
                     that.close();
-                    that.$emit('searchQuery')
                   })
               }else {
                 that.$message.error("服务出错")
