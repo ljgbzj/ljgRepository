@@ -34,6 +34,14 @@ export function loginByPhone(parameter) {
   })
 }
 
+export function loginByPhoneEncry(parameter) {
+  return axios({
+    url: '/sys/verifyMessageLoginEncry',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function getSmsCaptcha(parameter) {
   return axios({
     url: api.SendSms,

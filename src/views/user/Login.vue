@@ -176,7 +176,7 @@ import { timeFix } from '@/utils/util' // 根据当前时间，判断问候语
 import Vue from 'vue'
 import { rsaUtil } from '@/utils/rsa'
 import { aesUtil } from '@/utils/aes'
-import { ACCESS_TOKEN, USER_INFO } from '@/store/mutation-types' // token, userInfo
+import { ACCESS_TOKEN, USER_INFO, CURRENT_GENKEY } from '@/store/mutation-types' // token, userInfo
 import JGraphicCode from '@/components/cmp/JGraphicCode' // 验证码生成器
 import { putAction, postAction, getAction } from '@/api/manage' // axios方法
 import UserRegister from './UserRegister'
@@ -331,7 +331,7 @@ export default {
                     .Login(qs.stringify(loginParams1))
                     .then(res => {
                       // 根据归属部门，选择处理，0提示，2选择，1则直接登录
-                      // Vue.ls.set(ACCESS_TOKEN, that.genKey, 7 * 24 * 60 * 60 * 1000)
+                      Vue.ls.set(CURRENT_GENKEY, that.genKey, 7 * 24 * 60 * 60 * 1000)
                       this.departConfirm(res)
                     })
                     .catch(err => {
@@ -358,8 +358,39 @@ export default {
               if (!err) {
                 loginParams = qs.stringify(Object.assign({}, values))
                 that.formLogin.phone = values.phone
+
+                // 生成客户端aes秘钥
+                that.genKey = aesUtil.genKey()
+                //key加密 登录信息
+                let loginParamsAes = aesUtil.encrypt(loginParams, that.genKey)
+
+                //  公钥加密aes秘钥
+                that.genKeyRsa = rsaUtil.encrypt(that.genKey, that.backPubKey)
+                // 组合登录信息及两个秘钥
+                let loginParams1 = {
+                  backPub: that.backPubKey,
+                  aesKey: that.genKeyRsa,
+                  data: loginParamsAes
+                }
+
                 that.loginBtn = true
-                that
+                if (res.result != null) {
+                  that
+                  .LoginByPhone(qs.stringify(loginParams1))
+                  .then(res => {
+                    if (that.requiredTwoStepCaptcha) {
+                      that.stepCaptchaVisible = true
+                    } else {
+                      Vue.ls.set(CURRENT_GENKEY, that.genKey, 7 * 24 * 60 * 60 * 1000)
+                      Vue.ls.set('FORM_LOGIN', that.formLogin, 7 * 24 * 60 * 60 * 1000)
+                      this.departConfirm(res)
+                    }
+                  })
+                  .catch(err => {
+                    that.requestFailed(err)
+                  })
+                } else {
+                  that
                   .LoginByPhone(loginParams)
                   .then(res => {
                     if (that.requiredTwoStepCaptcha) {
@@ -372,6 +403,8 @@ export default {
                   .catch(err => {
                     that.requestFailed(err)
                   })
+                }
+                
               }
             })
           }
@@ -481,6 +514,7 @@ export default {
     },
     // 部门选择
     departConfirm(res) {
+      console.log(res,'看看是啥');
       if (res.success) {
         let multi_depart = res.result.multi_depart
         //0:无部门 1:一个部门 2:多个部门

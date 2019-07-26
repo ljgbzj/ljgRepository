@@ -387,7 +387,8 @@ export default {
         imgerver: window._CONFIG['domianURL'] + '/sys/common/view',
         pdferver: window._CONFIG['domianURL'] + '/sys/common/pdf/pdfPreviewIframe',
         fileDownLoad: '/file/uploadFile/downloadFileById',
-        timeCheck: '/oa/leaveApplication/verifyOverlapedLeaveTime'
+        timeCheck: '/oa/leaveApplication/verifyOverlapedLeaveTime',
+        getEntityName: '/sysFlow/flowConfig/getProcessDefinitionKeyByEntityName'
       },
       // imgurl: '',
       // radioStyle: '',
@@ -514,7 +515,9 @@ export default {
       timeStartCheck: '',
       timeEndCheck: '',
       TimeBtn: '',
-      nodeId: ''
+      nodeId: '',
+      entityName: 'leaveApplication',
+      processDefinitionKey: ''
     }
   },
   filters: {
@@ -541,6 +544,7 @@ export default {
     const token = Vue.ls.get(ACCESS_TOKEN)
     this.headers = { 'X-Access-Token': token }
     this.attachment[0].fileTokens = ''
+    this.getEntity();
   },
   methods: {
     ...mapGetters(['nickname']),
@@ -614,7 +618,7 @@ export default {
       this.timeStartCheck = '',
       this.timeEndCheck = ''
     },
-   handleOk() {
+    handleOk() {
       const that = this
       if (that.title == '查看') {
         that.close()
@@ -637,7 +641,7 @@ export default {
               httpurl += this.url.add
               method = 'post'
               strFlowData.api = '/process/startAndSubmit'
-              strFlowData.processDefinitionKey = 'leave'
+              strFlowData.processDefinitionKey = this.processDefinitionKey
             } else {
               httpurl += this.url.edit
               method = 'post' // put修改
@@ -661,8 +665,6 @@ export default {
               strFormData: JSON.stringify(strFormData),
               strAttachment: JSON.stringify(this.attachment)
             }
-            
-            
             httpAction(httpurl, qs.stringify(params2), method)
             .then(res => {
               if (res.success) {
@@ -702,7 +704,7 @@ export default {
             } else {
               strFlowData.api = '/process/start';
             }
-            strFlowData.processDefinitionKey = 'leave';
+            strFlowData.processDefinitionKey = this.processDefinitionKey;
 
             //时间格式化
             strFormData.timeStart = strFormData.timeStart?strFormData.timeStart.format('YYYY-MM-DD HH:mm:ss'):null;
@@ -754,7 +756,7 @@ export default {
         } else {
           strFlowData.api = '/process/start'
         }
-        strFlowData.processDefinitionKey = 'leave'
+        strFlowData.processDefinitionKey = this.processDefinitionKey
 
         //时间格式化
         strFormData.timeStart = strFormData.timeStart
@@ -897,10 +899,16 @@ export default {
         })
       }
     },
-    blank(info) {}
-
-   
-    
+    blank(info) {},
+    getEntity(){
+      let params = {
+        entityName: this.entityName
+      }
+      getAction(this.url.getEntityName, params).then((res)=>{
+        this.processDefinitionKey = res.result;
+      }).finally(() => {
+      })
+    }
   },
   computed: {
     rollback() {
@@ -944,7 +952,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '~@assets/less/modal.less';
+@import '~@assets/less/common.less';
 .ant-col-12 {
   padding-left: 0 !important;
   padding-right: 0 !important;

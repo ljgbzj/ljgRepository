@@ -147,16 +147,15 @@
   .userSelect {
     :global(.ant-select) {
       :global(.ant-select-selection) {
-        padding: 0;
+        // padding: 0;
         :global(.ant-select-selection__rendered) {
-          line-height: 40px;
+          // line-height: 40px;
           :global(.ant-select-selection__placeholder){
-            top: 48%;
+            // top: 48%;
           }
           :global(ul) {
             :global(li) {
-              margin-top: 6px;
-              // margin-bottom: 7px;
+              // margin-top: 6px;
             }
           }
         }
