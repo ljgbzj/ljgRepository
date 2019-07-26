@@ -126,8 +126,8 @@
       </div>
     </a-card>
     <!--表单区域-->
-    <!--<room-list-order-modal ref="modalForm" @ok="modalFormOk"></room-list-order-modal>-->
-    <meetingRoom-modal ref="modalForm" @ok="modalFormOk" @searchQuery="searchQuery"></meetingRoom-modal>
+    <!--<meetingRoom-modal ref="modalForm" @ok="modalFormOk" @searchQuery="searchQuery"></meetingRoom-modal>-->
+    <meetingRoom-modal ref="test" @searchQuery="searchQuery"></meetingRoom-modal>
   </div>
 </template>
 
@@ -135,7 +135,7 @@
   import moment from 'moment';
   import JSelectDepart from '../../components/cmpbiz/JSelectDepart'
   import JSelectUserByDep from '../../components/cmpbiz/JSelectUserByDep'
-  import { CmpListMixin } from '@/mixins/CmpListMixin'
+  // import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { mapGetters } from 'vuex'
   import ARow from 'ant-design-vue/es/grid/Row'
   import ACol from 'ant-design-vue/es/grid/Col'
@@ -151,7 +151,7 @@
     name: 'roomListOrder',
     components: {
       JSelectUserNew, ARadioButton, ARadioGroup, AFormItem, ACol, ARow, JSelectUserByDep, JSelectDepart, JDictSelectTag, MeetingRoomModal},
-    mixins: [CmpListMixin],
+    // mixins: [CmpListMixin],
     data() {
       return {
         endTimeDisabled:true,
@@ -285,7 +285,8 @@
           //让弹出表单只有可读权限
           that.model = item.arrUseInfo[index]
           that.model.action = 2;
-          that.$refs.modalForm.edit(item.arrUseInfo[index]);
+          // that.$refs.modalForm.edit(item.arrUseInfo[index]);
+          that.$refs.test.edit(item.arrUseInfo[index]);
         } else if (items == 0) { //如果状态为0，表明为空闲会议室，触发鼠标移动事件，并计入起始选择坐标
           that.roomList[key].arrUseInfo[index].status = 2
           that.isMoving = true
@@ -351,7 +352,9 @@
             that.model.meetingDate = that.meetingDate;
             that.model.meetingStartTime = that.startTime;
             that.model.meetingEndTime = that.endTime;
-            that.$refs.modalForm.edit(that.model);
+            that.model.reserveDate = moment().format('YYYY-MM-DD HH:mm:ss');
+            // that.$refs.modalForm.edit(that.model);
+            that.$refs.test.edit(that.model);
             that.isMoving = false //关闭滑动
           }
         }
