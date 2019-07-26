@@ -14,13 +14,13 @@ const colorList = [
     key: '日暮', color: '#FAAD14',
   },
   {
-    key: '明青', color: '#13C2C2',
-  },
-  {
     key: '极光绿', color: '#52C41A',
   },
   {
-    key: '拂晓蓝', color: '#1890FF',
+    key: '明青', color: '#13C2C2',
+  },
+  {
+    key: '设计蓝（默认）', color: '#0493f3'
   },
   {
     key: '极客蓝', color: '#2377FC',
@@ -28,9 +28,7 @@ const colorList = [
   {
     key: '酱紫', color: '#722ED1',
   },
-  {
-    key: '设计紫', color: '#0493f3'
-  }
+  
 ];
 
 const updateTheme = primaryColor => {

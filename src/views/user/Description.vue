@@ -1,7 +1,7 @@
 <template>
   <div class="desc">
     <div class="title">CyberEng工程云</div>
-    <div class="title title-desc">小微工程企业综合管理云平台</div>
+    <div class="title title-desc">工程企业综合管理云平台</div>
     <p>云办公平台专注服务于各大数字化系统，汇集存储各大系统的信息数据。平台有大量的组件可以直接使用，提高项目的开发效率，减少开发工作量。</p>
     <router-link to="/user/login">
       <button :class="loginClass">登录</button>
