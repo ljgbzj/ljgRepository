@@ -5,23 +5,17 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-
-          <!-- <a-col :md="6" :sm="8">
-            <a-form-item label="请假人用户编码">
-              <a-input placeholder="请输入请假人用户编码" v-model="queryParam.username"></a-input>
-            </a-form-item>
-          </a-col> -->
-          <a-col :md="12" :sm="8">
+          <a-col :md="6" :sm="8">
             <a-form-item label="请假人">
-              <a-input placeholder="请输入请假人" v-model="queryParam.inputerFullname"></a-input>
+              <a-input placeholder="请输入请假人" v-model="queryParam.inputerFullname" @keyup.enter="searchQuery"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="12" :sm="8">
+          <a-col :md="6" :sm="8">
             <a-form-item label="请假类型">
               <j-dict-select-tag  v-model="queryParam.type" placeholder="请选择类型" dictCode="leave_type"/>
             </a-form-item>
           </a-col>
-        <!-- <template v-if="toggleSearchStatus"> -->
+        <template v-if="toggleSearchStatus">
           <a-col :md="6" :sm="8">
             <a-form-item label="请假时间">
               <a-date-picker
@@ -43,19 +37,19 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="状态选择">
+            <a-form-item label="状态">
               <j-dict-select-tag  v-model="queryParam.status" placeholder="请选择状态" dictCode="bpm_status"/>
             </a-form-item>
           </a-col>
-        <!-- </template> -->
+        </template>
           <a-col :md="6" :sm="8" >
-            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!-- <a @click="handleToggleSearch" style="margin-left: 8px">
+              <a @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a> -->
+              </a>
             </span>
           </a-col>
 
@@ -128,6 +122,7 @@
       LeaveApplicationModal,
       JDictSelectTag
     },
+    
     data () {
       return {
         description: '请假申请管理页面',
@@ -289,7 +284,6 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        console.log(param,'不走你说气不气');
         return filterObj(param);
       },
     },

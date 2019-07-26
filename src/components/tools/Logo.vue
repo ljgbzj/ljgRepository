@@ -1,14 +1,4 @@
 <template>
-  <!-- <div class="logo">
-    <router-link :to="{name:'dashboard'}">
-      <img src="~@/assets/logo.svg" alt="logo">
-      <h1 v-if="showTitle">{{ title }}</h1>
-      </router-link>
-  </div>-->
-  <!-- <div class="loginContainer">
-      <img src="@/assets/img/login/LOGO1.png" color="#6857FF">
-      <img src="@/assets/img/login/LOGO3.png" color="#6857FF" v-if="showTitle">
-  </div>-->
   <div class="logo">
     <router-link :to="{name:'dashboard'}" class="logoPic">
       <img src="@/assets/img/login/LOGO1.png">

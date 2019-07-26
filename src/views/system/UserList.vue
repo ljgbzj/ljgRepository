@@ -15,9 +15,7 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="性别">
               <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
-                <a-select-option value="">请选择性别查询</a-select-option>
-                <a-select-option value="1">男性</a-select-option>
-                <a-select-option value="2">女性</a-select-option>
+                <a-select-option :value="item.value" v-for="(item, index) in sexList">{{item.title}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -184,6 +182,7 @@
   import UserModal from './modules/UserModal'
   import PasswordModal from './modules/PasswordModal'
   import {putAction} from '@/api/manage';
+  import {initDictOptions, filterDictText} from "../../components/dict/JDictSelectUtil";
   import {frozenBatch} from '@/api/api'
   import {CmpListMixin} from '@/mixins/CmpListMixin'
   import SysUserAgentModal from "./modules/SysUserAgentModal";
@@ -200,6 +199,7 @@
       return {
         description: '这是用户管理页面',
         queryParam: {},
+        sexList:'',
         columns: [
           /*{
             title: '#',
@@ -213,13 +213,13 @@
           },*/
           {
             title: '用户账号',
-            align: "center",
+            align: "left",
             dataIndex: 'username',
             width: 120
           },
           {
             title: '真实姓名',
-            align: "center",
+            align: "left",
             width: 100,
             dataIndex: 'realname',
           },
@@ -233,30 +233,35 @@
 
           {
             title: '性别',
-            align: "center",
+            align: "left",
             width: 80,
-            dataIndex: 'sex_dictText'
+            dataIndex: 'sex',
+            customRender: (text, record, index) => {
+              console.log(text,"ss");
+              console.log(this.sexList,"bbb")
+              return filterDictText(this.sexList, text);
+            }
           },
           {
             title: '生日',
-            align: "center",
+            align: "left",
             width: 180,
             dataIndex: 'birthday'
           },
           {
             title: '手机号码',
-            align: "center",
+            align: "left",
             width: 100,
             dataIndex: 'phone'
           },
           {
             title: '邮箱',
-            align: "center",
+            align: "left",
             dataIndex: 'email'
           },
           {
             title: '状态',
-            align: "center",
+            align: "left",
             width: 80,
             dataIndex: 'status_dictText'
           },
@@ -280,7 +285,7 @@
             title: '操作',
             dataIndex: 'action',
             scopedSlots: {customRender: 'action'},
-            align: "center",
+            align: "left",
             width: 170
           }
 
@@ -300,6 +305,18 @@
       importExcelUrl: function(){
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       }
+    },
+   beforeCreate() {
+     initDictOptions('sys_sex').then((res)=>{
+       if(res.success) {
+         this.sexList = res.result;
+         console.log(this.sexList,"Sex")
+       }
+
+     })
+    },
+    created(){
+
     },
     methods: {
       getAvatarView: function (avatar) {

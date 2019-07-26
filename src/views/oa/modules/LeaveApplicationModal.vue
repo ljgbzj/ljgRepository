@@ -57,7 +57,7 @@
               </a-row>
               <a-row :gutter="24">
                 <a-col :span="12">
-                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始时间">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假开始时间">
                     <a-date-picker
                       :disabledDate="disabledStartDate"
                       showTime
@@ -69,7 +69,7 @@
                   </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结束时间">
+                  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假结束时间">
                     <a-date-picker
                       :disabledDate="disabledEndDate"
                       showTime
@@ -85,7 +85,7 @@
                 <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="请假时长">
                     <a-input
-                      placeholder="请假申请"
+                      placeholder="请假时长"
                       v-model="timeLength"
                       disabled
                     />
@@ -117,10 +117,11 @@
                       listType="picture"
                       :headers="headers"
                       :fileList="fileList"
-                      @change="handleChange"
+                      @change="disabledBtn"
                       @preview="handlePreview"
                       :multiple="true"
                       class="upload-list-inline"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
                     >
                       <a-button>
                         <a-icon type="upload" />上传
@@ -136,7 +137,7 @@
               <!-- <a-row :gutter="24">
                 <a-col :span="24"> -->
                   <a-form-item :labelCol="labelCol1" :wrapperCol="wrapperCol1" label="新任务通知">
-                    <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]">
+                    <a-checkbox-group v-decorator="['notifyMethod', {initialValue: []}]" :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'">
                       <!-- <a-checkbox value="email">邮件</a-checkbox> -->
                       <a-checkbox value="sms">手机短信</a-checkbox>
                       <!-- <a-checkbox value="euc">站内消息</a-checkbox> -->
@@ -146,7 +147,12 @@
               <a-row :gutter="24">
                 <a-col :span="12">
                   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目经理/组长">
-                    <j-select-user-new :selectedDetails="auditUsers1" @callback="setAuditUser" class="userSelect"></j-select-user-new>
+                    <j-select-user-new
+                    :selectedDetails="auditUsers1"
+                    @callback="setAuditUser"
+                    class="userSelect"
+                    :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
+                    v-decorator="['auditUsername1', validatorRules.auditUsername1]"></j-select-user-new>
                   </a-form-item>
                 </a-col>
                 <a-col :span="12">
@@ -155,6 +161,8 @@
                       :selectedDetails="auditUsers2"
                       @callback="setAuditUser"
                       class="userSelect"
+                      :disabled="this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看'"
+                      v-decorator="['auditUsername2', validatorRules.auditUsername2]"
                     ></j-select-user-new>
                   </a-form-item>
                 </a-col>
@@ -178,7 +186,7 @@
                     :labelCol="labelCol1"
                     :wrapperCol="wrapperCol1"
                     label="审批意见"
-                    v-show="model.status !== undefined && model.status !== 0 && title !== '编辑' && nodeName != '填写表单'"
+                    v-show="(model.status !== undefined && model.status !== 0 && title !== '编辑' && nodeName != '填写表单' && title !== '查看')"
                     :disabled="title == '编辑'"
                   >
                     <a-textarea
@@ -201,7 +209,7 @@
                           class="confirm"
                           type="primary"
                         >{{placement.btnName}}</a-button>
-                        <a-menu slot="overlay" v-if="placement.btnApi == '/task/jump'">
+                        <a-menu slot="overlay" v-if="placement.btnApi == '/task/rollback'">
                           <a-menu-item v-for="(v,k) in rollback" :key="k">
                             <div @click="goBack(v.nodeId)">{{ v.nodeName }}</div>
                           </a-menu-item>
@@ -276,7 +284,6 @@
                 <span>已完成</span>
               </h3>
               <s-table
-                rowKey="id"
                 :columns="goodsColumns"
                 :data="loadGoodsData"
                 v-if="commentList"
@@ -288,7 +295,6 @@
                 <span>处理中</span>
               </h3>
               <s-table
-                rowKey="id"
                 :columns="goodsColumns1"
                 :data="loadGoodsData1"
                 v-if="commentList"
@@ -365,6 +371,8 @@ export default {
         templatehrLeaderR: { rules: [{ required: true, message: '请选择人事部门领导!' }] },
         templateGeManagerU: { rules: [{ required: true, message: '请选择总经理!' }] },
         templateGeManagerR: { rules: [{ required: true, message: '请选择总经理!' }] },
+        auditUsername1: { rules: [{ required: true, message: '请选择项目经理/组长!' }] },
+        auditUsername2: { rules: [{ required: true, message: '请选择部门主任!' }] },
         templateContent: { rules: [] }
       },
       url: {
@@ -441,7 +449,7 @@ export default {
       goodsColumns1: [
         {
           title: '序号',
-          dataIndex: '',
+          dataIndex: '1',
           key: 'rowIndex',
           width: 80,
           align: 'center',
@@ -565,7 +573,9 @@ export default {
             'reason',
             'notifyMethod',
             // 'remarks',
-            '_taskComment'
+            '_taskComment',
+            'auditUsername1',
+            'auditUsername2',
           )
         )
 
@@ -618,13 +628,7 @@ export default {
 
             // 选人控件传值
             this.uploadMan(strFormData,that);
-            if (!strFormData.auditUsername1) {
-              this.$message.warning('部门经理/组长不能为空！');
-              return;
-            } else if (!strFormData.auditUsername2){
-              this.$message.warning('部门主任不能为空！');
-              return;
-            }
+
             that.confirmLoading = true
             let httpurl = ''
             let method = ''
@@ -646,8 +650,6 @@ export default {
             strFormData.timeEnd = strFormData.timeEnd
               ? strFormData.timeEnd.format('YYYY-MM-DD HH:mm:ss')
               : null
-
-            
 
             // 上传组件
             for (let i = 0; i < that.attachment.length; i++) {
@@ -694,7 +696,7 @@ export default {
             let strFlowData = {};
             if (lab !== 'start') {
               strFlowData.api = lab;
-              if (lab == '/task/jump') {
+              if (lab == '/task/rollback') {
                 strFlowData.targetNodeId = id;
               }
             } else {
@@ -746,7 +748,7 @@ export default {
         let strFlowData = {}
         if (lab !== 'start') {
           strFlowData.api = lab
-          if (lab == '/task/jump') {
+          if (lab == '/task/rollback') {
             strFlowData.targetNodeId = id
           }
         } else {
@@ -807,10 +809,10 @@ export default {
       } else if (value.btnApi == '/process/delete') {
         lab = '/process/delete'
         this.handleSave(lab)
-      } else if (value.btnApi == '/task/jump') {
+      } else if (value.btnApi == '/task/rollback') {
         return
       } else if ((value = 'jump')) {
-        lab = '/task/jump'
+        lab = '/task/rollback'
         this.handleSave(lab, id)
       }
     },
@@ -894,7 +896,8 @@ export default {
           }
         })
       }
-    }
+    },
+    blank(info) {}
 
    
     
@@ -931,6 +934,9 @@ export default {
       } else {
         return 0
       }
+    },
+    disabledBtn() {
+      return this.nodeId != '' && this.nodeId != 'UserTask_0'  || this.title == '查看' ? this.blank : this.handleChange
     }
 
   }

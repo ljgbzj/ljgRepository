@@ -64,7 +64,7 @@
             @click="chooseIcon(icon)"
           >
             <img
-              :src="require(`@/assets/img/menu/${icon}.png`)"
+              :src="require(`@/assets/img/icon/${icon}.png`)"
               :alt="icon"
             />
           </li>
@@ -428,17 +428,29 @@ const logoIcons = [
   'yahoo'
 ] */
 const currentIcons = [
-  'setting',
-  'warning',
+  'address-list',
   'bar-chart',
-  'check-circle-o',
+  'contract',
   'dashboard',
+  'design',
+  'document',
+  'financial-affairs',
   'form',
+  'human-resource',
+  'integrate',
+  'leave',
+  'manage',
+  'meeting',
   'message',
-  'profile',
+  'project',
   'qrcode',
+  'result',
+  'setting',
+  'shopping-cart',
   'table',
-  'user'
+  'task',
+  'user',
+  'warning'
 ]
 export default {
   name: 'Icons',

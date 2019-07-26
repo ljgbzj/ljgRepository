@@ -2183,7 +2183,7 @@ i.trigger:hover {
 }
 .right .action > i {
   /* color: rgba(0, 0, 0, 0.65); */
-  color: #a69dff;
+  color: @primary-color;
 }
 .right .action:hover {
   background: rgba(0, 0, 0, 0.025);
@@ -5126,13 +5126,21 @@ form .ant-upload {
   background: #f0f2f5;
   color: rgba(0, 0, 0, 0.65);
 }
+
+//
 .ant-layout-sider {
   background: #001529;
 }
 .ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open.ant-menu-submenu-selected,
+.ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-selected,
 .ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-open{
   & > .ant-menu-submenu-title{
     background-color: rgba(0,0,0,0.1);
+  }
+}
+.ant-layout-sider .ant-menu-submenu.ant-menu-submenu-inline:hover{
+  & > .ant-menu-submenu-title{
+    color: #7d9fff;
   }
 }
 .ant-layout-sider-trigger {
@@ -5339,7 +5347,7 @@ i.anticon.anticon-home + span{
 } */
 //二级菜单hover字体颜色
 .ant-menu-item > a {
-  color: #fff;
+  color: rgba(255,255,255,0.6);
   width: 78%;
 }
 //二级菜单hover字体颜色
@@ -5370,11 +5378,22 @@ i.anticon.anticon-home + span{
   color: @primary-color;
   background: @primary-color !important;
 }
-.ant-menu-submenu .ant-menu .ant-menu-item-selected > a,
-.ant-menu-submenu .ant-menu .ant-menu-item-selected > a:hover {
-  color: @primary-color;
-  width: 78%;
-  background: #fff;
+.ant-menu-submenu .ant-menu .ant-menu-item-selected
+ {
+  & > a{
+    color: @primary-color;
+    background: #fff;
+  }
+}
+.ant-menu-submenu .ant-menu .ant-menu-submenu .ant-menu-submenu-title {
+  span{
+    color: rgba(255,255,255,0.6);
+  }
+  &:hover{
+    span{
+      color: #fff;
+    }
+  }
 }
 .ant-menu-item-selected > .router-link-exact-active,
 .ant-menu-item-selected > .router-link-exact-active:hover
@@ -5526,7 +5545,7 @@ i.anticon.anticon-home + span{
 }
 .ant-menu-horizontal > .ant-menu-item > a {
   /* color: rgba(0, 0, 0, 0.65); */
-  color: #a69dff;
+  color:  @primary-color;
 }
 .ant-menu-horizontal > .ant-menu-item > a:hover {
   /* color: @primary-color; */
@@ -6231,7 +6250,7 @@ i.anticon.anticon-home + span{
 }
 .ant-select-disabled .ant-select-selection--multiple .ant-select-selection__choice {
   background: #f5f5f5;
-  color: #a69dff;
+  color:  @primary-color;
 }
 .ant-select-disabled .ant-select-selection__choice__remove {
   color: rgba(0, 0, 0, 0.25);
@@ -6960,7 +6979,7 @@ tr.ant-table-expanded-row:hover {
   background: @primary-color;
   .ant-tabs-tab{
     background: @primary-color!important;
-    color: #a69dff;
+    color: rgba(255,255,255,0.5);
     &:hover{
       color:#fff;
     }
@@ -7869,4 +7888,33 @@ font.weak {
 }
 .title-box {
   background: @primary-color;
+}
+
+// topmenu菜单颜色
+.topmenu{
+  .secondItem.checked .secondMenuTitle{
+    color: @primary-color!important;
+  }
+  .secondItem .secondMenuTitle:hover{
+    color: @primary-color!important;
+  }
+  .secondItem.checked, .secondItem:hover {
+    & > a{
+      color: @primary-color!important;
+    }
+    .thirdItem.chosed, .thirdItem:hover{
+      & > a{
+        color: @primary-color!important;
+      }
+    }
+  }
+
+
+  .out{
+    .su-menu-list.FirstMenu{
+      .img-container{
+        background-color: @primary-color!important;
+      }
+    }
+  }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card title="会议室预定" :bordered="false" v-model="hoverRoomName">
+    <a-card :bordered="false" v-model="hoverRoomName">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
@@ -32,7 +32,8 @@
         </a-form>
       </div>
       <!--表头-->
-      <a-spin :spinning="confirmLoading2" class="loading">
+      <div style="width: 100%;overflow-x: auto">
+      <a-spin :spinning="confirmLoading2" class="loading" style="width: 1839px">
       <div class="father-box">
         <div class="title-room-name-box">
           <div class="title-box">会议室名称</div>
@@ -75,7 +76,7 @@
               @mouseleave="leave"
             >
                 <div class="info-icon-order">
-                  {{items.username}}
+                  {{items.reserveFullName}}
                 </div>
             </div>
             <!--被预约,别人预定的-->
@@ -88,7 +89,8 @@
               @mouseleave="leave"
             >
               <div class="info-icon-order">
-                {{items.username}}
+                <!--显示为联系人-->
+                {{items.reserveFullName}}
               </div>
             </div>
             <!--隐藏单元格-->
@@ -121,199 +123,11 @@
         <!-- </a-row> -->
       </div>
       </a-spin>
+      </div>
     </a-card>
     <!--表单区域-->
-    <a-modal
-      title="会议室预定"
-      :width="1000"
-      :visible="visible"
-      :confirmLoading="confirmLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
-      style="top:5%;">
-
-      <a-spin :spinning="confirmLoading">
-        <a-form :form="form">
-          <a-row :gutter="24">
-            <!--会议主题-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议主题">
-                <a-input
-                  placeholder="请输入会议主题"
-                  v-decorator="['subject', { rules: [{ required: true, message: '请输入会议主题' }]}]" />
-              </a-form-item>
-            </a-col>
-            <!--参与人数-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="参与人数">
-                <a-input
-                  style="width: 50%"
-                  placeholder="请输入参与人数"
-                  v-decorator="[ 'memberNumber', validatorRules.memberNumber]"
-                   />
-                最大容纳人数：{{this.containNum}}
-              </a-form-item>
-              <!--v-decorator="[ 'memberNumber', validatorRules.memberNumber]"-->
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系人/主持人">
-                <!--<j-select-user-by-dep-->
-                <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new
-                  :selectedDetails="auditUsers1"
-                  @callback="setAuditUser"
-                  class="userSelect"></j-select-user-new>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系电话">
-                <a-input
-                  v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
-              </a-form-item>
-            </a-col>
-            <!--会议室名称-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议室名称">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingRoom',{initialValue:this.orderRoom}]"/>
-              </a-form-item>
-            </a-col>
-            <!--会议日期-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                style="display: none"
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议日期">
-                <a-date-picker
-                  :disabledDate="disabledDate"
-                  v-decorator="['meetingDate',{initialValue:this.queryParam.searchDate}]"
-                  @change="onChange" />
-              </a-form-item>
-            </a-col>
-            <!--会议级别-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议类型">
-                <j-dict-select-tag
-                  v-decorator="['meetingLevel', {initialValue:'小组例会'}]"
-                  :triggerChange="true"
-                  placeholder="请选择会议类型"
-                  dictCode="meeting_level"
-                />
-              </a-form-item>
-            </a-col>
-            <!--会议开始时间-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议开始时间">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingStartTime',{initialValue:this.meetingDate + ' ' + this.startTime}]"/>
-              </a-form-item>
-            </a-col>
-            <!--会议结束时间-->
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="会议结束时间">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['meetingEndTime',{initialValue:this.meetingDate + ' ' +this.endTime}]"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="12" :sm="8" style="display: none">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="申请部门">
-                <j-select-depart
-                  v-decorator="['applyDepart',{ }]"
-                  :trigger-change="true" ></j-select-depart>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="12" :sm="8" style="display: none">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="部门领导">
-                <j-select-user-by-dep
-                  v-decorator="['departLeader',{}]"></j-select-user-by-dep>
-              </a-form-item>
-            </a-col>
-
-            <a-form-item label="meetingRoomId" style="display: none">
-              <input v-decorator="['meetingRoomId',{initialValue:this.orderRoomId}]"/>
-            </a-form-item>
-          </a-row>
-
-          <!--院内主要参与者-->
-          <a-row :gutter="24">
-            <a-col :md="24" :sm="8">
-              <a-form-item
-                :labelCol="{
-                xs: { span: 24},
-                sm: { span: 3 },
-                }"
-                :wrapperCol="{
-                xs: { span: 24},
-                sm: { span: 20 },
-                }"
-                label="院内参与者">
-                <!--<j-select-user-by-dep-->
-                <!--v-decorator="['joinMember',{rules: [{ required: true, message: '请选择参与人' }],initialValue:this.loginUserName}]"/>-->
-                <j-select-user-new :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
-              </a-form-item>
-            </a-col>
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="预订人">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }],initialValue:this.loginUserName}]"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="12" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="预定时间">
-                <a-input
-                  :disabled="disabledValue"
-                  v-decorator="['reserveDate',{initialValue:moment().format('YYYY-MM-DD HH:mm:ss')}]"/>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form>
-      </a-spin>
-    </a-modal>
-    <room-list-order-modal ref="modalForm" @ok="modalFormOk"></room-list-order-modal>
+    <!--<room-list-order-modal ref="modalForm" @ok="modalFormOk"></room-list-order-modal>-->
+    <meetingRoom-modal ref="modalForm" @ok="modalFormOk" @searchQuery="searchQuery"></meetingRoom-modal>
   </div>
 </template>
 
@@ -331,16 +145,16 @@
   import ARadioButton from 'ant-design-vue/es/radio/RadioButton'
   import JDictSelectTag from '@/components/dict/JDictSelectTag'
   import JSelectUserNew from '../../components/cmpbiz/JSelectUserNew'
-  import RoomListOrderModal from './modules/roomListOrderModal'
-
+  import MeetingRoomModal from './modules/MeetingRoomModal'
 
   export default {
     name: 'roomListOrder',
-    components: { RoomListOrderModal, JSelectUserNew, ARadioButton, ARadioGroup, AFormItem, ACol, ARow, JSelectUserByDep, JSelectDepart, JDictSelectTag},
+    components: {
+      JSelectUserNew, ARadioButton, ARadioGroup, AFormItem, ACol, ARow, JSelectUserByDep, JSelectDepart, JDictSelectTag, MeetingRoomModal},
     mixins: [CmpListMixin],
     data() {
       return {
-        drawerVisible:false,
+        endTimeDisabled:true,
         model: {},
         hoverRoomName:'会议室预定',
         //滑动状态
@@ -368,27 +182,23 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        form: this.$form.createForm(this),
         // 查询参数
         queryParam:{
           searchDate:moment(moment(),'YYYY-MM-DD'),
           searchRoomName:'',
         },
-        // 弹窗状态
-        visible: false,
         confirmLoading: false,
         confirmLoading2: false,
         // 对话框参数
-        orderTime: '',
         orderRoom: '',
         orderRoomId: '',
         // 会议室信息透出
         roomList:'',
         roomListCopy: '',
         timeList: [
-          { time: '8:30' },
-          { time: '9:00' },
-          { time: '9:30' },
+          { time: '08:30' },
+          { time: '09:00' },
+          { time: '09:30' },
           { time: '10:00' },
           { time: '10:30' },
           { time: '11:00' },
@@ -403,30 +213,24 @@
           { time: '15:30' },
           { time: '16:00' },
           { time: '16:30' },
-          { time: '17:00' }
+          { time: '17:00' },
+          { time: '17:30' },
+          { time: '18:00' },
+          { time: '18:30' },
+          { time: '19:00' },
+          { time: '19:30' },
+          { time: '20:00' },
+          { time: '20:30' },
+          { time: '21:00' },
+          { time: '21:30' },
         ],
         validatorRules: {
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
-          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]}
+          // contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue: this.$store.getters.userInfo.phone},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }]},
+          memberNumber:{ rules: [{validator: this.memberNumbercheck}]}
         },
-        reserveUserName:'',
-        reserveFullName:'',
-        joinMemberUserName:'',
-        joinMemberFullName:'',
-        selectUser: ['auditUsers1', 'auditUsers2'],
-        auditUsers1: {
-          colum: 'auditUsers1',
-          value: [],
-          target: [
-            { to: 'reserveUserName', from: 'username' },
-            { to: 'reserveFullName', from: 'realname' }
-          ]
-        },
-        auditUsers2: {
-          colum: 'auditUsers2',
-          value: [],
-          target: [{ to: 'joinMemberUserName', from: 'username' }, { to: 'joinMemberFullName', from: 'realname' }]
-        },
+        // 联系电话
+        contactPhone:'',
         // 最大容纳数
         containNum:'',
       }
@@ -435,6 +239,7 @@
       this.loginUserName = this.$store.getters.nickname
       this.loginUserId = this.$store.getters.userId
       this.confirmLoading2 = true
+      //查询数据
       findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.queryParam.searchRoomName})
         .then((res) => {
           this.roomList = res.result;
@@ -446,290 +251,216 @@
         })
     },
     methods: {
-      ...mapGetters(["nickname", "avatar","userId"]),
+      ...mapGetters(["nickname", "avatar", "userId"]),
       moment,
       onChange(date, dateString) {
-        console.log(date, dateString);
         this.queryParam.searchDate = date;
         this.meetingDate = dateString;
         this.confirmLoading2 = true
-        findRoomList({meetingDate:dateString,meetingRoomName:this.queryParam.searchRoomName})
+        //切换日历时，请求查询接口
+        findRoomList({ meetingDate: dateString, meetingRoomName: this.queryParam.searchRoomName })
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
             console.log(res.result.userInfo)
-            if (res.code === 0){
+            if (res.code === 0) {
               this.confirmLoading2 = false
             }
           })
       },
-      range(start, end) {
-        const result = [];
-        for (let i = start; i < end; i++) {
-          result.push(i);
-        }
-        return result;
-      },
-      //点击预定会议室
-      order() {
-        if (this.orderRoom == null || this.orderRoom == ''){
-          this.$message.warning('您没有选择会议室哦')
-        }else {
-          // 弹出预定表单
-          this.visible = true
-          // 预定会议室信息
-        }
-      },
-      myMouseDown: function(item, items,index,key){
+      myMouseDown: function(item, items, index, key) {
         this.orderRoom = item.roomName
         this.orderRoomId = item.roomId
         this.containNum = item.containNum
         const that = this
-        if (that.endCol != null){
+        //如果上次滑动已经结束了，此次点击将会重置页面数据
+        if (that.endCol != null) {
           that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
           that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
         }
-        // console.log("鼠标点下" + "=> 当前行是 =>" + key + "当前列是 =>" + index)
-        if (items == 2){
+        //如果状态为2，再次点击将其置为0
+        if (items == 2) {
           that.roomList[key].arrUseInfo[index].status = 0
-        } else if (items == 1){
-          // const message = '当前会议室已经被预定了'
-          // that.$message.warning(message)
-          that.visibleOrder = true
+        } else if (items == 1) { //如果状态为1，表明该时间点会议室已经被预定了，弹出详情页面，不可提交
+          //让弹出表单只有可读权限
+          that.model = item.arrUseInfo[index]
+          that.model.action = 2;
           that.$refs.modalForm.edit(item.arrUseInfo[index]);
-          that.orderTime = ''
-        } else if (items == 0){
+        } else if (items == 0) { //如果状态为0，表明为空闲会议室，触发鼠标移动事件，并计入起始选择坐标
           that.roomList[key].arrUseInfo[index].status = 2
           that.isMoving = true
           that.startRow = key //起始行坐标
           that.startCol = index //起始列坐标
-          that.startTime =  that.timeList[index].time
+          that.startTime = that.timeList[index].time
         }
       },
-      myMouseUp:function(item, items ,index,key){
-        // debugger
+      myMouseUp: function(item, items, index, key) {
         const that = this
-        console.log("鼠标抬起了")
         that.endCol = index //结束列坐标
+        //对 起始 和 终止时间排序 防止异常
         if (that.startTime != null && that.startTime != '') {
           if (that.startCol <= index) { //正常顺序
-            if (that.endCol == 17) {
-              that.endTime =  ' 17:30'
+            if (that.endCol == 26) {
+              that.endTime = '22:00'
             } else {
               that.endTime =
                 that.timeList[index + 1].time
             }
-            that.orderTime = that.startTime + " - " + that.endTime
           } else { //倒序
-            if (that.startCol == 17) {
-              that.startTime = '17:30'
+            if (that.startCol == 26) {
+              that.startTime = '22:00'
               that.endTime = that.timeList[index].time
             } else {
               that.startTime = that.timeList[that.startCol].time
               that.endTime = that.timeList[index].time
             }
-            that.orderTime = that.endTime + " - " + that.startTime
           }
-        }else {
-          that.orderTime = ''
         }
-        // 弹出预定表单
+        // 在移动的过程中弹起鼠标事件，证明前面的校验都通过了，本次弹起可以触发提交表单并计入终止坐标
         if (that.isMoving == true) {
-          // 初始化选人组件字段
-          that.auditUsers1.value = []
-          that.auditUsers2.value = []
-          // 初始化选人控件
-            that.model = {
-              reserveUserName:that.loginUserId,
-              reserveFullName:that.loginUserName
-            }
-          that.$nextTick( () => { //异步请求选人控件回显当前登录用户
-            that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
-          })
-          that.initSelectMan(that,{reserveUserName:that.loginUserId, reserveFullName:that.loginUserName});
           //判定时间是否可以选择
           if ((new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()
-                || (new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()) {
+            || (new Date(that.meetingDate + ' ' + that.startTime)).getTime() < (new Date()).getTime()) {
             that.$message.warning("不能选择过去的时间")
             that.isMoving = false // 关闭滑动
             that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
             that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-          }else {
-            that.visible = true //弹出表单
+          } else {
+            //弹出表单
+            //  查询当前登录用户的手机号
+            that.axios.get('/meetingRoom/getInfo?userName=' + that.loginUserId)
+              .then(function(response) {
+                that.contactPhone = response.result.phone
+              })
+            //新增字段action，让组件知道本次操作为新增操作，开放编辑和提交按钮
+            that.model.subject = null
+            that.model.memberNumber = null
+            that.model.joinMemberFullName = null
+            that.model.joinMemberUserName = null
+            that.model.meetingLevel = '小组例会'
+            that.model.action = 1;
+            that.model.startCol = that.startCol;
+            that.model.endCol = that.endCol;
+            that.model.contactPhone = that.contactPhone;
+            that.model.meetingRoomId = that.orderRoomId;
+            that.model.reserveUserName = that.loginUserId;
+            that.model.reserveFullName = that.loginUserName;
+            that.model.contact = that.loginUserName;
+            that.model.contactId = that.loginUserId;
+            that.model.meetingRoom = that.orderRoom;
+            that.model.meetingDate = that.meetingDate;
+            that.model.meetingStartTime = that.startTime;
+            that.model.meetingEndTime = that.endTime;
+            that.$refs.modalForm.edit(that.model);
             that.isMoving = false //关闭滑动
           }
         }
       },
-      mymouseOver: function(item, items ,index,key){
+      mymouseOver: function(item, items, index, key) {
         let isMoving = this.isMoving
         const that = this
+        // 如果isMoving不为true，证明mouseDown事件校验不通过，直接退出本方法
         if (!isMoving) return false
-        // console.log("鼠标划过了" + "(" + key + "," + index + ")")
-        if (items == 0){
-          // that.roomList[key].arrUseInfo[index] = 0
+        //如果划过的地方 状态为0 ，则为可记录的点 ， 将其状态置为2，做变色处理
+        if (items == 0) {
           that.roomList[that.startRow].arrUseInfo[index].status = 2
-        } else if (items == 1){
+        } else if (items == 1) { //划过的地方状态为1，表明冲突了
           that.$message.warning('时间有冲突，请重新选择')
           that.isMoving = false // 关闭滑动
           that.roomList = that.roomListCopy //将深度克隆的对象 赋给页面数据源
           that.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
         }
       },
-      handleOk(e) {
-        e.preventDefault();
-        const that = this;
-        // 触发表单验证
-        that.form.validateFields((err, values) => {
-          let formData = Object.assign(this.model, values);
-          // 组装formData
-          formData.contactId = that.loginUserId;
-          formData.cancelFlag = that.cancelFlag;
-          formData.meetingDate = that.meetingDate.substring(0,10);
-          formData.startCol = that.startCol;
-          formData.endCol = that.endCol;
-          formData.meetingStartTime = that.startTime;
-          formData.meetingEndTime = that.endTime;
-          // 选人控件传值
-          this.uploadMan(formData,that);
-          if (!err){
-            that.confirmLoading = true;
-            that.axios.post('/meetingRoom/meetingRoomTimeStatus/add',{
-              roomId:that.orderRoomId,
-              meetingDate:that.meetingDate,
-              startSort:that.startCol,
-              endSort:that.endCol,
-            })
-              .then(function (response){
-                if (response.code === 200){
-                  that.$notification.success({
-                    message: '您好',
-                    description: response.message,
-                  })
-                  //  新增记录
-                  that.axios.post('/meetingRoom/add',formData)
-                    .then(function (response) {
-                      that.confirmLoading2 = true
-                      console.log(response);
-                      if (response.code === 200){
-                        findRoomList({meetingDate:that.meetingDate,meetingRoomName:that.queryParam.searchRoomName})
-                          .then((res) => {
-                            that.roomList = res.result;
-                            that.roomListCopy = JSON.parse(JSON.stringify(that.roomList)); //将当前页面数据源深度克隆
-                            if (res.code === 0){
-                              that.confirmLoading2 = false
-                            }
-                          })
-                      }
-                    })
-                    .catch(function (error) {
-                      console.log(error);
-                    });
-                } else if (response.code === 10002){
-                  that.$notification.warning({
-                    message: '抱歉',
-                    description: response.message,
-                  })
-                } else {
-                  that.$notification.error({
-                    message: '错误',
-                    description: '服务器开小差了',
-                  })
-                }
-              })
-              .catch(function (error) {
-              that.$notification.error({
-                message: '错误',
-                description: '请求出现错误',
-              })
-            })
-            that.confirmLoading = false
-            that.visible = false
-            that.confirmLoading2 = true
-          }
-        })
-      },
-      close () {
-        this.$emit('close');
-        this.visible = false;
-      },
-      handleCancel(e) {
-        this.close()
-      },
-      enter: function(item, items,index) {
+      //鼠标移入事件，依靠移入移出事件，触发Vue页面重渲染，即可及时显示状态为2的区域变色
+      enter: function(item, items, index) {
         const time1 = this.timeList[index].time
         let time2 = null
-        if (index < this.timeList.length-1) {
+        if (index < this.timeList.length - 1) {
           time2 = this.timeList[index + 1].time
-        }if (index === this.timeList.length-1){
-          time2 = "17:30"
+        }
+        if (index === this.timeList.length - 1) {
+          time2 = "22:00"
         }
         this.hoverRoomName = '会议室预定 【时间段：' + time1 + "—" + time2 + '】'
       },
+      //鼠标移出事件
       leave: function() {
         // this.hoverRoomName = '会议室预定'
       },
+      //限制日历选择框不可选择过去的时间
       disabledDate(current) {
-        // Can not select days before today and today
         return current && current < moment().startOf('day');
-        // return current && current < moment().endOf('day');
       },
-      searchQuery:function() {
+      //查询
+      searchQuery: function() {
         this.confirmLoading2 = true
-        findRoomList({meetingDate:this.meetingDate,meetingRoomName:this.queryParam.searchRoomName})
-          .then((res) => {
-          this.roomList = res.result;
-          this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-          console.log(res.result.userInfo)
-            if (res.code === 0){
-              this.confirmLoading2 = false
-            }
-        })
-      },
-      searchReset:function() {
-        this.confirmLoading2 = true
-        this.meetingDate = moment().format('YYYY-MM-DD')
-        this.queryParam.searchRoomName = ''
-        findRoomList({meetingDate:moment().format('YYYY-MM-DD'),meetingRoomName:this.queryParam.searchRoomName})
+        findRoomList({ meetingDate: this.meetingDate, meetingRoomName: this.queryParam.searchRoomName })
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
             console.log(res.result.userInfo)
-            if (res.code === 0){
+            if (res.code === 0) {
               this.confirmLoading2 = false
             }
           })
-        this.queryParam.searchDate = moment(moment(),'YYYY-MM-DD')
+      },
+      //重置
+      searchReset: function() {
+        this.confirmLoading2 = true
+        this.meetingDate = moment().format('YYYY-MM-DD')
+        this.queryParam.searchRoomName = ''
+        findRoomList({ meetingDate: moment().format('YYYY-MM-DD'), meetingRoomName: this.queryParam.searchRoomName })
+          .then((res) => {
+            this.roomList = res.result;
+            this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
+            console.log(res.result.userInfo)
+            if (res.code === 0) {
+              this.confirmLoading2 = false
+            }
+          })
+        this.queryParam.searchDate = moment(moment(), 'YYYY-MM-DD')
       },
       //转换百分数
-     toPercent (val){
-        return (Math.round(val * 10000)/100).toFixed(2) + '%';
+      toPercent(val) {
+        return (Math.round(val * 10000) / 100).toFixed(2) + '%';
       },
-      getWidth(length){
+      //根据length参数计算DIV的宽度并返回
+      getWidth(length) {
         return this.toPercent(length)
       },
-      validatePhone(rule, value, callback){
-        if(!value || new RegExp(/^1[3|4|5|7|8][0-9]\d{8}$/).test(value)){
+      //手机号码校验
+      validatePhone(rule, value, callback) {
+        if (!value || new RegExp(/^1[3|4|5|7|8][0-9]\d{8}$/).test(value)) {
           callback();
-        }else{
+        } else {
           callback("请输入正确格式的手机号码!");
         }
       },
-      memberNumbercheck(rule, value, callback){
+      //参与人数校验
+      memberNumbercheck(rule, value, callback) {
         const r = /^\+?[1-9][0-9]*$/;
-        if (r.test(value) && value <= this.containNum){
+        if (r.test(value) && value <= this.containNum) {
           callback();
-        } else if (r.test(value) && value > this.containNum){
+        } else if (r.test(value) && value > this.containNum) {
           callback("人数超过了会议室最大容纳人数");
+        } else if (value == '' || value == null) {
+          callback();
         } else {
           callback("请输入数字!");
         }
       },
-      loadData() {}
     },
+    watch : {
+      $route(to,from){
+        console.log(to.path,'会议室预定跳转');
+        this.searchQuery();
+      }
+    }
   }
 </script>
 
 <style scoped lang="less">
+  @import '~@assets/less/modal.less';
   @import '~@assets/less/common.less';
   @import '~@assets/less/topBtns.less';
   @table-title-heignt: 50px;
@@ -757,7 +488,7 @@
     width: 100%;
   }
   .room-time-father-box {
-    width: 80%;
+    width: 87%;
     float: left;
   }
   /*.info-icon {*/
@@ -771,7 +502,10 @@
   .title-box {
     width: auto;
     height: 100%;
-    margin-left: 1px;
+    /*margin: 0 1q 1q 0 ;*/
+    border-style:none solid solid none;
+    border-width: 1q;
+    border-color: white;
     text-align: center;
     /*background-color: #0099ff;*/
     font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'STHeitiSC-Light', 'Microsoft YaHei', '微软雅黑', Arial,
@@ -791,13 +525,13 @@
   }
 
   .title-room-name-box {
-    width: 15%;
+    width: 10%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-room-name-box {
-    width: 15%;
+    width: 10%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;
@@ -806,25 +540,25 @@
     border-color: #d5d5d5;
   }
   .title-contain-number{
-    width: 5%;
+    width: 3%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-contain-number{
-    width: 5%;
+    width: 3%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;
   }
   .title-room-time-box {
-    width: 5.55%;
+    width: 3.7%;
     height: @table-title-heignt;
     line-height: @table-title-heignt;
     float: left;
   }
   .content-room-time-box {
-    width: 5.55%;
+    width: 3.7%;
     height: @table-content-heignt;
     line-height: @table-content-heignt;
     float: left;

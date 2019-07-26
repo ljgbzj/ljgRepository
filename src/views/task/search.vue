@@ -8,29 +8,24 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="发起人">
-              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName"></a-input>
+              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName" @keyup.enter="searchQuery"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="任务类型">
-              <a-input placeholder="请输入任务类型" v-model="queryParam.taskCategory"></a-input>
+              <a-input placeholder="请输入任务类型" v-model="queryParam.taskCategory" @keyup.enter="searchQuery"></a-input>
             </a-form-item>
           </a-col>
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="任务名称">
-                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="开始时间">
+              <a-form-item label="任务创建时间">
                 <a-date-picker
                   v-model="queryParam.minStartTime"
                   :disabledDate="disabledStartDate"
                   showTime
                   format='YYYY-MM-DD HH:mm:ss'
-                  placeholder="开始时间"/>
+                  placeholder="任务创建开始时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -40,9 +35,15 @@
                   :disabledDate="disabledEndDate"
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="开始时间"/>
+                  placeholder="任务创建结束时间"/>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="任务名称">
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject" @keyup.enter="searchQuery"></a-input>
+              </a-form-item>
+            </a-col>
+            
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -126,7 +127,7 @@
             dataIndex: 'state'
           },
 		      {
-            title: '开始时间',
+            title: '任务创建时间',
             align:"center",
             dataIndex: 'startTime'
           },
@@ -143,7 +144,7 @@
           }
         ],
 		    url: {
-          list: "/flowable/form/list",
+          list: "/sysFlow/flowConfig/list",
           form: "/flowable/tasks/form"
         },
         rowkey: '',

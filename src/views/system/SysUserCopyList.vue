@@ -1,59 +1,49 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" class="lijie">
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24" >
 
-          <a-col :md="8" :sm="8">
+          <a-col :md="8" :sm="8" :xs="24">
             <a-form-item label="手机号码">
-              <a-input placeholder="请输手机号码" v-model="queryParam.phone"></a-input>
+              <a-input placeholder="请输手机号码" v-model="queryParam.dimPhone"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="8">
-            <a-form-item label="姓名">
-              <a-input placeholder="请输入姓名" v-model="queryParam.realname" ></a-input>
+          <a-col :md="8" :sm="8" :xs="24">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="姓名搜索">
+              <a-input  placeholder="请输入姓名" v-model="queryParam.dimRealName" ></a-input>
             </a-form-item>
           </a-col>
-        <!--<template v-if="toggleSearchStatus">
-          <a-col :md="8" :sm="8">
-            <a-form-item label="电子邮箱">
-              <a-input placeholder="请输入电子邮箱" v-model="queryParam.email"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="8">
-            <a-form-item label="办公号码">
-              <a-input placeholder="请输入办公号码" v-model="queryParam.officePhone"></a-input>
-            </a-form-item>
-          </a-col>
+        <template v-if="toggleSearchStatus">
 
 
-          &lt;!&ndash;<a-col :md="6" :sm="8">
+          <a-col :md="8" :sm="8" :xs="24">
+            <a-form-item label="小组名称" >
+              <a-select placeholder="请选择小组名称" v-model="queryParam.groupName" style="position: static; height: 40px" >
+                <a-select-option   :value="item.value" v-for="(item,index) in groupList" :key="index">
+                  {{item.title}}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :md="6" :sm="8">
             <a-form-item label="密码">
               <a-input placeholder="请输入密码" v-model="queryParam.password"></a-input>
             </a-form-item>
-          </a-col>&ndash;&gt;
-          &lt;!&ndash;<a-col :md="6" :sm="8">
-            <a-form-item label="md5密码盐">
-              <a-input placeholder="请输入md5密码盐" v-model="queryParam.salt"></a-input>
-            </a-form-item>
-          </a-col>&ndash;&gt;
-          &lt;!&ndash;<a-col :md="6" :sm="8">
-            <a-form-item label="头像">
-              <a-input placeholder="请输入头像" v-model="queryParam.avatar"></a-input>
-            </a-form-item>
-          </a-col>&ndash;&gt;
-        </template>-->
+          </a-col>-->
+
+        </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
                <a-button type="primary" style="margin-left: 8px" v-has="'mail:export'" icon="download" @click="handleExportXls('test')">导出</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">
+              <a @click="handleToggleSearch" style="">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>-->
+              </a>
             </span>
           </a-col>
         </a-row>
@@ -91,17 +81,31 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        @change="handleTableChange">
+        @change="handleTableChange"
+      >
 
 
-        <template slot="avatarslot" slot-scope="text, record, index">
+          <div id="signatures" ref="signatures"  slot="signature" slot-scope="text, record, index" style="width: 150px; height: 20px; overflow: hidden;
+                display: block; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" :title="record.personalSignature" >
+            {{record.personalSignature}}
+          </div>
+        <div  slot="interest" slot-scope="text, record, index" style="width: 150px; height: 20px; overflow: hidden;
+                display: block; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" :title="record.hobbys" >
+            {{record.hobbys}}
+          </div>
+
+
+        <template  slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
             <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
           </div>
         </template>
 
+
         <span slot="action" slot-scope="text, record">
-          <a v-show="record.username === userName" @click="handleEdit(record)">编辑</a>
+          <a v-show="record.username != userName"  v-has="'admin:edit'" @click="handleEdit(record,false)">编辑</a>
+          <a  v-if="record.username == userName" @click="handleEdit(record,false)" >编辑</a>
+          <a  v-if="record.username != userName" v-has="'user:see'" @click="handleEdit(record, true)">查看</a>
           <!--<a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
@@ -127,6 +131,7 @@
 <script>
   import SysUserCopyModal from './modules/SysUserCopyModal'
   import {CmpListMixin} from '@/mixins/CmpListMixin'
+  import { initDictOptions, filterDictText } from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "SysUserCopyList",
@@ -136,8 +141,21 @@
     },
     data () {
       return {
+        labelCol: {
+          xs: { span: 24},
+          sm: { span: 15 },
+          md:{span:15}
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 15 },
+        },
         description: 'test管理页面',
         userName: '',
+        filteredInfo: null,
+        sortedInfo: null,
+        //小组名
+        groupList: '',
         // 表头
         queryParam:{},
         columns: [
@@ -147,9 +165,7 @@
             key:'rowIndex',
             width:60,
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
+            customRender: this.getPageidnex
            },
 		   /*{
             title: '登录账号',
@@ -166,23 +182,32 @@
           },
 		   {
             title: '姓名',
-            align:"center",
-            dataIndex: 'realname'
+            align:"left",
+            width:60,
+            dataIndex: 'realname',
+            customHeaderCell:this.handleClick
+            /*customHeaderRow: this.refreshlist(column,index)*/
+
+           /*sorter: (a, b) => a.name.length - b.name.length,
+           sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,*/
            },
           {
             title: '手机号码',
-            align:"center",
+            width:60,
+            align:"left",
             dataIndex: 'phone'
           },
 		   {
             title: '电子邮件',
-            align:"center",
+            align:"left",
+            width:60,
             dataIndex: 'email'
            },
 
        {
             title: '小组名',
-            align:"center",
+            align:"left",
+            width:150,
             dataIndex: 'groupName'
           },
           /*{
@@ -192,18 +217,23 @@
           },*/
 		   {
             title: '办公号码',
-            align:"center",
+            align:"left",
+           width:60,
             dataIndex: 'officePhone'
            },
           {
             title: '爱好',
-            align:"center",
-            dataIndex: 'hobbys'
+            align:"left",
+            width:150,
+            dataIndex: 'hobbys',
+            scopedSlots: { customRender: 'interest' }
           },
           {
             title: '个性签名',
-            align:"center",
-            dataIndex: 'personalSignature'
+            align:"left",
+            width:150,
+            dataIndex: 'personalSignature',
+            scopedSlots: { customRender: 'signature' }
           },
 		   /*{
             title: '办公地址',
@@ -213,6 +243,7 @@
           {
             title: '操作',
             dataIndex: 'action',
+            width:60,
             align:"center",
             scopedSlots: { customRender: 'action' },
           }
@@ -233,16 +264,51 @@
     created() {
       var a = JSON.parse( localStorage.getItem("pro__Login_Username"))
       this.userName =a.value;
+
+      console.log(this.ipagination,"aaa")
+    },
+    beforeCreate() {
+      /*初始化引入小组名称的字典*/
+      initDictOptions('group_name_list').then((res) =>{
+        if(res.success) {
+          this.groupList =  res.result
+        }
+      })
     },
   computed: {
     importExcelUrl: function(){
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
     },
+    /*refreshlist(column,index) {
+      console.log(column[index])
+      /!*this.loadData();*!/
+    },*/
+
+
     /*getAvatarView: function (avatar) {
       return this.url.imgerver + "/" + avatar;
     },*/
   },
     methods: {
+
+      getPageidnex(t,r,index) {
+        return parseInt((this.ipagination.current-1)*10+ index)+1;
+      },
+
+      /*表头的点击事件*/
+      handleClick(column) {
+        return {
+          on:{
+            click:() =>{
+              console.log(column)
+              this.queryParam.realNameType = "0";
+              this.loadData(this.queryParam);
+            }
+          }
+        }
+
+      },
+
       getAvatarView: function (avatar) {
         return this.url.imgerver + "/" + avatar;
       },
@@ -255,10 +321,20 @@
     }
   }
 </script>
-<style scoped>
+<style lang="less" scoped>
   @import '~@assets/less/common.less';
   .ant-form-item-label {
     line-height: 40px;
+  }
+
+  .ant-select {
+  /* height: 40px; */
+  :global(.ant-select-selection--single) {
+    height: 40px;
+  :global(.ant-select-selection__rendered) {
+    line-height: 40px;
+  }
+  }
   }
   /*.table-page-search-wrapper .ant-form-inline .ant-form-item > .ant-form-item-label{
     line-height: 40px !important;
@@ -270,6 +346,8 @@
     .ant-form-item > :global(.ant-form-item-label) {
       line-height: 40px;
     }
+
+
 
 
   .ant-input {

@@ -8,29 +8,34 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="发起人">
-              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName"></a-input>
+              <a-input placeholder="请输入发起人" v-model="queryParam.startUserFullName" @keyup.enter="searchQuery"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="任务类型">
-              <a-input placeholder="请输入任务类型" v-model="queryParam.taskCategory"></a-input>
+              <a-input placeholder="请输入任务类型" v-model="queryParam.taskCategory" @keyup.enter="searchQuery"></a-input>
             </a-form-item>
           </a-col>
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="任务名称">
-                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject"></a-input>
+              <a-form-item label="执行人">
+                <a-input placeholder="请输入执行人" v-model="queryParam.assigneeFullname" @keyup.enter="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="开始时间">
+              <a-form-item label="任务名称">
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskSubject" @keyup.enter="searchQuery"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="任务创建时间">
                 <a-date-picker
                   v-model="queryParam.minStartTime"
                   :disabledDate="disabledStartDate"
                   showTime
                   format='YYYY-MM-DD HH:mm:ss'
-                  placeholder="开始时间"/>
+                  placeholder="任务创建开始时间"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -40,7 +45,7 @@
                   :disabledDate="disabledEndDate"
                   showTime
                   format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="开始时间"/>
+                  placeholder="任务创建结束时间"/>
               </a-form-item>
             </a-col>
           </template>
@@ -74,7 +79,7 @@
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
           <a @click="handleEditform(record)">查看</a>&nbsp;
-          <a @click="handleEdit(record)">委托</a>
+          <a @click="handleEntrust(record)">委托</a>
         </span>
       </a-table>
 
@@ -82,18 +87,22 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>  
+    <component :is="comName" ref="modalForm" @ok="modalFormOk"></component>
+    <task-modal ref="modalForm1" @ok="modalFormOk"></task-modal>
   </a-card>
 </template>
 
 <script>
-  // import TaskModal from './modules/TaskModal'
+  import TaskModal from './modules/TaskModal'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import { getAction } from '@/api/manage'
 
   export default {
     name: "TaskList",
     mixins:[CmpListMixin],
+    components: {
+      TaskModal
+    },
     data () {
       return {
         description: '待办任务管理页面',
@@ -130,7 +139,7 @@
             dataIndex: 'nodeName'
           },
 		      {
-            title: '开始时间',
+            title: '任务创建时间',
             align:"center",
             dataIndex: 'startTime'
           },
@@ -156,7 +165,6 @@
     },
     methods: {
       handleEditform: function (record) {
-        console.log(record,'追踪');
         let params = {
           businessKey: record.businessKey,
           processDefinitionKey: record.processDefinitionKey, 
@@ -194,6 +202,11 @@
           }
           this.loading = false;
         })
+      },
+      // 第二个弹窗  委托方法
+      handleEntrust(record) {
+        this.$refs.modalForm1.edit(record);
+        this.$refs.modalForm1.title = "委托";
       },
       // 时间选择器的禁用封装
       disabledStartDate (startValue) {

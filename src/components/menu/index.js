@@ -157,9 +157,12 @@ export default {
         return null
       }
       const props = {}
-      typeof (icon) === 'object' ? props.component = icon : props.type = icon
-      return (
+      /* typeof (icon) === 'object' ? props.component = icon : props.type = icon */
+      /* return (
         <Icon {... { props } }/>
+      ) */
+      return (
+        <img src={require(`@/assets/img/icon/${icon}.png`)} ></img>
       )
     }
   },
