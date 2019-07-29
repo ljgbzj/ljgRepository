@@ -9,8 +9,9 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="日期">
               <a-date-picker
-                placeholder="today"
-                @change="onChange"/>
+                placeholder="请选择日期"
+                @change="onChange"
+                v-model="queryParam.meetingDate"/>
             </a-form-item>
           </a-col>
 
@@ -34,22 +35,20 @@
     <div>
       <a-table :columns="columns"
                :dataSource="data"
-               :loading="loading"
-               :scroll="{ x: '100%' }"
+               :scroll="{ x:2200 }"
                rowKey="roomId"
+               :loading="loading"
                bordered
       >
-        <!--<template slot="t0" slot-scope="t0">
-
+<!--        <template slot="t0" slot-scope="t0">
             <a @click="check(t0)" type="primary" v-if="t0.status=='1'"><font style="color:red" >{{createby}}</font></a>
             <img src="@/assets/img/meeting/free.png"  draggable="false" style="width: 100%;height: 100%; border:none;" v-else-if="t0.status=='0'"/>
-            <img src="@/assets/img/meeting/free.png"  draggable="false" style="width: 100%;height: 100%; border:none; background-color:blue;" v-else/>
-
+            <img src="@/assets/img/meeting/free.png"  draggable="false" style="width: 100%;height: 100%; border:none;"/>
         </template>-->
 
-        <template slot="action" slot-scope="text, record">
+<!--        <template slot="action" slot-scope="text, record">
           <a @click="handleBook(record)">查看</a>
-        </template>
+        </template>-->
       </a-table>
     </div>
     <div>
@@ -61,6 +60,7 @@
         @ok="subbook"
         @cancel="reload"
         @close="reload"
+        style="top:5%;"
         >
 
           <a-form
@@ -89,18 +89,17 @@
                   最大容纳人数：{{this.containNum}}
                 </a-form-item>
               </a-col>
-
+            </a-row>
+            <a-row>
               <a-col :md="12" :sm="8">
                 <a-form-item
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="联系人/主持人">
-                  <!--<j-select-user-by-dep-->
-                  <!--v-decorator="['reserveUser',{rules: [{ required: true, message: '请选择预订人' }],initialValue:this.loginUserName}]"/>-->
                   <j-select-user-new
                     :selectedDetails="auditUsers1"
                     @callback="setAuditUser"
-                    class="userSelect"></j-select-user-new>
+                    class="userSelect" v-decorator = "['reserveFullName',{}]"></j-select-user-new>
                 </a-form-item>
               </a-col>
 
@@ -113,7 +112,8 @@
                     v-decorator="[ 'contactPhone', validatorRules.contactPhone]"/>
                 </a-form-item>
               </a-col>
-
+            </a-row>
+            <a-row>
               <!--会议室名称-->
               <a-col :md="12" :sm="8">
                 <a-form-item
@@ -121,13 +121,12 @@
                   :wrapperCol="wrapperCol"
                   label="会议室名称">
                   <a-input
-                    :disabled="disabledValue"
-                    v-decorator="['meetingRoom',{initialValue:this.selectroomname}]"/>
+                    :disabled="disabledValue" v-decorator="['meetingRoom',{}]"/>
                 </a-form-item>
               </a-col>
 
               <!--会议日期-->
-              <a-col :md="12" :sm="8">
+              <!--<a-col :md="12" :sm="8">
                 <a-form-item
                   style="display: none"
                   :labelCol="labelCol"
@@ -138,8 +137,7 @@
                     v-decorator="['meetingDate',{initialValue:this.queryParam.searchDate}]"
                     @change="onChange" />
                 </a-form-item>
-              </a-col>
-
+              </a-col>-->
               <!--会议级别-->
               <a-col :md="12" :sm="8">
                 <a-form-item
@@ -154,13 +152,14 @@
                   />
                 </a-form-item>
               </a-col>
-
+            </a-row>
+            <a-row>
               <a-col :md="12" :sm="8">
                 <a-form-item
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="会议开始时间">
-                  <a-input readonly="readonly" v-decorator="[ 'meetingStartTime', {}]"></a-input>
+                  <a-input :disabled="disabledValue" v-decorator="[ 'meetingStartTime', {}]"></a-input>
                 </a-form-item>
               </a-col>
 
@@ -169,10 +168,10 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="会议结束时间">
-                  <a-input readonly="readonly" v-decorator="[ 'meetingEndTime', {}]"></a-input>
+                  <a-input :disabled="disabledValue" v-decorator="[ 'meetingEndTime', {}]"></a-input>
                 </a-form-item>
               </a-col>
-
+            </a-row>
               <a-col :md="12" :sm="8" style="display: none">
                 <a-form-item
                   :labelCol="labelCol"
@@ -197,7 +196,7 @@
               <a-form-item label="meetingRoomId" style="display: none">
                 <input v-decorator="['meetingRoomId',{initialValue:this.orderRoomId}]"/>
               </a-form-item>
-            </a-row>
+
               <!--院内主要参与者-->
               <a-row :gutter="24">
                 <a-col :md="24" :sm="8">
@@ -233,7 +232,7 @@
                     :wrapperCol="wrapperCol"
                     label="预定时间">
                     <a-input
-                      :disabled="disabledValue" v-decorator="[ 'reserveDate', ,{initialValue:moment().format('YYYY-MM-DD HH:mm:ss')}]" />
+                      :disabled="disabledValue" v-decorator="[ 'reserveDate', ,{}]" />
                   </a-form-item>
                 </a-col>
               </a-row>
@@ -261,6 +260,9 @@
   import { putAction } from '@/api/manage'
   import { CmpListMixin } from '@/mixins/CmpListMixin'
   import JSelectUserNew from '@/components/cmpbiz/JSelectUserNew'
+  import JSelectDepart from '@/components/cmpbiz/JSelectDepart'
+  import JSelectUserByDep from '@/components/cmpbiz/JSelectUserByDep'
+  import ARow from "ant-design-vue/es/grid/Row"
 
 
   function getNowFormatDate() {
@@ -313,32 +315,38 @@
     mixins:[CmpListMixin],
 
     mounted() {
-      loading:true;
-      this.fetch(getNowFormatDate());
-      loading:false;
-      this.loginUserName = this.$store.getters.nickname
-      this.loginUserId = this.$store.getters.userId
+      this.selectdate = getNowFormatDate();
+      this.loading = true;
+      this.fetch({meetingDate:getNowFormatDate(),meetingRoomName:this.queryParam.searchRoomName});
+      this.loading = false;
+      this.loginUserName = this.$store.getters.nickname;
+      this.loginUserId = this.$store.getters.userId;
     },
 
     components: {
+      ARow,
       JSelectUserNew,
+      JSelectDepart,
+      JSelectUserByDep,
     },
 
     data() {
 
       return {
         //记录mousedown时的会议室
-        selectroomname:"",
-        startValue: "",
+        selectroomname:'',
+        startValue: '',
         selectflag:"0",
-        row:"",
+        row:'',
         orderRoomId: '',
-
+        startCol:'',
+        endCol:'',
+        img: require(`@/assets/img/meeting/free.png`),
         //查询日期
-        selectdate:"",
+        selectdate:'',
 
+        loading:false,
         data: [],
-        loading: false,
         disabledValue: true,
 
         //预订弹窗
@@ -351,7 +359,7 @@
             title: '会议室名称',
             align: "center",
             dataIndex: 'roomName',
-            width: 120,
+            width: 160,
             fixed: 'left'
           },
           {
@@ -364,7 +372,7 @@
           {
             title: '8:30',
             align: "center",
-            
+            // scopedSlots:{customRender:'t0'},
             dataIndex: 'arrUseInfo[0]',
             customRender: (text, row, index) => {
               return this.cellcontent(text, row, index);
@@ -575,9 +583,20 @@
             customRender: (text, row, index) => {
               return this.cellcontent(text, row, index);
             },
-          }/*,
-          {
+          },
+          /*{
             title: '17:00',
+            align: "center",
+            dataIndex: 'arrUseInfo[18]',
+            customCell:(record, rowIndex) => {
+              return this.thiscell(record.arrUseInfo[18],rowIndex,record);
+            },
+            customRender: (text, row, index) => {
+              return this.cellcontent(text, row, index);
+            },
+          },*/
+          {
+            title: '17:30',
             align: "center",
             dataIndex: 'arrUseInfo[18]',
             customCell:(record, rowIndex) => {
@@ -588,7 +607,7 @@
             },
           },
           {
-            title: '17:30',
+            title: '18:00',
             align: "center",
             dataIndex: 'arrUseInfo[19]',
             customCell:(record, rowIndex) => {
@@ -599,7 +618,7 @@
             },
           },
           {
-            title: '18:00',
+            title: '18:30',
             align: "center",
             dataIndex: 'arrUseInfo[20]',
             customCell:(record, rowIndex) => {
@@ -610,7 +629,7 @@
             },
           },
           {
-            title: '18:30',
+            title: '19:00',
             align: "center",
             dataIndex: 'arrUseInfo[21]',
             customCell:(record, rowIndex) => {
@@ -621,7 +640,7 @@
             },
           },
           {
-            title: '19:00',
+            title: '19:30',
             align: "center",
             dataIndex: 'arrUseInfo[22]',
             customCell:(record, rowIndex) => {
@@ -632,7 +651,7 @@
             },
           },
           {
-            title: '19:30',
+            title: '20:00',
             align: "center",
             dataIndex: 'arrUseInfo[23]',
             customCell:(record, rowIndex) => {
@@ -643,7 +662,7 @@
             },
           },
           {
-            title: '20:00',
+            title: '20:30',
             align: "center",
             dataIndex: 'arrUseInfo[24]',
             customCell:(record, rowIndex) => {
@@ -654,7 +673,7 @@
             },
           },
           {
-            title: '20:30',
+            title: '21:00',
             align: "center",
             dataIndex: 'arrUseInfo[25]',
             customCell:(record, rowIndex) => {
@@ -665,7 +684,7 @@
             },
           },
           {
-            title: '21:00',
+            title: '21:30',
             align: "center",
             dataIndex: 'arrUseInfo[26]',
             customCell:(record, rowIndex) => {
@@ -674,18 +693,7 @@
             customRender: (text, row, index) => {
               return this.cellcontent(text, row, index);
             },
-          },
-          {
-            title: '21:30',
-            align: "center",
-            dataIndex: 'arrUseInfo[27]',
-            customCell:(record, rowIndex) => {
-              return this.thiscell(record.arrUseInfo[27],rowIndex,record);
-            },
-            customRender: (text, row, index) => {
-              return this.cellcontent(text, row, index);
-            },
-          }*//*,
+          }/*,
           {
             title: '更多',
             dataIndex: 'action',
@@ -696,20 +704,19 @@
           }*/],
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 4 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 20 },
+          sm: { span: 16 },
         },
         form: this.$form.createForm(this),
         // 查询参数
         queryParam:{
-          searchDate:moment(moment(),'YYYY-MM-DD'),
+          meetingDate:moment(moment(),'YYYY-MM-DD'),
           searchRoomName:'',
         },
         url: {
-          add: 'reserve/meetingRoomReserve/add',
           list: 'meetingRoom/meetingRoomTimeStatus/list'
         },
 
@@ -748,18 +755,19 @@
       moment,
 
       cellcontent(text, row, index){
-        var createby = text.reserveUserName;
+        var createby = text.reserveFullName;
         const obj1 = {
-          children: <a click="check(text)" type="primary" ><font style="color:red" >{createby}</font></a>,
-          attrs: {colSpan : text.length,}
+          children: <a click="check(text)" type="primary" ><font style="color:white" >{createby}</font></a>,
+          attrs: {colSpan : text.length,style:"background-color:#32CD32;"}
       };
         const obj2 = {
-          children: <img src="free.png" draggable="false" style="width: 100%;height: 100%; border:none;" />,
-          attrs: {colSpan : text.length,},
+          // children: <img src=`@/src/assets/img/meeting/free.png` draggable="false" style="width: 100%;height: 100%; border:none;"/>,
+          children:<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAACSklEQVRIib2Wy2sUQRDGf7uJSiS+ERQUsr4iKohi/gKJiKJovAkBD4bcREExggfRmxcPQg5BRTxETxoPKoggHoTkD9BTTFgiRAPB9wOjrlT8Btrp7mF2JPvBMHRVdVd11dddXapWq0SwAzgLrAmrc+M7cB+4GprQ7En+YinwHGgBPgE1zyI/FgO7gWlgMG8A7XJ+GBjytPXDNtAVCqAcWSrZ8RtPUwwzwM/QzFgAv/Vf5GmysRFYGbAo1RtAFkqqaxoXgKcRXRRFAiiLoCcc2UPgJNAJvPJmZCBGwiz8AvpEzgngNLBAJ6fQborgAdAN3AVGgF0F1ymUgQR3VIoJT1MHYhlo0n/a0/yLvM7tWM/3pDmO4XZPUz/sKM+L3aaxAF4Cr4Ebmvg/30etecvzksGBL8B6oAdYJbuWlM2MGk1Nd0PaxuTfgK/AE2DY82ITM7phQxAqge3iXirlVpJtjs3CgM0LYItjc1C9xLXpz5OBM8Bl4Lp4YOw9B4ypLIbzwCVgAJjURdSnQLc6JfgMXBGpO4B9wH7dnLMIcWCT/scd2WrgmDNu17/XkW0AjqTWOgVcc8YW1NpQBvYAF4HNwBLp3qlENeea/ZAavxcB07Imp5MmNiZrlWxMxOxNAhgH2oBHwFu9gtYlQaqWxuaKxlMBm0mdiopSbmsuB5YpQOsh5mwFcEABVppFKHN+GzjqFWRuYFwaBfaW1UINNxvkHLVsy0pPWeSywWPPbG5hr+SdVoJDcmMvmh8NDMBeyrOn4JkuGSNMYwHDfwA/7pZY7fiBvAAAAABJRU5ErkJggg==" draggable="false" style="width: 100%;height: 100%; border:none;"/>,
+          attrs: {colSpan : text.length },
       };
         const obj3 = {
-          children: <img src="./free.png"  draggable="false" style="width: 100%;height: 100%; border:none;background-color:blue;"/>,
-          attrs: {colSpan : text.length,},
+          children: <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAACSklEQVRIib2Wy2sUQRDGf7uJSiS+ERQUsr4iKohi/gKJiKJovAkBD4bcREExggfRmxcPQg5BRTxETxoPKoggHoTkD9BTTFgiRAPB9wOjrlT8Btrp7mF2JPvBMHRVdVd11dddXapWq0SwAzgLrAmrc+M7cB+4GprQ7En+YinwHGgBPgE1zyI/FgO7gWlgMG8A7XJ+GBjytPXDNtAVCqAcWSrZ8RtPUwwzwM/QzFgAv/Vf5GmysRFYGbAo1RtAFkqqaxoXgKcRXRRFAiiLoCcc2UPgJNAJvPJmZCBGwiz8AvpEzgngNLBAJ6fQborgAdAN3AVGgF0F1ymUgQR3VIoJT1MHYhlo0n/a0/yLvM7tWM/3pDmO4XZPUz/sKM+L3aaxAF4Cr4Ebmvg/30etecvzksGBL8B6oAdYJbuWlM2MGk1Nd0PaxuTfgK/AE2DY82ITM7phQxAqge3iXirlVpJtjs3CgM0LYItjc1C9xLXpz5OBM8Bl4Lp4YOw9B4ypLIbzwCVgAJjURdSnQLc6JfgMXBGpO4B9wH7dnLMIcWCT/scd2WrgmDNu17/XkW0AjqTWOgVcc8YW1NpQBvYAF4HNwBLp3qlENeea/ZAavxcB07Imp5MmNiZrlWxMxOxNAhgH2oBHwFu9gtYlQaqWxuaKxlMBm0mdiopSbmsuB5YpQOsh5mwFcEABVppFKHN+GzjqFWRuYFwaBfaW1UINNxvkHLVsy0pPWeSywWPPbG5hr+SdVoJDcmMvmh8NDMBeyrOn4JkuGSNMYwHDfwA/7pZY7fiBvAAAAABJRU5ErkJggg=="  draggable="false" style="width: 100%;height: 100%; border:none;"/>,
+          attrs: {colSpan : text.length,style:"background-color:blue;"},
       };
         if (text.status=='1') {
           return obj1;
@@ -779,9 +787,10 @@
                 this.check(roomreverse);
                 return;
               }
+              this.startCol = roomreverse.sort;
               this.containNum = rowrecord.containNum;
               this.startValue = this.selectdate + ' ' +timeBySort(roomreverse.sort * 0.5 + 8.5);
-              this.selectroomname = rowrecord.roomname;
+              this.selectroomname = rowrecord.roomName;
               this.orderRoomId = rowrecord.roomId;
               this.selectflag = "1";
               this.row = id;
@@ -798,28 +807,38 @@
                   return;
                 }
               }
-              console.log(id);
             },  // 鼠标移入
             mouseup: () => {
+
+              this.model.joinMemberFullName = null
+              this.model.joinMemberUserName = null
+              this.model.reserveUserName = this.loginUserId;
+              this.model.reserveFullName = this.loginUserName;
+
               this.form.resetFields();
-              // 初始化选人组件字段
-              this.auditUsers1.value = [];
               this.visible = true;
               var realendtime = this.selectdate + ' ' +timeBySort(roomreverse.sort * 0.5 + 9);
               if (this.startValue > realendtime){
                 [this.startValue,realendtime] = [realendtime,this.startValue];
               }
+              this.endCol = roomreverse.sort;
               this.$nextTick(() => {
+                setTimeout(()=>{
                 this.form.setFieldsValue({
                   meetingRoom: this.selectroomname,
                   meetingStartTime: this.startValue,
                   meetingEndTime: realendtime,
-                  applyDate: new Date().Format("yyyy-MM-dd hh:mm:ss"),
+                  reserveDate: new Date().Format("yyyy-MM-dd hh:mm:ss"),
                 })
-                // 初始化选人控件
-                this.initSelectMan(this, roomreverse);
+              },0);
 
-              });
+                // 初始化选人组件字段
+                this.auditUsers1.value = []
+                this.auditUsers2.value = []
+
+                // 初始化选人控件
+                this.initSelectMan(this,this.model);
+              })
             },
           },
         }
@@ -832,13 +851,12 @@
           content: h('div',{}, [
             h('p', "会议主题： " + record.subject),
             h('p', "备注： " + (record.remarks==null?"无":record.remarks)),
-            h('p', "申请部门： " + record.applyDepart),
             h('p', "联系人： " + record.contact),
             h('p', "联系电话： " + record.contactPhone),
             h('p', "会议室： " + record.meetingRoom),
-            h('p', "申请时间： " + record.applyDate),
-            h('p', "申请人： " + record.createBy),
-            h('p', "参与人： " + record.corpCode),
+            h('p', "申请时间： " + record.reserveDate),
+            h('p', "申请人： " + record.reserveFullName),
+            h('p', "参与人： " + record.joinMemberFullName),
           ]),
           onOk() {},
         });
@@ -874,14 +892,7 @@
                       that.confirmLoading2 = true
                       console.log(response);
                       if (response.code === 200){
-                        findRoomList({meetingDate:that.meetingDate,meetingRoomName:that.queryParam.searchRoomName})
-                          .then((res) => {
-                            that.roomList = res.result;
-                            that.roomListCopy = JSON.parse(JSON.stringify(that.roomList)); //将当前页面数据源深度克隆
-                            if (res.code === 0){
-                              that.confirmLoading2 = false
-                            }
-                          })
+                        fetch({meetingDate:param,meetingRoomName:this.queryParam.searchRoomName})
                       }
                     })
                     .catch(function (error) {
@@ -914,21 +925,23 @@
 
       onChange(date, dateString) {
         this.selectdate = dateString;
-        this.queryParam.searchDate = date;
+        this.queryParam.meetingDate = date;
       },
 
       searchQuery:function() {
-        this.fetch(this.selectdate);
+        this.loading = true;
+        this.fetch({meetingDate:this.selectdate,meetingRoomName:this.queryParam.searchRoomName});
+        this.loading = false;
       },
       searchReset:function() {
-        this.meetingDate = moment().format('YYYY-MM-DD');
-        this.queryParam.searchRoomName = ''
+        this.queryParam.meetingDate = moment(moment(), 'YYYY-MM-DD');
+        this.queryParam.searchRoomName = '';
       },
 
       reload(){
         this.selectflag = '0';
         let param = getNowFormatDate();
-        this.fetch(param);
+        this.fetch({meetingDate:param,meetingRoomName:this.queryParam.searchRoomName});
       },
 
       disabledDate(current) {
@@ -938,22 +951,18 @@
       },
 
       fetch(param) {
+        // this.loading = true
 
-        this.loading = true
-        /*       var qdate;
-               if (param != null){
-                 qdate = param.replace(/-/g,"");
-               }*/
-        var params = {meetingDate:param,meetingRoomName:this.queryParam.searchRoomName};
-        this.selectdate = param;
-        console.log(params,this.selectdate);
-        getAction(this.url.list, params).then((res) => {
+        // var params = {meetingDate:param,meetingRoomName:this.queryParam.searchRoomName};
+        // this.selectdate = param;
+        // console.log(params,this.selectdate);
+        getAction(this.url.list, param).then((res) => {
           if (res.success) {
             this.data = res.result;
-            this.loading = false;
+            // this.loading = false;
           } else {
             this.$message.warning(res.message);
-            this.loading = false;
+            // this.loading = false;
           }
         });
       }
