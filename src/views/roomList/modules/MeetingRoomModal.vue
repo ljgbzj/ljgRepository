@@ -21,7 +21,7 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" style="margin-top: 25px">
-        <a-row :gutter="24">
+        <a-row>
           <!--会议主题-->
           <a-col :md="12" :sm="8">
             <a-form-item
@@ -143,7 +143,7 @@
         </a-row>
 
         <!--院内主要参与者-->
-        <a-row :gutter="24">
+        <a-row>
           <a-col :md="24" :sm="8">
             <a-form-item
               :labelCol="{
@@ -157,6 +157,7 @@
               label="参会人员">
               <j-select-user-new
                 v-if="this.action !== 2"
+                v-decorator="['joinMemberUserName', validatorRules.joinMemberUserName]"
                 :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
               <a-input
                 v-if="this.action === 2"
@@ -307,6 +308,7 @@
           meetingDate:{rules: [{ required: true, message: '请输入会议日期!' }]},
           memberNumber:{ rules: [{validator: this.memberNumbercheck}]},
           reserveUserName: {rules: [{ required: true, message: '请选择联系人!' }]},
+          joinMemberUserName: {rules: [{ required: true, message: '请选择参会人!' }]},
           meetingStartTime: {rules: [{ validator: this.startTimecheck}]},
         },
         url: {
@@ -350,9 +352,9 @@
         } else if (record.action === 2){
           this.disabedVal = true
           this.title = '查看预约'
-        } else if (record.action == null || record.action == undefined) {
+        } else if (record.action == null || record.action === undefined || record.action === 3) {
           this.disabedVal = false
-          this.title = '会议室预约'
+          this.title = '修改预约'
         }
         const that = this
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
@@ -377,7 +379,7 @@
               pick(that.model,
                 'contact',
                 'contactPhone',
-                'joinMemberFullName',
+                // 'joinMemberFullName',
                 'joinMemberUserName',
                 'meetingDate',
                 'meetingLevel',
@@ -385,7 +387,7 @@
                 'meetingStartTime',
                 'meetingEndTime',
                 'memberNumber',
-                'reserveFullName',
+                // 'reserveFullName',
                 'reserveUserName',
                 'subject',
                 'reserveDate',
@@ -480,7 +482,7 @@
                   })
                 that.confirmLoading = false
                 that.close();
-              }else if (that.action !== 1 && that.action == undefined) {
+              }else if (that.action ===3 || that.action === undefined) {
                 //修改功能
                 that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit', formData)
                   .then(function(response) {
@@ -491,7 +493,7 @@
                           that.$message.success(res.message);
                           //刷新父页面
                           that.$emit('ok');
-                          that.$root.$emit('searchQuery')
+                          that.$emit('searchQuery')
                         } else {
                           that.$message.warning(res.message);
                         }

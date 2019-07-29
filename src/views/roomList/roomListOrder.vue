@@ -244,7 +244,6 @@
         .then((res) => {
           this.roomList = res.result;
           this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-          console.log(res.result.userInfo)
           if (res.code === 0){
             this.confirmLoading2 = false
           }
@@ -262,13 +261,13 @@
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
           })
       },
       myMouseDown: function(item, items, index, key) {
+        console.log(item.arrUseInfo[index].contactId,'sdadsasda少')
         this.orderRoom = item.roomName
         this.orderRoomId = item.roomId
         this.containNum = item.containNum
@@ -282,11 +281,18 @@
         if (items == 2) {
           that.roomList[key].arrUseInfo[index].status = 0
         } else if (items == 1) { //如果状态为1，表明该时间点会议室已经被预定了，弹出详情页面，不可提交
-          //让弹出表单只有可读权限
-          that.model = item.arrUseInfo[index]
-          that.model.action = 2;
-          // that.$refs.modalForm.edit(item.arrUseInfo[index]);
-          that.$refs.test.edit(item.arrUseInfo[index]);
+          //判定预定用户ID，如果ID是当前登录用户的ID，则弹出表单具备可编辑权限
+          if (that.loginUserId === item.arrUseInfo[index].contactId) {
+            that.model = item.arrUseInfo[index]
+            that.model.action = 3;
+            that.$refs.test.edit(item.arrUseInfo[index]);
+          }else {
+            //让弹出表单只有可读权限
+            that.model = item.arrUseInfo[index]
+            that.model.action = 2;
+            // that.$refs.modalForm.edit(item.arrUseInfo[index]);
+            that.$refs.test.edit(item.arrUseInfo[index]);
+          }
         } else if (items == 0) { //如果状态为0，表明为空闲会议室，触发鼠标移动事件，并计入起始选择坐标
           that.roomList[key].arrUseInfo[index].status = 2
           that.isMoving = true
@@ -401,7 +407,6 @@
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
@@ -416,7 +421,6 @@
           .then((res) => {
             this.roomList = res.result;
             this.roomListCopy = JSON.parse(JSON.stringify(this.roomList)); //将当前页面数据源深度克隆
-            console.log(res.result.userInfo)
             if (res.code === 0) {
               this.confirmLoading2 = false
             }
