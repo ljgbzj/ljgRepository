@@ -21,7 +21,7 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" style="margin-top: 25px">
-        <a-row :gutter="24">
+        <a-row>
           <!--会议主题-->
           <a-col :md="12" :sm="8">
             <a-form-item
@@ -54,6 +54,7 @@
               :wrapperCol="wrapperCol"
               label="联系人/主持人">
               <j-select-user-new
+                v-decorator="['reserveUserName', validatorRules.reserveUserName]"
                 :selectedDetails="auditUsers1"
                 @callback="setAuditUser"
                 class="userSelect"
@@ -71,8 +72,12 @@
               :wrapperCol="wrapperCol"
               label="联系电话">
               <a-input
-                :disabled="disabedVal"
-                v-model="contactPhone"/>
+                v-decorator="['contactPhone', validatorRules.contactPhone]"
+                :disabled="disabedVal"/>
+              <!--<a-input-->
+                <!--v-decorator="['contactPhone', validatorRules.contactPhone]"-->
+                <!--:disabled="disabedVal"-->
+                <!--v-model="contactPhone"/>-->
             </a-form-item>
           </a-col>
           <!--会议室名称-->
@@ -96,7 +101,7 @@
               label="会议类型">
               <j-dict-select-tag
                 :disabled="disabedVal"
-                v-decorator="['meetingLevel', {initialValue:'小组例会'}]"
+                v-decorator="['meetingLevel', {}]"
                 :triggerChange="true"
                 placeholder="请选择会议类型"
                 dictCode="meeting_level"
@@ -122,21 +127,23 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="会议时间">
-
-              <a-select style="width: 120px" v-model='model.meetingStartTime' :disabled="disabedVal">
+              <a-select style="width: 120px"
+                        v-decorator="['meetingStartTime', {}]"
+                        :disabled="disabedVal">
                 <a-select-option v-for="(time1,index) in timeNode" :key="time1" @click="selectChat1(time1,index)" >{{time1}}</a-select-option>
               </a-select>
               <span style="width: 20px;"> ~ </span>
-              <a-select style="width: 120px" :disabled="disabedVal" v-model='model.meetingEndTime' >
+              <a-select style="width: 120px"
+                        :disabled="disabedVal"
+                        v-decorator="['meetingEndTime',{}]" >
                 <a-select-option v-for="(time2,index) in timeNode_copy" :key="time2" @click="selectChat2(time2,index)">{{time2}}</a-select-option>
               </a-select>
-
             </a-form-item>
           </a-col>
         </a-row>
 
         <!--院内主要参与者-->
-        <a-row :gutter="24">
+        <a-row>
           <a-col :md="24" :sm="8">
             <a-form-item
               :labelCol="{
@@ -150,6 +157,7 @@
               label="参会人员">
               <j-select-user-new
                 v-if="this.action !== 2"
+                v-decorator="['joinMemberUserName', validatorRules.joinMemberUserName]"
                 :selectedDetails="auditUsers2" @callback="setAuditUser" class="userSelect"></j-select-user-new>
               <a-input
                 v-if="this.action === 2"
@@ -164,7 +172,7 @@
               label="预订人">
               <a-input
                 :disabled="disabledValue"
-                v-decorator="['contact',{ rules: [{ required: true, message: '预订人' }]}]"/>
+                v-decorator="['contact',{}]"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="8">
@@ -174,7 +182,7 @@
               label="预定时间">
               <a-input
                 :disabled="disabledValue"
-                v-decorator="['reserveDate',{initialValue:moment().format('YYYY-MM-DD HH:mm:ss')}]"/>
+                v-decorator="['reserveDate',{}]"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -294,18 +302,20 @@
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
-          meetingRoom:{rules: [{ required: true, message: '请输入会议室名!' }]},
           subject:{rules: [{ required: true, message: '请输入会议主题!' }]},
-          contact:{rules: [{ required: true, message: '请输入联系人!' }]},
-          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.$store.getters.userInfo.phone},
+          contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }]},
+          // contactPhone:{rules: [{validator: this.validatePhone},{ required: true, message: '请输入手机号码' }],initialValue:this.contactPhone},
           meetingDate:{rules: [{ required: true, message: '请输入会议日期!' }]},
-          memberNumber:{ rules: [{ required: true, message: '参与人数' },{validator: this.memberNumbercheck}]},
-          reserveFullName: {rules: [{ required: true, message: '请选择联系人!' }]},
+          memberNumber:{ rules: [{validator: this.memberNumbercheck}]},
+          reserveUserName: {rules: [{ required: true, message: '请选择联系人!' }]},
+          joinMemberUserName: {rules: [{ required: true, message: '请选择参会人!' }]},
+          meetingStartTime: {rules: [{ validator: this.startTimecheck}]},
         },
         url: {
           list: "/meetingRoom/meetingRoomList/allList",
           edit: "/meetingRoom/edit",
         },
+        columns: [],
         // 最大容纳数
         containNum:'',
         reserveUserName:'',
@@ -334,6 +344,7 @@
     methods: {
       moment,
       edit (record) {
+        console.log(record,'record打印出来了好好检查下吧')
         this.action = record.action
         if (record.action === 1){
           this.disabedVal = false
@@ -341,13 +352,10 @@
         } else if (record.action === 2){
           this.disabedVal = true
           this.title = '查看预约'
-        } else if (record.action == null || record.action == undefined) {
+        } else if (record.action == null || record.action === undefined || record.action === 3) {
           this.disabedVal = false
-          this.title = '会议室预约'
+          this.title = '修改预约'
         }
-        this.meetingDate = record.meetingDate
-        this.reserveFullName = record.reserveFullName
-        this.joinMemberFullName = record.joinMemberFullName
         const that = this
         that.axios.get('/meetingRoom/meetingRoomList/findById?roomId=' + record.meetingRoomId)
           .then(function (response){
@@ -361,28 +369,33 @@
         that.startCol = record.startCol;
         that.endCol = record.endCol;
         that.contactPhone = record.contactPhone;
+        that.meetingDate = record.meetingDate
+        that.reserveFullName = record.reserveFullName
+        that.joinMemberFullName = record.joinMemberFullName
 
         that.$nextTick(() => {
           setTimeout(()=>{
             that.form.setFieldsValue(
               pick(that.model,
-                'subject',
-                'memberNumber',
-                'joinMemberFullName',
-                'joinMemberUserName',
-                'meetingLevel',
-                'action',
-                'startCol',
-                'endCol',
-                'contactPhone',
-                'meetingRoomId',
-                'reserveUserName',
-                'reserveFullName',
                 'contact',
-                'meetingRoom',
+                'contactPhone',
+                // 'joinMemberFullName',
+                'joinMemberUserName',
                 'meetingDate',
+                'meetingLevel',
+                'meetingRoom',
                 'meetingStartTime',
                 'meetingEndTime',
+                'memberNumber',
+                // 'reserveFullName',
+                'reserveUserName',
+                'subject',
+                'reserveDate',
+                // 'action',
+                // 'contactId',
+                // 'startCol',
+                // 'endCol',
+                // 'meetingRoomId',
               )
             )
           },0)
@@ -391,7 +404,6 @@
           that.auditUsers2.value = []
           // 初始化选人控件
           that.initSelectMan(that,record);
-          that.form.setFieldsValue({ inputerFullname: that.reserveFullName })
         });
       },
       close () {
@@ -400,9 +412,6 @@
       },
       handleOk () {
         const that = this;
-         if (that.contactPhone == ''){
-          that.$message.warn("联系电话不能为空")
-        }else {
           // 触发表单验证
           this.form.validateFields((err, values) => {
             if (!err) {
@@ -473,7 +482,7 @@
                   })
                 that.confirmLoading = false
                 that.close();
-              }else if (that.action !== 1 && that.action == undefined) {
+              }else if (that.action ===3 || that.action === undefined) {
                 //修改功能
                 that.axios.post('/meetingRoom/meetingRoomTimeStatus/edit', formData)
                   .then(function(response) {
@@ -484,7 +493,7 @@
                           that.$message.success(res.message);
                           //刷新父页面
                           that.$emit('ok');
-                          that.$root.$emit('searchQuery')
+                          that.$emit('searchQuery')
                         } else {
                           that.$message.warning(res.message);
                         }
@@ -503,7 +512,6 @@
               }
             }
           })
-        }
       },
       handleCancel () {
         this.close()
@@ -536,6 +544,9 @@
         }
         this.repeat = 0;
         console.log(this.endCol,"结束的序号");
+        // if (this.startCol <= this.endCol){
+        //   this.startTimecheck(callback)
+        // }
       },
       selectMeetingRoomName(item){
         this.meetingRoom = item.roomName
@@ -547,20 +558,21 @@
           callback();
         } else if (r.test(value) && value > this.containNum){
           callback("人数超过了会议室最大容纳人数");
+        } else if (value === undefined || value === '' || value == null) {
+          callback();
         } else {
           callback("请输入数字!");
         }
       },
       validatePhone(rule, value, callback){
-        if(!value || new RegExp(/^1[3|4|5|7|8][0-9]\d{8}$/).test(value)){
+        if(!value || new RegExp(/^1[3|4|5|7|8|9][0-9]\d{8}$/).test(value)){
           callback();
         }else{
           callback("请输入正确格式的手机号码!");
         }
       },
       // startTimecheck(rule, value, callback){
-      //   console.log(value)
-      //   console.log("触发了时间校验",this.startCol,this.endCol)
+      //   console.log('起止时间的校验')
       //   if (this.startCol > this.endCol){
       //     callback("开始时间不能大于结束时间");
       //   } else {
@@ -572,11 +584,32 @@
       //监听联系人字段
       reserveUserName: function () {
         const that = this
-        that.axios.get('/meetingRoom/getInfo?userName=' + that.reserveUserName)
-          .then(function(response) {
-            console.log(response)
-            that.contactPhone = response.result.phone
-          })
+        //删除了联系人 同时删除联系手机
+        if (that.reserveUserName === undefined || that.reserveUserName === '') {
+          that.contactPhone = undefined;
+          //异步动态清楚手机号
+          that.$nextTick(() => {
+            setTimeout(()=>{
+              that.form.setFieldsValue(
+                {contactPhone: that.contactPhone}
+              )
+            },0)
+          });
+        }else {
+          that.axios.get('/meetingRoom/getInfo?userName=' + that.reserveUserName)
+            .then(function(response) {
+              console.log(response)
+              that.contactPhone = response.result.phone
+              //异步动态替换手机号
+              that.$nextTick(() => {
+                setTimeout(()=>{
+                  that.form.setFieldsValue(
+                    {contactPhone: that.contactPhone}
+                  )
+                },0)
+              });
+            })
+        }
       },
     }
   }

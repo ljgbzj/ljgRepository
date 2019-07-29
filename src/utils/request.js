@@ -87,19 +87,17 @@ service.interceptors.request.use(config => {
     }
   }
   if (config.method=='post' && config.url != '/sys/loginEncry' && config.url != '/sys/login') {
-    if (config.headers.common.Accept.indexOf("application/json") != -1) {
-      if (Vue.ls.get(CURRENT_GENKEY) != null) {
+    if (Vue.ls.get(CURRENT_GENKEY) != null) {
+      if (typeof(config.data) == "string") {
+        config.data = qs.stringify({
+          data: aesUtil.encrypt(decodeURIComponent(config.data), Vue.ls.get(CURRENT_GENKEY))
+        })
+      } else {
         config.data = ({
           data: aesUtil.encrypt(config.data, Vue.ls.get(CURRENT_GENKEY))
         })
       }
-    } else {
-      if (Vue.ls.get(CURRENT_GENKEY) != null) {
-        config.data = qs.stringify({
-          data: aesUtil.encrypt(config.data, Vue.ls.get(CURRENT_GENKEY))
-        })
-      }
-    }                                                                                                                                                                        
+    }                                                                                                                                                                       
   }
   return config
 },(error) => {

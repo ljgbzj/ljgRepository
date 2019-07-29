@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { login, loginEncry, loginByPhone, logout } from "@/api/login"
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
+import { login, loginEncry, loginByPhone, loginByPhoneEncry, logout } from "@/api/login"
+import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH, CURRENT_GENKEY } from "@/store/mutation-types"
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
 
@@ -91,24 +91,45 @@ const user = {
     // 短信登录
     LoginByPhone({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        loginByPhone(userInfo).then(response => {
-          if(response.code =='200'){
-            const result = response.result
-            const userInfo = result.userInfo
-            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_TOKEN', result.token)
-            commit('SET_INFO', userInfo)
-            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
-            commit('SET_AVATAR', userInfo.avatar)
-            resolve(response)
-          }else{
-            reject(response)
-          }
-        }).catch(error => {
-          reject(error)
-        })
+        if (typeof(userInfo) == 'string') {
+          loginByPhoneEncry(userInfo).then(response => {
+            if(response.code =='200'){
+              const result = response.result
+              const userInfo = result.userInfo
+              Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+              commit('SET_TOKEN', result.token)
+              commit('SET_INFO', userInfo)
+              commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+              commit('SET_AVATAR', userInfo.avatar)
+              resolve(response)
+            }else{
+              reject(response)
+            }
+          }).catch(error => {
+            reject(error)
+          })
+        } else {
+          loginByPhone(userInfo).then(response => {
+            if(response.code =='200'){
+              const result = response.result
+              const userInfo = result.userInfo
+              Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+              Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+              commit('SET_TOKEN', result.token)
+              commit('SET_INFO', userInfo)
+              commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+              commit('SET_AVATAR', userInfo.avatar)
+              resolve(response)
+            }else{
+              reject(response)
+            }
+          }).catch(error => {
+            reject(error)
+          })
+        }
       })
     },
 
@@ -143,6 +164,7 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
+        Vue.ls.remove(CURRENT_GENKEY)
         logout(logoutToken).then(() => {
           resolve()
         }).catch(() => {

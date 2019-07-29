@@ -534,16 +534,16 @@
       outline: none;  //消除默认点击蓝色边框效果
     }
     .cancel {
-      min-width:96px;
-      height:40px;
+      min-width:82px;
+      // height:40px;
       background:rgba(238,238,238,1);
       border-radius:4px;
       color:rgba(51,51,51,1);
       padding: 5px;
     }
     .confirm {
-      min-width:96px;
-      height:40px;
+      min-width:82px;
+      // height:40px;
       // background:rgba(109,98,255,1);
       border-radius:4px;
       // color: rgba(255,255,255,1);
